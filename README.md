@@ -1,26 +1,23 @@
-twilio-taskrouter-worker.js
+twilio-taskrouter.js
 ===============
 
-twilio-taskrouter-worker.js allows you to manage Workers in the browser.
+TaskRouter is Twilio's skills based routing system. With this library, you can manage your Workers in the browser or view the state of your Workspace.
 
 Note that this is a preview release. You may encounter bugs and instability, and
 the APIs available in this release may change in subsequent releases.
 
-**We want your feedback!** Email Al Cook, Product Manager for TaskRouter
-at [al@twilio.com](mailto:al@twilio.com) with suggested
+**We want your feedback!** Email Ben Getson Product Manager for TaskRouter
+at [bgetson@twilio.com](mailto:bgetson@twilio.com) with suggested
 improvements, feature requests and general feedback. If you need technical
 support, contact [help@twilio.com](mailto:help@twilio.com).
 
 Installation
 ------------
 
-### CDN
+### NPM
 
-Releases of twilio-taskrouter-worker.js are hosted on a CDN, and you can include these
-directly in your web app using a &lt;script&gt; tag.
-
-```html
-<script src="//media.twiliocdn.com/taskrouter/js/v2/twilio-taskrouter-worker.min.js"></script>
+```
+npm install twilio-taskrouter
 ```
 
 Usage
@@ -31,41 +28,64 @@ For more information, refer to the
 [API Docs](//media.twiliocdn.com/taskrouter/js/v2/docs).
 
 ```js
-const alice = new Twilio.TaskRouter.Worker(token);
+const TaskRouter = require('twilio-taskrouter');
+const Twilio = require('twilio');
+const AccessToken = Twilio.jwt.AccessToken;
+const TaskRouterGrant = AccessToken.TaskRouterGrant;
 
-alice.on('ready', (readyAlice) => {
-    console.log('Worker ' + readyAlice.sid + ' is now ready for work');
+const accountSid = '';
+const signingKeySid = '';
+const signingKeySecret = '';
+const workspaceSid = '';
+const workerSid = '';
+
+const token = createAccessToken(accountSid, signingKeySid, signingKeySecret, workspaceSid, workerSid);
+const alice = new TaskRouter.Worker(token);
+
+alice.on('ready', readyAlice => {
+    console.log(`Worker ${readyAlice.sid} is now ready for work`);
 });
 
-alice.on('reservationCreated', (reservation) => {
-    console.log('Reservation ' + reservation.sid + ' has been created for ' + alice.sid);
+alice.on('reservationCreated', reservation => {
+    console.log(`Reservation ${reservation.sid} has been created for ${alice.sid}`);
+    console.log(`Task attributes are: ${reservation.task.attributes}`);
 
-    reservation.getTask().then((task) => {
-      console.log('Task attributes are: ' + task.attributes);
+    reservation.on('accepted', acceptedReservation => {
+      console.log(`Reservation ${acceptedReservation.sid} was accepted.`);
     });
 
-    reservation.on('accepted', (acceptedReservation) => {
-      console.log('Reservation ' + acceptedReservation.sid + ' was accepted.');
-    });
-
-    reservation.accept().then((acceptedReservation) => {
-      console.log('Reservation status is ' + acceptedReservation.status);
+    reservation.accept().then(acceptedReservation => {
+      console.log(`Reservation status is ${acceptedReservation.status}`);
     }).catch((err) => {
-      console.log('Error: ' + err);
+      console.log(`Error: ${err}`);
     });
 });
+
+function createAccessToken(accountSid, signingKeySid, signingKeySecret, workspaceSid, workerSid) {
+    const taskRouterGrant = new TaskRouterGrant({
+        workerSid: workerSid,
+        workspaceSid: workspaceSid,
+        role: 'worker'
+    });
+
+    const accessToken = new AccessToken(accountSid, signingKeySid, signingKeySecret);
+    accessToken.addGrant(taskRouterGrant);
+    accessToken.identity = 'alice';
+
+    return accessToken.toJwt();
+}
 
 ```
 
 Changelog
 ---------
 
-See [CHANGELOG.md](https://github.com/twilio/twilio-taskrouter-worker.js/blob/master/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/twilio/twilio-taskrouter.js/blob/master/CHANGELOG.md).
 
 License
 -------
 
-See [LICENSE.md](https://github.com/twilio/twilio-taskrouter-worker.js/blob/master/LICENSE.md).
+See [LICENSE.md](https://github.com/twilio/twilio-taskrouter.js/blob/master/LICENSE.md).
 
 Building
 --------
@@ -73,13 +93,13 @@ Building
 Fork and clone the repository. Then, install dependencies with
 
 ```
-npm install
+yarn install
 ```
 
 Then run the `build` script:
 
 ```
-npm run build
+yarn build
 ```
 
 The builds and docs will be placed in the `dist/` directory.

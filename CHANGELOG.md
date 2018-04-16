@@ -1,11 +1,13 @@
-2.0.0-prev1
+0.1.7
 ===========
 
-In this release, the SDK has been renamed twilio-taskrouter-worker.js and replaces the
-earlier taskrouter.js. twilio-taskrouter-worker.js is a breaking change from
-twilio-taskrouter.js and offers the following improvements:
+In this release, the SDK has been renamed twilio-taskrouter.js and replaces the
+earlier taskrouter.js. twilio-taskrouter.js is not backwards compatible with twilio-taskrouter.js but offers multiple improvements such as:
 
 - Promises over callbacks
 - Migration to FPA model using Twilio Access Tokens
+- Replace es5 patterns with es6
+- New "completed" event on a Reservation and support for events on a Task
+- Introduce a Workspace class that allows querying for Workers and TaskQueues
 
 Refer to the API docs for the full set of features.
