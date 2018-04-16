@@ -1,0 +1,45 @@
+{
+    "type": "JavaScript",
+    "travis": "pro",
+    "slug": "twilio/twilio-taskrouter-worker-pvt.js",
+    "env": {
+      "GH_REF": "git@github.com:twilio/twilio-taskrouter-worker-pvt.js.git"
+    },
+    "plans": {
+      "release": {
+        "env": {
+          "GIT_USER_NAME": "twilio-ci",
+          "GIT_USER_EMAIL": "ccis+twilio-ci@twilio.com"
+        },
+        "commands": [
+          "node ./node_modules/.bin/release --bump ${CURRENT_VERSION} ${RELEASE_VERSION}",
+          "git config user.name \"${GIT_USER_NAME}\"",
+          "git config user.email \"${GIT_USER_EMAIL}\"",
+          "yarn build",
+          "git add .",
+          "git add -f dist",
+          "git commit -m \"${RELEASE_VERSION}\"",
+          "git tag ${RELEASE_VERSION}",
+          "git remote set-url origin \"${GH_REF}\"",
+          "git rebase HEAD ${BRANCH}",
+          "git push origin ${BRANCH} --tags"
+        ]
+      },
+      "development": {
+        "commands": [
+          "node ./node_modules/.bin/release --bump ${RELEASE_VERSION} ${DEVELOPMENT_VERSION}",
+          "git rm -rf dist",
+          "git add .",
+          "git commit -m \"${DEVELOPMENT_VERSION}\"",
+          "git push origin ${BRANCH}"
+        ]
+      },
+      "publish": {
+        "commands": [
+          "git checkout ${RELEASE_VERSION}",
+          "echo \"//registry.npmjs.org/:_authToken=${NPM_TOKEN}\" >~/.npmrc",
+          "npm publish"
+        ]
+      }
+    }
+  }

@@ -1,0 +1,13 @@
+node_modules
+coverage
+docs
+bin
+dist
+build
+*.swp
+.idea
+.vscode
+test.json
+.env
+package-lock.json
+yarn-error.log
