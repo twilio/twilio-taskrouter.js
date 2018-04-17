@@ -1,4 +1,3 @@
-import { describe, it } from 'mocha';
 import { token, updatedToken } from '../../../mock/Token';
 
 const chai = require('chai');

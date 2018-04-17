@@ -1,4 +1,3 @@
-import { describe, it, before, after } from 'mocha';
 import Worker from '../../../lib/Worker';
 import { WorkerChannelCapacities } from '../../mock/WorkerChannelCapacities';
 import EnvTwilio from '../../util/EnvTwilio';

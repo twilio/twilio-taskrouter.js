@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
 import Configuration from '../../../../lib/util/Configuration';
 import TaskDescriptor from '../../../../lib/descriptors/TaskDescriptor';
 import { pendingReservationInstance as instance } from '../../../mock/Reservations';

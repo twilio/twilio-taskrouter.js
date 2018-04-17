@@ -6,7 +6,6 @@ const assert = chai.assert;
 const expect = chai.expect;
 const sinon = require('sinon');
 
-import { afterEach, beforeEach, describe, it } from 'mocha';
 import Activity from '../../../lib/Activity';
 import ActivityDescriptor from '../../../lib/descriptors/ActivityDescriptor';
 import { API_V1 } from '../../../lib/util/Constants';

@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { API_V1 } from '../../../lib/util/Constants';
-import { afterEach, beforeEach, describe, it } from 'mocha';
 import Configuration from '../../../lib/util/Configuration';
 import Logger from '../../../lib/util/Logger';
 const mockEvents = require('../../mock/Events').events;

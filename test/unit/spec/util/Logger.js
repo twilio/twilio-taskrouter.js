@@ -1,4 +1,3 @@
-import { describe, it, afterEach } from 'mocha';
 import Logger from '../../../../lib/util/Logger';
 const chai = require('chai');
 const assert = chai.assert;
