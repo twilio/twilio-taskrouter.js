@@ -5,7 +5,7 @@ import Worker from '../../../lib/Worker';
 const chai = require('chai');
 const assert = chai.assert;
 const credentials = require('../../env');
-const JWT = require('../../util/makeAccessToken');
+const JWT = require('../../util/MakeAccessToken');
 
 describe('NonMuliTask Worker Client', () => {
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskBobSid);
