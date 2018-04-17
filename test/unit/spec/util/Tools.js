@@ -1,4 +1,3 @@
-import { describe, it } from 'mocha';
 import { badToken } from '../../../mock/Token';
 
 const tools = require('../../../../lib/util/Tools');

@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
 
 import WorkerChannelDescriptor from '../../../../lib/descriptors/WorkerChannelDescriptor';
 import { defaultChannelInstance as instance } from '../../../mock/Channels';

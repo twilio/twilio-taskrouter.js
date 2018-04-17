@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
 
 import Configuration from '../../../../lib/util/Configuration';
 import Request from '../../../../lib/util/Request';

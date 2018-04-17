@@ -4,7 +4,6 @@ chai.use(require('chai-datetime'));
 chai.should();
 const sinon = require('sinon');
 
-import { describe, it } from 'mocha';
 import Channel from '../../../lib/Channel';
 import Configuration from '../../../lib/util/Configuration';
 import { defaultChannelInstance } from '../../mock/Channels';

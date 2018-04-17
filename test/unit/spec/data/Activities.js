@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, describe, it } from 'mocha';
 import { API_V1 } from '../../../../lib/util/Constants';
 import { list as mockList, offlineActivityInstance as mockInstance, activitiesPage0 as mockPage0, activitiesPage1 as mockPage1 } from '../../../mock/Activities';
 import { token } from '../../../mock/Token';

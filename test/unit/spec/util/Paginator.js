@@ -1,4 +1,3 @@
-import { describe, it } from 'mocha';
 import Paginator from '../../../../lib/util/Paginator';
 const chai = require('chai');
 const expect = chai.expect;

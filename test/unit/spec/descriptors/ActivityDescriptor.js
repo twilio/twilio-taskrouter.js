@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
 import ActivityDescriptor from '../../../../lib/descriptors/ActivityDescriptor';
 import { offlineActivityInstance as instance } from '../../../mock/Activities';
 

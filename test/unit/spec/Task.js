@@ -5,7 +5,6 @@ chai.use(require('chai-datetime'));
 chai.should();
 const sinon = require('sinon');
 
-import { afterEach, beforeEach, describe, it } from 'mocha';
 import { assignedReservationInstance, pendingReservationInstance } from '../../mock/Reservations';
 import { API_V1, TASK_STATUS_COMPLETED, TASK_STATUS_WRAPPING } from '../../../lib/util/Constants';
 import Configuration from '../../../lib/util/Configuration';

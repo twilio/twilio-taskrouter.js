@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, describe, it } from 'mocha';
 import { API_V1 } from '../../../../lib/util/Constants';
 import { pageSize1000 as mockList, defaultChannelInstance as mockInstance, channelsPageSize5Page0 as mockPage0, channelsPageSize5Page1 as mockPage1 } from '../../../mock/Channels';
 import { token } from '../../../mock/Token';

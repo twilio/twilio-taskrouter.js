@@ -1,4 +1,3 @@
-import { describe, it, before, after } from 'mocha';
 
 const chai = require('chai');
 const assert = chai.assert;

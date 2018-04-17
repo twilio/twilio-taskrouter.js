@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { assert } from 'chai';
-import { describe, it } from 'mocha';
 import Configuration from '../../../../lib/util/Configuration';
 import ReservationDescriptor from '../../../../lib/descriptors/ReservationDescriptor';
 import TaskDescriptor from '../../../../lib/descriptors/TaskDescriptor';
