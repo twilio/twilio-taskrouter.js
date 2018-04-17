@@ -73,7 +73,7 @@ describe('Worker', () => {
     });
 
     afterEach(() => {
-      setAttributesSpy.reset();
+      setAttributesSpy.resetHistory();
       sandbox.restore();
     });
 
@@ -220,7 +220,7 @@ describe('Worker', () => {
     });
 
     afterEach(() => {
-      _updateWorkerActivitySpy.reset();
+      _updateWorkerActivitySpy.resetHistory();
       sandbox.restore();
     });
 

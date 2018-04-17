@@ -29,11 +29,11 @@ describe('Logger', () => {
     const errorSpy = sinon.spy(log, 'error');
 
     afterEach(() => {
-      traceSpy.reset();
-      infoSpy.reset();
-      debugSpy.reset();
-      warnSpy.reset();
-      errorSpy.reset();
+      traceSpy.resetHistory();
+      infoSpy.resetHistory();
+      debugSpy.resetHistory();
+      warnSpy.resetHistory();
+      errorSpy.resetHistory();
     });
 
     describe('#trace(msg)', () => {
