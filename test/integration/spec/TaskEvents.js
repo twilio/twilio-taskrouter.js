@@ -109,9 +109,6 @@ describe('TaskEvents', () => {
                 assert.equal(taskResArr[0].reason, 'Time to go home');
                 expect(taskResArr[0].attributes).to.deep.equal({ 'selected_language': 'es' });
                 assert.equal(taskResArr[0].workflowSid, credentials.multiTaskWorkflowSid);
-                // Make sure the task cancellation does not remove the reservation from the worker's reservation list
-                assert.equal(alice.reservations.size, 1);
-
             });
         }).timeout(10000);
     });
