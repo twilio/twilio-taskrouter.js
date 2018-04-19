@@ -144,7 +144,7 @@ describe('Worker', () => {
         expect(unUpdatedWorker.dateUpdated).to.equal(worker.dateUpdated);
         expect(unUpdatedWorker.disconnectActivitySid).to.equal(worker.disconnectActivitySid);
         expect(unUpdatedWorker.name).to.equal(worker.name);
-        expect(unUpdatedWorker.reservations).to.equal(worker.reservations);
+        expect(unUpdatedWorker.reservations).to.deep.equal(worker.reservations);
         expect(unUpdatedWorker.sid).to.equal(worker.sid);
         expect(unUpdatedWorker.workspaceSid).to.equal(worker.workspaceSid);
 
@@ -213,7 +213,8 @@ describe('Worker', () => {
         const activityDescriptor = new ActivityDescriptor(activityPayload);
         activities.set(activityPayload.sid, new Activity(worker, activityDescriptor, activityPayload.sid));
       });
-      worker.activities = activities;
+
+      sinon.stub(worker, 'activities').get(() => activities);
 
       _updateWorkerActivitySpy = sinon.spy(worker, '_updateWorkerActivity');
       sandbox = sinon.sandbox.create();

@@ -70,7 +70,7 @@ describe('Activity', () => {
                 activities.set(activityPayload.sid, new Activity(worker, activityDescriptor));
             });
 
-            worker.activities = activities;
+            sinon.stub(worker, 'activities').get(() => activities);
             let idleActivity;
 
             worker.activities.forEach(activity => {
@@ -116,7 +116,7 @@ describe('Activity', () => {
                 activities.set(activityPayload.sid, new Activity(worker, activityDescriptor));
             });
 
-            worker.activities = activities;
+            sinon.stub(worker, 'activities').get(() => activities);
 
             let idleActivity;
             let offlineActivity;
