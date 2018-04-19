@@ -1,9 +1,9 @@
 {
     "type": "JavaScript",
-    "travis": "pro",
-    "slug": "twilio/twilio-taskrouter-worker-pvt.js",
+    "travis": true,
+    "slug": "twilio/twilio-taskrouter.js",
     "env": {
-      "GH_REF": "git@github.com:twilio/twilio-taskrouter-worker-pvt.js.git"
+      "GH_REF": "git@github.com:twilio/twilio-taskrouter.js.git"
     },
     "plans": {
       "release": {
@@ -22,7 +22,14 @@
           "git tag ${RELEASE_VERSION}",
           "git remote set-url origin \"${GH_REF}\"",
           "git rebase HEAD ${BRANCH}",
-          "git push origin ${BRANCH} --tags"
+          "git push origin ${BRANCH} --tags",
+          "git checkout -B docs",
+          "find . -maxdepth 1 \\( -name dist -o -name .git \\) -prune -o -exec rm -rf {} +",
+          "mv dist/docs/* .",
+          "rm -rf dist",
+          "git add .",
+          "git commit -am \"${RELEASE_VERSION}\"",
+          "git push origin docs --force"
         ]
       },
       "development": {
