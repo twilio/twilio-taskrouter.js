@@ -12,6 +12,7 @@
           "GIT_USER_EMAIL": "twilio-ci@twilio.com"
         },
         "commands": [
+          "sed 's/inherit//g' ./node_modules/release-tool/lib/plans.js",
           "node ./node_modules/.bin/release --bump ${CURRENT_VERSION} ${RELEASE_VERSION}",
           "git config user.name \"${GIT_USER_NAME}\"",
           "git config user.email \"${GIT_USER_EMAIL}\"",

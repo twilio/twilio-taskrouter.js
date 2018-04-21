@@ -45,7 +45,7 @@
   "dependencies": {
     "lodash": "^4.17.5",
     "loglevel": "^1.4.1",
-    "release-tool": "^0.2.2",
+    "release-tool": "MartinAmps/release-tool",
     "ws": "^5.1.0",
     "xmlhttprequest": "^1.8.0"
   },

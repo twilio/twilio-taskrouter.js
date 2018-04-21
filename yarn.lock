@@ -5940,9 +5940,9 @@ regjsparser@^0.1.4:
   dependencies:
     jsesc "~0.5.0"
 
-release-tool@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/release-tool/-/release-tool-0.2.2.tgz#2d87d7febb6d6ea6a03aca268aafde166558b401"
+release-tool@MartinAmps/release-tool:
+  version "0.2.4-dev"
+  resolved "https://codeload.github.com/MartinAmps/release-tool/tar.gz/fa60a5afc425dd5d8197e735269ee879df1e86a0"
   dependencies:
     colors "^1.1.2"
     commander "^2.9.0"
