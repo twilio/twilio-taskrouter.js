@@ -118,7 +118,8 @@ describe('MultiTask Worker Client', () => {
             return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
         });
 
-        it('should populate pending .reservations', () => {
+        it('should populate pending .reservations', async () => {
+            await new Promise(r => setTimeout(r, 500));
             multiTaskAlice = new Worker(aliceMultiToken, {
                 ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
                 wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
