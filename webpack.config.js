@@ -2,16 +2,12 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const WebpackAutoInject = require('webpack-auto-inject-version');
 const webpack = require('webpack');
 
-const createConfig = (libraryTarget) => {
-    return {
-        entry: {
-            main: './lib'
-        },
+const createConfig = libraryTarget => {
+    const config = {
         output: {
             libraryTarget: libraryTarget,
             filename: 'index.' + libraryTarget + '.js'
         },
-        target: 'node',
         plugins: [
             new WebpackAutoInject({
                 components: {
@@ -27,12 +23,6 @@ const createConfig = (libraryTarget) => {
             })
         ],
         module: {},
-        node: {
-            fs: 'empty',
-            net: 'empty',
-            tls: 'empty',
-            process: false
-        },
         optimization: {
             minimizer: [
                 new UglifyJsPlugin({
@@ -46,6 +36,22 @@ const createConfig = (libraryTarget) => {
             ]
         }
     };
+
+    if (libraryTarget === 'window') {
+        config.node = {
+            fs: 'empty',
+            net: 'empty',
+            tls: 'empty',
+            process: false
+        };
+        config.target = 'web';
+        config.entry = { main: './lib/web.js' }
+    } else {
+        config.entry = { main: './lib/index.js' }
+        config.target = 'node';
+    }
+
+    return config;
 };
 
 module.exports = [

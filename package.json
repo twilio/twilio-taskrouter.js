@@ -21,7 +21,7 @@
     "dist"
   ],
   "main": "./dist/index.commonjs2.js",
-  "browser": "./dist/index.commonjs2.js",
+  "browser": "./dist/index.window.js",
   "scripts": {
     "webpack": "webpack --config ./webpack.config.js --progress --mode",
     "mocha": "mocha --require babel-core/register --exit $1",
@@ -75,7 +75,7 @@
     "sinon": "^4.5.0",
     "sinon-chai": "^3.0.0",
     "twilio": "^3.6.1",
-    "uglifyjs-webpack-plugin": "^1.2.2",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "utf-8-validate": "^4.0.1",
     "vinyl-fs": "^3.0.2",
     "webpack": "^4.1.1",
