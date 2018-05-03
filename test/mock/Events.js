@@ -161,7 +161,7 @@ const reservationCanceled = {
     task: {
         reason: null,
         date_updated: 1521490731,
-        assignment_status: 'reserved',          // (@wli) TODO: wrong, should be "canceled", pending WDS changes
+        assignment_status: 'canceled',
         workflow_name: 'Default Fifo Workflow',
         addons: '{}',
         workflow_sid: 'WWxxx',
@@ -221,7 +221,7 @@ const reservationRescinded = {
     task: {
         reason: null,
         date_updated: 1521492208,
-        assignment_status: 'reserved',      // (@wli) TODO: This should be assigned ?
+        assignment_status: 'assigned',
         workflow_name: 'Default Fifo Workflow',
         addons: '{}',
         workflow_sid: 'WWxxx',
