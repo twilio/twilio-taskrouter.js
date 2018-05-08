@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 green='\033[0;32m'
 yellow='\033[0;33m'
 no_color='\033[0m'
