@@ -42,8 +42,8 @@ describe('TaskEvents', () => {
         it('should get the updated event on the task.', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -80,8 +80,8 @@ describe('TaskEvents', () => {
         it('should get the canceled event on the task.', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -117,8 +117,8 @@ describe('TaskEvents', () => {
         it('should get the wrapup event on the task.', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -159,8 +159,8 @@ describe('TaskEvents', () => {
         it('should get the completed event on the task.', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {

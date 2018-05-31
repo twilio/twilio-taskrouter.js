@@ -29,8 +29,8 @@ describe('Channel', () => {
     describe('constructor', () => {
         it('should create specific channels in MultiTask mode', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -48,8 +48,8 @@ describe('Channel', () => {
 
         it('should create specific channels in NonMultiTask mode', () => {
             const alice = new Worker(aliceToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {

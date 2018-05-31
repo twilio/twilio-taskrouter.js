@@ -20,8 +20,8 @@ describe('Common Worker Client', () => {
     before(() => {
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error'
             });
         });
@@ -83,8 +83,8 @@ describe('Common Worker Client', () => {
     describe('Two Worker clients in the same browser', () => {
         it('should not allow log levels across unique workers to be affected', () => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'info'
             });
 
