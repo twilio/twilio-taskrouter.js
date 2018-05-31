@@ -12,27 +12,30 @@ const mockEvents = require('../../mock/Events').events;
 import Request from '../../../lib/util/Request';
 import { token } from '../../mock/Token';
 import WorkerChannelDescriptor from '../../../lib/descriptors/WorkerChannelDescriptor';
+import Worker from '../../../lib/Worker';
+import { WorkerConfig } from '../../mock/WorkerConfig';
 
 describe('Channel', function() {
 
     const config = new Configuration(token);
+    const worker = new Worker(token, WorkerConfig);
     const defaultChannelDescriptor = new WorkerChannelDescriptor(defaultChannelInstance);
 
     describe('constructor', () => {
-          it('should throw an error if config is missing', () => {
+          it('should throw an error if worker is missing', () => {
             (() => {
                 new Channel(null);
-            }).should.throw(/config is a required parameter/);
+            }).should.throw(/worker is a required parameter/);
         });
 
         it('should throw an error if channel descriptor is missing', () => {
             (() => {
-                new Channel(config, null);
+                new Channel(worker, null);
             }).should.throw(/descriptor is a required parameter/);
         });
 
         it('should set properties using the payload', () => {
-            const defaultChannel = new Channel(config, new Request(config), defaultChannelDescriptor);
+            const defaultChannel = new Channel(worker, new Request(config), defaultChannelDescriptor);
 
             assert.equal(defaultChannel.accountSid, defaultChannelInstance.account_sid);
             assert.equal(defaultChannel.assignedTasks, defaultChannelInstance.assigned_tasks);
@@ -48,7 +51,6 @@ describe('Channel', function() {
             assert.equal(defaultChannel.workerSid, defaultChannelInstance.worker_sid);
             assert.equal(defaultChannel.workspaceSid, defaultChannelInstance.workspace_sid);
 
-            assert.equal(defaultChannel._config, config);
             assert.instanceOf(defaultChannel._log, Logger);
         });
     });
@@ -57,7 +59,7 @@ describe('Channel', function() {
         it('should emit Event:on(capacityUpdated)', () => {
             const spy = sinon.spy();
 
-            const defaultChannel = new Channel(config, new Request(config), defaultChannelDescriptor);
+            const defaultChannel = new Channel(worker, new Request(config), defaultChannelDescriptor);
             assert.equal(defaultChannel.capacity, 2);
             defaultChannel.on('capacityUpdated', spy);
 
@@ -76,7 +78,7 @@ describe('Channel', function() {
         it('should emit Event:on(availabilityUpdated)', () => {
             const spy = sinon.spy();
 
-            const defaultChannel = new Channel(config, new Request(config), defaultChannelDescriptor);
+            const defaultChannel = new Channel(worker, new Request(config), defaultChannelDescriptor);
             assert.equal(defaultChannel.available, true);
             defaultChannel.on('availabilityUpdated', spy);
 

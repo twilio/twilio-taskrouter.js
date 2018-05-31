@@ -1,13 +1,15 @@
 import _ from 'lodash';
 import { assert } from 'chai';
-import Configuration from '../../../../lib/util/Configuration';
 import ReservationDescriptor from '../../../../lib/descriptors/ReservationDescriptor';
 import TaskDescriptor from '../../../../lib/descriptors/TaskDescriptor';
+import Worker from '../../../../lib/Worker';
 import { pendingReservationInstance as instance } from '../../../mock/Reservations';
 import { token } from '../../../mock/Token';
+import { WorkerConfig } from '../../../mock/WorkerConfig';
 
 describe('ReservationDescriptor', () => {
-    const config = new Configuration(token);
+    const worker = new Worker(token, WorkerConfig);
+
     describe('constructor', () => {
         it('should throw an error if descriptor is not of type Object', () => {
             ['abc', 123, null].forEach(v => {
@@ -15,20 +17,20 @@ describe('ReservationDescriptor', () => {
             });
         });
 
-        it('should throw an error if the config is not of type Configuration', () => {
+        it('should throw an error if the worker is not of type Worker', () => {
             (() => {
                 new ReservationDescriptor(instance, 'abc');
-            }).should.throw(/<Configuration>config is required./);
+            }).should.throw(/<Worker>worker is required./);
         });
 
         it('should throw an error if the descriptor does not contain all properties of a Reservation', () => {
             (() => {
-                new ReservationDescriptor({ 'account_sid': 'WAxxx' }, config);
+                new ReservationDescriptor({ 'account_sid': 'WAxxx' }, worker);
             }).should.throw(/<Descriptor>descriptor does not contain all properties of a Reservation./);
         });
 
         it('should set properties using data from the descriptor', () => {
-            const reservationDescriptor = new ReservationDescriptor(instance, config);
+            const reservationDescriptor = new ReservationDescriptor(instance, worker);
             assert.equal(reservationDescriptor.accountSid, instance.account_sid);
             assert.equal(reservationDescriptor.workspaceSid, instance.workspace_sid);
             assert.equal(reservationDescriptor.sid, instance.sid);
@@ -39,7 +41,7 @@ describe('ReservationDescriptor', () => {
             assert.deepEqual(reservationDescriptor.dateUpdated, new Date(instance.date_updated * 1000));
 
             // task data on the reservation
-            const taskDescriptor = new TaskDescriptor(instance.task, config);
+            const taskDescriptor = new TaskDescriptor(instance.task, worker);
             assert.deepEqual(taskDescriptor.addOns, JSON.parse(instance.task.addons));
             assert.equal(taskDescriptor.age, instance.task.age);
             assert.deepEqual(taskDescriptor.attributes, JSON.parse(instance.task.attributes));
@@ -65,7 +67,7 @@ describe('ReservationDescriptor', () => {
             const badReservationInstance = _.cloneDeep(instance);
             _.unset(badReservationInstance, 'task.workflow_sid');
             (() => {
-                new ReservationDescriptor(badReservationInstance, config);
+                new ReservationDescriptor(badReservationInstance, worker);
             }).should.throw(/<Descriptor>descriptor does not contain all properties of a Task./);
         });
     });

@@ -13,24 +13,30 @@ import ChannelsEntity from '../../../../lib/data/ChannelsEntity';
 import Configuration from '../../../../lib/util/Configuration';
 import Request from '../../../../lib/util/Request';
 import path from 'path';
+import Worker from '../../../../lib/Worker';
+import { WorkerConfig } from '../../../mock/WorkerConfig';
+import Routes from '../../../../lib/util/Routes';
 
 describe('Channels', () => {
     const config = new Configuration(token);
+    const worker = new Worker(token, WorkerConfig);
+    const routes = new Routes('WSxxx', 'WKxxx');
+    sinon.stub(worker, 'getRoutes').returns(routes);
 
     describe('constructor', () => {
-        it('should throw an error if the configuration is missing', () => {
+        it('should throw an error if the worker is missing', () => {
             (() => {
                 new ChannelsEntity();
-            }).should.throw(/config is a required parameter/);
+            }).should.throw(/worker is a required parameter/);
         });
 
         it('should use the default pageSize=1000, if none provided', () => {
-            const channelsServices = new ChannelsEntity(config, new Request(config));
+            const channelsServices = new ChannelsEntity(worker, new Request(config));
             assert.equal(channelsServices._pageSize, 1000);
         });
 
         it('should use the pageSize, if provided', () => {
-            const channelsServices = new ChannelsEntity(config, new Request(config), { pageSize: 50 });
+            const channelsServices = new ChannelsEntity(worker, new Request(config), { pageSize: 50 });
             assert.equal(channelsServices._pageSize, 50);
         });
     });
@@ -52,7 +58,7 @@ describe('Channels', () => {
 
             sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1, requestParams).returns(Promise.resolve(mockList));
 
-            const channelsServices = new ChannelsEntity(config, new Request(config));
+            const channelsServices = new ChannelsEntity(worker, new Request(config));
 
             return channelsServices.fetchChannels().then(() => {
                 expect(channelsServices.channels.size).to.equal(mockList.contents.length);
@@ -85,7 +91,7 @@ describe('Channels', () => {
             s.withArgs(requestURL, API_V1, requestParamsPage0).returns(Promise.resolve(mockPage0));
             s.withArgs(requestURL, API_V1, requestParamsPage1).returns(Promise.resolve(mockPage1));
 
-            const channelsServices = new ChannelsEntity(config, new Request(config), { pageSize: 5 });
+            const channelsServices = new ChannelsEntity(worker, new Request(config), { pageSize: 5 });
 
             return channelsServices.fetchChannels().then(() => {
                expect(channelsServices.channels.size).to.equal(mockPage0.total);

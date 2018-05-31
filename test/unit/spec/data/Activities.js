@@ -14,10 +14,13 @@ import Configuration from '../../../../lib/util/Configuration';
 import ActivitiesEntity from '../../../../lib/data/ActivitiesEntity';
 import Request from '../../../../lib/util/Request';
 import Worker from '../../../../lib/Worker';
+import Routes from '../../../../lib/util/Routes';
 
 describe('Activities', () => {
     const worker = new Worker(token, WorkerConfig);
     const config = new Configuration(token);
+    const routes = new Routes('WSxxx', 'WKxxx');
+    sinon.stub(worker, 'getRoutes').returns(routes);
 
     describe('constructor', () => {
         it('should throw an error if the worker is missing', () => {

@@ -13,12 +13,6 @@ describe('Configuration', () => {
       }).should.throw(/Failed to initialize Configuration/);
     });
 
-    it('should throw an error if the token is malformed', () => {
-      (() => {
-        new Configuration('abc');
-      }).should.throw(/Twilio access token malformed/);
-    });
-
     it('should set environment option if passed in', () => {
       const options = {
         ebServer: 'https://event-bridge.dev-us1.twilio.com/v1/wschannels',
@@ -45,13 +39,6 @@ describe('Configuration', () => {
         const config = new Configuration(token);
         config.updateToken();
       }).should.throw(/a new Twilio token must be passed in/);
-    });
-
-    it('should throw an error if the token is malformed', () => {
-      (() => {
-        const config = new Configuration(token);
-        config.updateToken('abc');
-      }).should.throw(/Twilio access token malformed/);
     });
 
     it('should update the token value', () => {

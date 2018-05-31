@@ -16,10 +16,14 @@ const Errors = require('../../../lib/util/Constants').twilioErrors;
 import Request from '../../../lib/util/Request';
 import Worker from '../../../lib/Worker';
 import { WorkerConfig } from '../../mock/WorkerConfig';
+import Routes from '../../../lib/util/Routes';
 
 describe('Activity', () => {
 
     const worker = new Worker(token, WorkerConfig);
+    const routes = new Routes('WSxxx', 'WKxxx');
+    sinon.stub(worker, 'getRoutes').returns(routes);
+
     const offlineActivityDescriptor = new ActivityDescriptor(mockInstance);
 
     describe('constructor', () => {
