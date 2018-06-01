@@ -49,9 +49,14 @@ describe('Common Worker Client', () => {
     describe('#setAttributes(newAttributes)', () => {
         it('should set the attributes of the worker', () => {
             const newAttributes = { languages: ['en'], name: 'Ms. Alice' };
-            return alice.setAttributes(newAttributes).then(updatedAlice => {
-                expect(alice).to.equal(updatedAlice);
-                expect(alice.attributes).to.deep.equal(newAttributes);
+
+            return new Promise(resolve => {
+                alice.on('ready', resolve);
+            }).then(() => {
+                return alice.setAttributes(newAttributes).then(updatedAlice => {
+                    expect(alice).to.equal(updatedAlice);
+                    expect(alice.attributes).to.deep.equal(newAttributes);
+                });
             });
         }).timeout(5000);
 
@@ -71,12 +76,6 @@ describe('Common Worker Client', () => {
             alice.updateToken(updateAliceToken);
             assert.equal(alice._config.token, updateAliceToken);
             assert.isTrue(spy.calledOnce);
-        }).timeout(5000);
-
-        it('should return an error if unable to update the token', () => {
-            (() => {
-                alice.updateToken('abc');
-            }).should.throw(/Twilio access token malformed/);
         }).timeout(5000);
     });
 
