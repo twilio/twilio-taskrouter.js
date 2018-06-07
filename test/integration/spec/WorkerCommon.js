@@ -94,4 +94,17 @@ describe('Common Worker Client', () => {
             assert.equal(bob._log.getLevel(), 'info');
         });
     });
+
+    describe('should disconnect', () => {
+        it('should fire a disconnect event', done => {
+            const bob = new Worker(bobToken, {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'info'
+            });
+
+            bob.on('ready', () => bob.disconnect());
+            bob.on('disconnected', () => done());
+        });
+    });
 });
