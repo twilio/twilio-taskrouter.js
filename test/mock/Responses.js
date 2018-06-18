@@ -86,6 +86,28 @@ export const taskWrapping = {
   addons: "{}"
 };
 
+export const updatedTaskAttributes = {
+    account_sid: "ACxxx",
+    workspace_sid: "WSxxx",
+    sid: "WTxx1",
+    date_created: 1518809969,
+    date_updated: 1519408987,
+    attributes: "{\"languages\":[\"es\"]}",
+    assignment_status: "completed",
+    workflow_sid: "WWxxx",
+    workflow_name: "Default Fifo Workflow",
+    queue_sid: "WQxxx",
+    queue_name: "Sample Queue",
+    priority: 0,
+    reason: "Task is completed.",
+    timeout: 86400,
+    task_channel_sid: "TCxxx",
+    task_channel_unique_name: "default",
+    counter: 2,
+    age: 291,
+    addons: "{}"
+};
+
 export const reservationAccepted = {
   account_sid: "ACxxx",
   workspace_sid: "WSxxx",

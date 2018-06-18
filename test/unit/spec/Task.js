@@ -12,7 +12,7 @@ const Errors = require('../../../lib/util/Constants').twilioErrors;
 const mockEvents = require('../../mock/Events').events;
 import Request from '../../../lib/util/Request';
 import Task from '../../../lib/Task';
-import { taskCompleted, taskWrapping } from '../../mock/Responses';
+import { taskCompleted, taskWrapping, updatedTaskAttributes } from '../../mock/Responses';
 import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 import { token } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
@@ -205,6 +205,101 @@ describe('Task', () => {
             const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).catch(() => {
+                expect(task.age).to.equal(assignedTaskDescriptor.age);
+                expect(task.accountSid).to.equal(assignedTaskDescriptor.accountSid);
+                expect(task.attributes).to.deep.equal(assignedTaskDescriptor.attributes);
+                expect(task.addOns).to.deep.equal(assignedTaskDescriptor.addOns);
+                expect(task.dateCreated).to.equalDate(assignedTaskDescriptor.dateCreated);
+                expect(task.dateUpdated).to.equalDate(assignedTaskDescriptor.dateUpdated);
+                expect(task.priority).to.equal(assignedTaskDescriptor.priority);
+                expect(task.reason).to.equal(assignedTaskDescriptor.reason);
+                expect(task.sid).to.equal(assignedTaskDescriptor.sid);
+                expect(task.status).to.equal(assignedTaskDescriptor.status);
+                expect(task.taskChannelSid).to.equal(assignedTaskDescriptor.taskChannelSid);
+                expect(task.taskChannelUniqueName).to.equal(assignedTaskDescriptor.taskChannelUniqueName);
+                expect(task.queueName).to.equal(assignedTaskDescriptor.queueName);
+                expect(task.queueSid).to.equal(assignedTaskDescriptor.queueSid);
+                expect(task.timeout).to.equal(assignedTaskDescriptor.timeout);
+                expect(task.workflowName).to.equal(assignedTaskDescriptor.workflowName);
+                expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
+                expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
+            });
+        });
+    });
+
+    describe('#setAttributes(attributes)', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1';
+        const requestParams = {
+            Attributes: '{"languages":["en"]}',
+        };
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should update the Task attributes upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(updatedTaskAttributes));
+
+            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+
+            return task.setAttributes({ languages: ['en'] }).then(() => {
+                expect(task.reason).to.equal(updatedTaskAttributes.reason);
+                expect(task.workflowSid).to.equal(updatedTaskAttributes.workflow_sid);
+                expect(task.workflowName).to.equal(updatedTaskAttributes.workflow_name);
+                expect(task.queueSid).to.equal(updatedTaskAttributes.queue_sid);
+                expect(task.queueName).to.equal(updatedTaskAttributes.queue_name);
+                expect(task.taskChannelSid).to.equal(updatedTaskAttributes.task_channel_sid);
+                expect(task.taskChannelUniqueName).to.equal(updatedTaskAttributes.task_channel_unique_name);
+                expect(task.status).to.equal(updatedTaskAttributes.assignment_status);
+                expect(task.attributes).to.deep.equal(JSON.parse(updatedTaskAttributes.attributes));
+                expect(task.age).to.equal(updatedTaskAttributes.age);
+                expect(task.priority).to.equal(updatedTaskAttributes.priority);
+                expect(task.timeout).to.equal(updatedTaskAttributes.timeout);
+                expect(task.dateCreated).to.equalDate(new Date(updatedTaskAttributes.date_created * 1000));
+                expect(task.dateUpdated).to.equalDate(new Date(updatedTaskAttributes.date_updated * 1000));
+            });
+        });
+
+        it('should throw an error if attributes parameter is missing', () => {
+            (() => {
+                const task = new Task(config, new Request(config), assignedTaskDescriptor);
+
+                task.setAttributes();
+            }).should.throw(/attributes is a required parameter/);
+        });
+
+        it('should not update the attributes, if none provided', () => {
+            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+
+            (() => {
+                task.setAttributes();
+            }).should.throw(/attributes is a required parameter/);
+            assert.equal(task.attributes, assignedTaskDescriptor.attributes);
+        });
+
+        it('should return an error if attributes update failed', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+
+            return task.setAttributes({ languages: ['en'] }).catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
+            });
+        });
+
+        it('should not update any unrelated Task properties', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+
+            return task.setAttributes({ languages: ['en'] }).catch(() => {
                 expect(task.age).to.equal(assignedTaskDescriptor.age);
                 expect(task.accountSid).to.equal(assignedTaskDescriptor.accountSid);
                 expect(task.attributes).to.deep.equal(assignedTaskDescriptor.attributes);
