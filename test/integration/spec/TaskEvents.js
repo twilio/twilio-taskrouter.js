@@ -155,6 +155,46 @@ describe('TaskEvents', () => {
         }).timeout(10000);
     });
 
+    describe('#setAttributes(newAttributes)', () => {
+        it('should set the attributes of the Task', () => {
+            const alice = new Worker(multiTaskAliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
+                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+            });
+
+            return new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation.task);
+                });
+            }).then(task => {
+                const newAttributes = { languages: ['en'] };
+                task.setAttributes(newAttributes).then(updatedTask => {
+                    expect(task).to.equal(updatedTask);
+                    expect(task.attributes).to.deep.equal(newAttributes);
+                });
+            });
+        }).timeout(5000);
+
+        it('should return an error if unable to set the attributes', () => {
+            const alice = new Worker(multiTaskAliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
+                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+            });
+
+            return new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation.task);
+                });
+            }).then(task => {
+                (() => {
+                    task.setAttributes();
+                }).should.throw(/attributes is a required parameter/);
+            });
+        });
+    });
+
     describe('#Task Completed', () => {
         it('should get the completed event on the task.', () => {
             const alice = new Worker(multiTaskAliceToken, {
