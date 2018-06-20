@@ -159,8 +159,8 @@ describe('TaskEvents', () => {
         it('should set the attributes of the Task', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -179,8 +179,8 @@ describe('TaskEvents', () => {
         it('should return an error if unable to set the attributes', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
