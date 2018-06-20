@@ -87,7 +87,7 @@ describe('Task', () => {
             }).should.throw(/reason is a required parameter/);
         });
 
-        it('should update the Task reason and properties upon successful execution', () => {
+        it('should set attributes of the Task', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(taskCompleted));
             const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
@@ -232,7 +232,9 @@ describe('Task', () => {
 
         const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1';
         const requestParams = {
-            Attributes: '{"languages":["en"]}',
+            Attributes: {
+                languages: ['en']
+            },
         };
 
         beforeEach(() => {
@@ -246,7 +248,7 @@ describe('Task', () => {
         it('should update the Task attributes upon successful execution', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(updatedTaskAttributes));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.setAttributes({ languages: ['en'] }).then(() => {
                 expect(task.reason).to.equal(updatedTaskAttributes.reason);
@@ -268,14 +270,14 @@ describe('Task', () => {
 
         it('should throw an error if attributes parameter is missing', () => {
             (() => {
-                const task = new Task(config, new Request(config), assignedTaskDescriptor);
+                const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
                 task.setAttributes();
             }).should.throw(/attributes is a required parameter/);
         });
 
         it('should not update the attributes, if none provided', () => {
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             (() => {
                 task.setAttributes();
@@ -286,7 +288,7 @@ describe('Task', () => {
         it('should return an error if attributes update failed', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.setAttributes({ languages: ['en'] }).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
@@ -297,7 +299,7 @@ describe('Task', () => {
         it('should not update any unrelated Task properties', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.setAttributes({ languages: ['en'] }).catch(() => {
                 expect(task.age).to.equal(assignedTaskDescriptor.age);

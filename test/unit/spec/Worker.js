@@ -59,7 +59,11 @@ describe('Worker', () => {
     let setAttributesSpy;
 
     const requestURL = 'Workspaces/WSxxx/Workers/WKxxx';
-    const requestParams = { Attributes: '{"languages":["en"]}' };
+    const requestParams = {
+      Attributes: {
+        languages: ['en']
+      }
+    };
 
     beforeEach(() => {
       worker = new Worker(initialToken, WorkerConfig);
