@@ -46,6 +46,7 @@ const createConfig = libraryTarget => {
         };
         config.target = 'web';
         config.entry = { main: './lib/web.js' }
+        config.output.library = 'TaskRouter';
     } else {
         config.entry = { main: './lib/index.js' }
         config.target = 'node';
