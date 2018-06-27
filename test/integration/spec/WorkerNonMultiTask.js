@@ -31,8 +31,8 @@ describe('NonMuliTask Worker Client', () => {
 
         it('should populate .activities', () => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -45,8 +45,8 @@ describe('NonMuliTask Worker Client', () => {
 
         it('should populate .channels', () => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -65,8 +65,8 @@ describe('NonMuliTask Worker Client', () => {
         it('should set the activity on connect if provided', () => {
             const bob = new Worker(bobToken, {
                 connectActivitySid: credentials.nonMultiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -86,8 +86,8 @@ describe('NonMuliTask Worker Client', () => {
         it('should populate .reservations with 0 Reservations when none currently pending', () => {
             const bob = new Worker(bobToken, {
                 connectActivitySid: credentials.nonMultiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {
@@ -111,8 +111,8 @@ describe('NonMuliTask Worker Client', () => {
 
         it('should populate pending .reservations', () => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {

@@ -20,8 +20,8 @@ describe('Common Worker Client', () => {
     before(() => {
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error'
             });
         });
@@ -49,9 +49,14 @@ describe('Common Worker Client', () => {
     describe('#setAttributes(newAttributes)', () => {
         it('should set the attributes of the worker', () => {
             const newAttributes = { languages: ['en'], name: 'Ms. Alice' };
-            return alice.setAttributes(newAttributes).then(updatedAlice => {
-                expect(alice).to.equal(updatedAlice);
-                expect(alice.attributes).to.deep.equal(newAttributes);
+
+            return new Promise(resolve => {
+                alice.on('ready', resolve);
+            }).then(() => {
+                return alice.setAttributes(newAttributes).then(updatedAlice => {
+                    expect(alice).to.equal(updatedAlice);
+                    expect(alice.attributes).to.deep.equal(newAttributes);
+                });
             });
         }).timeout(5000);
 
@@ -72,19 +77,13 @@ describe('Common Worker Client', () => {
             assert.equal(alice._config.token, updateAliceToken);
             assert.isTrue(spy.calledOnce);
         }).timeout(5000);
-
-        it('should return an error if unable to update the token', () => {
-            (() => {
-                alice.updateToken('abc');
-            }).should.throw(/Twilio access token malformed/);
-        }).timeout(5000);
     });
 
     describe('Two Worker clients in the same browser', () => {
         it('should not allow log levels across unique workers to be affected', () => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'info'
             });
 
@@ -93,6 +92,19 @@ describe('Common Worker Client', () => {
 
             assert.equal(alice._log.getLevel(), 'error');
             assert.equal(bob._log.getLevel(), 'info');
+        });
+    });
+
+    describe('should disconnect', () => {
+        it('should fire a disconnect event', done => {
+            const bob = new Worker(bobToken, {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'info'
+            });
+
+            bob.on('ready', () => bob.disconnect());
+            bob.on('disconnected', () => done());
         });
     });
 });

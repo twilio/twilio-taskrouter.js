@@ -19,9 +19,11 @@ import EventBridgeSignaling from '../../../lib/signaling/EventBridgeSignaling';
 import { token as initialToken, updatedToken } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
 import { WorkerConfig } from '../../mock/WorkerConfig';
-
+import Routes from '../../../lib/util/Routes';
 
 describe('Worker', () => {
+  const routes = new Routes('WSxxx', 'WKxxx');
+
   describe('constructor', () => {
     it('should throw an error if the token is missing', () => {
       (() => {
@@ -29,15 +31,8 @@ describe('Worker', () => {
       }).should.throw(/token is a required parameter/);
     });
 
-    it('should throw an error if the token is malformed', () => {
-      (() => {
-        new Worker('abc');
-      }).should.throw(/Twilio access token malformed/);
-    });
-
     it('should create a Worker Configuration with the token and any options', () => {
       const worker = new Worker(initialToken, WorkerConfig);
-
       assert.isNotNull(worker._config);
       assert.instanceOf(worker._config, Configuration);
     });
@@ -68,6 +63,8 @@ describe('Worker', () => {
 
     beforeEach(() => {
       worker = new Worker(initialToken, WorkerConfig);
+      sinon.stub(worker, 'getRoutes').returns(routes);
+
       setAttributesSpy = sinon.spy(worker, 'setAttributes');
       sandbox = sinon.sandbox.create();
     });
@@ -98,8 +95,7 @@ describe('Worker', () => {
 
       // set initial attributes
       worker.attributes = '{"languages":["es"]}';
-
-      return worker.setAttributes({ languages: ['en'] }).then((updatedWorker) => {
+      return worker.setAttributes({ languages: ['en'] }).then(updatedWorker => {
         expect(worker).to.equal(updatedWorker);
         expect(worker.attributes).to.deep.equal(JSON.parse(updateWorkerAttributes.attributes));
         expect(worker.dateUpdated).to.deep.equal(new Date(updateWorkerAttributes.date_updated * 1000));
@@ -207,6 +203,7 @@ describe('Worker', () => {
 
     beforeEach(() => {
       worker = new Worker(initialToken, WorkerConfig);
+      sinon.stub(worker, 'getRoutes').returns(routes);
 
       const activities = new Map();
       mockList.contents.forEach((activityPayload) => {

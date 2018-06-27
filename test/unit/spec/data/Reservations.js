@@ -2,32 +2,38 @@ import { API_V2 } from '../../../../lib/util/Constants';
 import { reservations as mockList, assignedReservationInstance as mockInstance } from '../../../mock/Reservations';
 import Request from '../../../../lib/util/Request';
 import ReservationsEntity from '../../../../lib/data/ReservationsEntity';
+import Worker from '../../../../lib/Worker';
+import { WorkerConfig } from '../../../mock/WorkerConfig';
 import { token } from '../../../mock/Token';
+import Configuration from '../../../../lib/util/Configuration';
+import Routes from '../../../../lib/util/Routes';
 
 const chai = require('chai');
 const assert = chai.assert;
 const expect = chai.expect;
 chai.should();
 const sinon = require('sinon');
-import Configuration from '../../../../lib/util/Configuration';
 
 describe('Reservations', () => {
     const config = new Configuration(token);
+    const worker = new Worker(token, WorkerConfig);
+    const routes = new Routes('WSxxx', 'WKxxx');
+    sinon.stub(worker, 'getRoutes').returns(routes);
 
     describe('constructor', () => {
-        it('should throw an error if the configuration is missing', () => {
+        it('should throw an error if the worker is missing', () => {
             (() => {
                 new ReservationsEntity();
-            }).should.throw(/config is a required parameter/);
+            }).should.throw(/worker is a required parameter/);
         });
 
         it('should use the default pageSize=1000, if none provided', () => {
-            const reservationsServices = new ReservationsEntity(config, new Request(config));
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
             assert.equal(reservationsServices._pageSize, 1000);
         });
 
         it('should use the pageSize, if provided', () => {
-            const reservationsServices = new ReservationsEntity(config, new Request(config), { pageSize: 50 });
+            const reservationsServices = new ReservationsEntity(worker, new Request(config), { pageSize: 50 });
             assert.equal(reservationsServices._pageSize, 50);
         });
     });
@@ -52,7 +58,7 @@ describe('Reservations', () => {
 
             sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V2, requestParams).returns(Promise.resolve(mockList));
 
-            const reservationsServices = new ReservationsEntity(config, new Request(config));
+        const reservationsServices = new ReservationsEntity(worker, new Request(config));
 
             return reservationsServices.fetchReservations().then(() => {
                 expect(reservationsServices.reservations.size).to.equal(mockList.contents.length);

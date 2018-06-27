@@ -15,9 +15,16 @@ import Task from '../../../lib/Task';
 import { taskCompleted, taskWrapping } from '../../mock/Responses';
 import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 import { token } from '../../mock/Token';
+import Worker from '../../../lib/Worker';
+import { WorkerConfig } from '../../mock/WorkerConfig';
+import Routes from '../../../lib/util/Routes';
 
 describe('Task', () => {
     const config = new Configuration(token);
+    const worker = new Worker(token, WorkerConfig);
+    const routes = new Routes('WSxxx', 'WKxxx');
+    sinon.stub(worker, 'getRoutes').returns(routes);
+
     const assignedTaskData = assignedReservationInstance.task;
     const assignedTaskDescriptor = new TaskDescriptor(assignedTaskData, new Request(config));
 
@@ -25,20 +32,20 @@ describe('Task', () => {
     const pendingTaskDescriptor = new TaskDescriptor(pendingTaskData, new Request(config));
 
     describe('constructor', () => {
-        it('should throw an error if config is missing', () => {
+        it('should throw an error if worker is missing', () => {
             (() => {
                 new Task();
-            }).should.throw(/config is a required parameter/);
+            }).should.throw(/worker is a required parameter/);
         });
 
         it('should throw an error if task descriptor is missing', () => {
             (() => {
-                new Task(config);
+                new Task(worker);
             }).should.throw(/descriptor is a required parameter/);
         });
 
         it('should set Task properties', () => {
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             assert.equal(task.age, assignedTaskData.age);
             assert.deepEqual(task.attributes, JSON.parse(assignedTaskData.attributes));
@@ -75,14 +82,14 @@ describe('Task', () => {
 
         it('should throw an Error if a <String>reason is not provided as argument', () => {
             (() => {
-                const task = new Task(config, new Request(config), assignedTaskDescriptor);
+                const task = new Task(worker, new Request(config), assignedTaskDescriptor);
                 task.complete();
             }).should.throw(/reason is a required parameter/);
         });
 
         it('should update the Task reason and properties upon successful execution', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(taskCompleted));
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.complete('Task is completed.').then(() => {
                 expect(task.reason).to.equal('Task is completed.');
@@ -105,7 +112,7 @@ describe('Task', () => {
         it('should return an error if unable to complete the Task', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.complete('Task is completed.').catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
@@ -117,7 +124,7 @@ describe('Task', () => {
         it('should not change any Task properties if unable to complete the Task', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.complete('Task is completed.').catch(() => {
                 expect(task.age).to.equal(assignedTaskDescriptor.age);
@@ -160,7 +167,7 @@ describe('Task', () => {
         it('should update the Task reason and properties upon successful execution', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(taskWrapping));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).then(() => {
                 expect(task.reason).to.equal('Task is wrapping.');
@@ -183,7 +190,7 @@ describe('Task', () => {
         it('should return an error if unable to wrap the Task', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
@@ -195,7 +202,7 @@ describe('Task', () => {
         it('should not change any Task properties if unable to wrap the Task', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).catch(() => {
                 expect(task.age).to.equal(assignedTaskDescriptor.age);
@@ -224,7 +231,7 @@ describe('Task', () => {
         it('should emit Event:on(canceled)', () => {
             const spy = sinon.spy();
 
-            const task = new Task(config, new Request(config), pendingTaskDescriptor);
+            const task = new Task(worker, new Request(config), pendingTaskDescriptor);
             assert.equal(task.status, 'reserved');
 
             task.on('canceled', spy);
@@ -252,7 +259,7 @@ describe('Task', () => {
         it('should emit Event:on(completed)', () => {
             const spy = sinon.spy();
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
             assert.equal(task.status, 'assigned');
 
             task.on('completed', spy);
@@ -280,7 +287,7 @@ describe('Task', () => {
         it('should emit Event:on(updated)', () => {
             const spy = sinon.spy();
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
             assert.equal(task.status, 'assigned');
 
             task.on('updated', spy);
@@ -308,7 +315,7 @@ describe('Task', () => {
         it('should emit Event:on(wrapup)', () => {
             const spy = sinon.spy();
 
-            const task = new Task(config, new Request(config), assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
             assert.equal(task.status, 'assigned');
 
             task.on('wrapup', spy);

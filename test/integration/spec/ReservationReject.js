@@ -39,8 +39,8 @@ describe('Reservation Reject', () => {
         it('should reject the reservation', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels/{accountSid}/{workerSid}`,
-                wsServer: `${credentials.wsServer}/v1/wschannels/{accountSid}/{workerSid}`
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             return new Promise(resolve => {

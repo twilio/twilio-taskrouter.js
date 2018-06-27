@@ -22,7 +22,6 @@ describe('EventBridgeSignaling', () => {
     });
 
     it('should set the environment and the closeExistingSessions options', () => {
-
       const worker = new Worker(initialToken, WorkerConfig);
       const options = {
         closeExistingSessions: true
@@ -32,7 +31,7 @@ describe('EventBridgeSignaling', () => {
 
       assert.instanceOf(signaling._log, Logger);
       assert.isTrue(signaling.closeExistingSessions);
-      assert.equal(signaling.worker, worker);
+      assert.equal(signaling._worker, worker);
     });
 
     it('should set optional closeExistingSessions to false if not provided', () => {

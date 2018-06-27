@@ -1,11 +1,8 @@
 import { assert } from 'chai';
-import Configuration from '../../../../lib/util/Configuration';
 import TaskDescriptor from '../../../../lib/descriptors/TaskDescriptor';
 import { pendingReservationInstance as instance } from '../../../mock/Reservations';
-import { token } from '../../../mock/Token';
 
 describe('TaskDescriptor', () => {
-    const config = new Configuration(token);
     describe('constructor', () => {
         it('should throw an error if descriptor is not of type Object', () => {
             ['abc', 123, null].forEach(v => {
@@ -13,21 +10,15 @@ describe('TaskDescriptor', () => {
             });
         });
 
-        it('should throw an error if the config is not of type Configuration', () => {
-            (() => {
-                new TaskDescriptor(instance.task, 'abc');
-            }).should.throw(/<Configuration>config is required./);
-        });
-
         it('should throw an error if the descriptor does not contain all properties of a Task', () => {
             (() => {
-                new TaskDescriptor({ 'account_sid': 'WAxxx' }, config);
+                new TaskDescriptor({ 'account_sid': 'WAxxx' });
             }).should.throw(/<Descriptor>descriptor does not contain all properties of a Task./);
         });
 
         it('should set properties using data from the descriptor', () => {
             // task data on the reservation
-            const taskDescriptor = new TaskDescriptor(instance.task, config);
+            const taskDescriptor = new TaskDescriptor(instance.task);
             assert.deepEqual(taskDescriptor.addOns, JSON.parse(instance.task.addons));
             assert.equal(taskDescriptor.age, instance.task.age);
             assert.deepEqual(taskDescriptor.attributes, JSON.parse(instance.task.attributes));
@@ -50,7 +41,7 @@ describe('TaskDescriptor', () => {
             const taskInstanceData = instance.task;
             taskInstanceData.addons = '{ bad }';
             (() => {
-                new TaskDescriptor(taskInstanceData, config);
+                new TaskDescriptor(taskInstanceData);
             }).should.throw(/Unexpected token/);
         });
 
@@ -58,7 +49,7 @@ describe('TaskDescriptor', () => {
             const taskInstanceData = instance.task;
             taskInstanceData.attributes = '{ bad }';
             (() => {
-                new TaskDescriptor(taskInstanceData, config);
+                new TaskDescriptor(taskInstanceData);
             }).should.throw(/Unexpected token/);
         });
     });

@@ -1,25 +1,15 @@
-import { badToken } from '../../../mock/Token';
-
 const tools = require('../../../../lib/util/Tools');
+import _ from 'lodash';
 
 describe('Tools', () => {
-  describe('#verifyJWT(token)', () => {
-    it('should throw an error if token parameter is missing', () => {
+  describe('#validateOptions', () => {
+    it('should throw an error if invalid type is provided', () => {
       (() => {
-        tools.verifyJWT();
-      }).should.throw(/token is a required parameter/);
-    });
-
-    it('should throw an error if unable to objectize the JWT', () => {
-      (() => {
-        tools.verifyJWT('abc');
-      }).should.throw(/Twilio access token malformed/);
-    });
-
-    it('should throw an error if missing role field', () => {
-      (() => {
-        tools.verifyJWT(badToken);
-      }).should.throw(/Twilio access token missing required 'role' parameter/);
+        tools.validateOptions(
+          { foo: new Date() },
+          { foo: (val) => _.isString(val) }
+        );
+      }).should.throw(/does not meet the required type/);
     });
   });
 });

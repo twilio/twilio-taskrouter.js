@@ -6,4 +6,3 @@ require('./spec/WorkerCommon');
 require('./spec/WorkerMultiTask');
 require('./spec/WorkerNonMultiTask');
 require('./spec/TaskEvents');
-
