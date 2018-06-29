@@ -44,9 +44,9 @@ const createConfig = libraryTarget => {
             tls: 'empty',
             process: false
         };
-        config.target = 'web';
         config.entry = { main: './lib/web.js' }
         config.output.library = 'TaskRouter';
+        config.output.libraryTarget = 'umd';
     } else {
         config.entry = { main: './lib/index.js' }
         config.target = 'node';
