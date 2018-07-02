@@ -63,7 +63,7 @@ export interface Task extends NodeJS.EventEmitter {
     readonly queueSid: string;
     readonly reason: string;
     readonly sid: string;
-    readonly status: string;
+    readonly status: "pending" | "reserved" | "assigned" | "canceled" | "completed" | "wrapping";
     readonly taskChannelSid: string;
     readonly taskChannelUniqueName: string;
     readonly timeout: number;
