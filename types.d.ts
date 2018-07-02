@@ -1,28 +1,25 @@
-export default TaskRouter;
 export as namespace TaskRouter;
-declare namespace TaskRouter {
-    class Worker extends NodeJS.EventEmitter {
-        constructor(token: string, options?: any);
+export class Worker extends NodeJS.EventEmitter {
+    constructor(token: string, options?: any);
 
-        readonly accountSid: string;
-        readonly activities: Map<string, Activity>;
-        readonly activity: Activity;
-        readonly attributes: any;
-        readonly channels: Map<string, Channel>;
-        readonly connectActivitySid: string;
-        readonly dateCreated: Date;
-        readonly dateStatusChanged: Date;
-        readonly dateUpdated: Date;
-        readonly disconnectActivitySid: string;
-        readonly name: string;
-        readonly reservations: Map<string, Reservation>;
-        readonly sid: string;
-        readonly workspaceSid: string;
+    readonly accountSid: string;
+    readonly activities: Map<string, Activity>;
+    readonly activity: Activity;
+    readonly attributes: any;
+    readonly channels: Map<string, Channel>;
+    readonly connectActivitySid: string;
+    readonly dateCreated: Date;
+    readonly dateStatusChanged: Date;
+    readonly dateUpdated: Date;
+    readonly disconnectActivitySid: string;
+    readonly name: string;
+    readonly reservations: Map<string, Reservation>;
+    readonly sid: string;
+    readonly workspaceSid: string;
 
-        disconnect();
-        setAttributes(attributes: any): Promise<Worker>;
-        updateToken(newToken: string);
-    }
+    disconnect();
+    setAttributes(attributes: any): Promise<Worker>;
+    updateToken(newToken: string);
 }
 
 export interface Activity {
