@@ -204,7 +204,7 @@ describe('TaskEvents', () => {
         });
     });
 
-    describe.only('#Task Completed', () => {
+    describe('#Task Completed', () => {
         it('should get the completed event on the task.', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
