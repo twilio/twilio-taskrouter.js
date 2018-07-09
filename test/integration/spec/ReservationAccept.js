@@ -12,18 +12,21 @@ describe('Reservation Accept', () => {
     let worker;
 
     before(() => {
-        worker = new Worker(multiTaskAliceToken, {
-            connectActivitySid: credentials.multiTaskConnectActivitySid,
-            ebServer: `${credentials.ebServer}/v1/wschannels`,
-            wsServer: `${credentials.wsServer}/v1/wschannels`
-        });
-
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+            worker = new Worker(multiTaskAliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
+            });
+
             return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskAliceSid,
                 credentials.multiTaskUpdateActivitySid
-            );
+            ).catch(err => {
+                console.log('Failed to update worker activity', err);
+                throw err;
+            });
         });
     });
 
@@ -81,6 +84,9 @@ describe('Reservation Accept', () => {
                     expect(completedTask.reason).to.equal('Work is done');
                     worker.removeAllListeners();
                     done();
+                }).catch(err => {
+                    console.log('failed to accept and complete task', err);
+                    throw err;
                 });
             });
         }).timeout(5000);
@@ -97,7 +103,11 @@ describe('Reservation Accept', () => {
 
             expect(1).to.equal(worker.reservations.size);
             worker.on('reservationCreated', async reservation => {
-                acceptedReservation = await reservation.accept();
+                acceptedReservation = await reservation.accept().catch(err => {
+                    console.log('failed to accept reservation', err);
+                    throw err;
+                });
+
                 expect(1).to.equal(worker.reservations.size);
                 done();
             });
@@ -119,8 +129,16 @@ describe('Reservation Accept', () => {
             );
 
             worker.on('reservationCreated', async reservation => {
-                const acceptedReservation = await reservation.accept();
-                acceptedReservation.task.complete('Work is done');
+                const acceptedReservation = await reservation.accept().catch(err => {
+                    console.log('failed to accept reservation', err);
+                    throw err;
+                });
+
+                acceptedReservation.task.complete('Work is done').catch(err => {
+                    console.log('failed to complete reservation', err);
+                    throw err;
+                });
+
                 acceptedReservation.on('completed', completedReservation => {
                     expect(completedReservation.task.reason).to.equal('Work is done');
                     expect(completedReservation.task.status).to.equal('completed');
