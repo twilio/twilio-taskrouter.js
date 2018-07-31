@@ -14,6 +14,7 @@ global.WebSocket = WS;
 require('./spec/Activity');
 require('./spec/Channel');
 require('./spec/Reservation');
+require('./spec/Supervisor');
 require('./spec/Task');
 require('./spec/Worker');
 require('./spec/signaling/EventBridgeSignaling');
