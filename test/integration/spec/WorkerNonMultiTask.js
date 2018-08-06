@@ -110,6 +110,7 @@ describe('NonMuliTask Worker Client', () => {
         });
 
         it('should populate pending .reservations', () => {
+            await new Promise(r => setTimeout(r, 2000));
             const bob = new Worker(bobToken, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`

@@ -119,7 +119,7 @@ describe('MultiTask Worker Client', () => {
         });
 
         it('should populate pending .reservations', async() => {
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 2000));
             multiTaskAlice = new Worker(aliceMultiToken, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`
