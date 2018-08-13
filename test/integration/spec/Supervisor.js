@@ -5,14 +5,13 @@ import Worker from '../../../lib/Worker';
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 chai.should();
-const assert = chai.assert;
-const expect = chai.expect;
-const sinon = require('sinon');
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
 describe('Supervisor Client', function() {
+  /* eslint-disable no-invalid-this */
   this.timeout(5000);
+  /* eslint-enable */
 
   const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
   const superToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, null, 'supervisor');
@@ -46,8 +45,8 @@ describe('Supervisor Client', function() {
         new Promise(resolve => supervisor.on('ready', () => resolve())),
         new Promise(resolve => worker.on('ready', () => resolve())),
         createTask,
-      ]).then(() => worker.setAttributes({ contact_uri: 'client:bob' }))
-        .then(() => supervisor.setAttributes({ contact_uri: 'client:charlie' }))
+      ]).then(() => worker.setAttributes({ 'contact_uri': 'client:bob' }))
+        .then(() => supervisor.setAttributes({ 'contact_uri': 'client:charlie' }))
         .then(() => {
           reservation = Array.from(worker.reservations.values())[0];
           return reservation.accept();
