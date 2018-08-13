@@ -44,10 +44,10 @@ describe('Supervisor Client', function() {
       return Promise.all([
         new Promise(resolve => supervisor.on('ready', () => resolve())),
         new Promise(resolve => worker.on('ready', () => resolve())),
-        createTask, /* eslint-disable camelcase */
-      ]).then(() => worker.setAttributes({ contact_uri: 'client:bob' }))
-        .then(() => supervisor.setAttributes({ contact_uri: 'client:charlie' }))
-        .then(() => { /* eslint-enable */
+        createTask,
+      ]).then(() => worker.setAttributes({ 'contact_uri': 'client:bob' }))
+        .then(() => supervisor.setAttributes({ 'contact_uri': 'client:charlie' }))
+        .then(() => {
           reservation = Array.from(worker.reservations.values())[0];
           return reservation.accept();
         });
