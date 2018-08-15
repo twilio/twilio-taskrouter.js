@@ -26,7 +26,7 @@ describe('NonMuliTask Worker Client', () => {
 
     describe('initialization of Non Multi Task Worker', () => {
         before(() => {
-            return envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid);
+            return envTwilio.updateWorkerActivity(credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskBobSid, credentials.nonMultiTaskUpdateActivitySid);
         });
 
         it('should populate .activities', () => {

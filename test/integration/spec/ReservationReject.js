@@ -26,7 +26,7 @@ describe('Reservation Reject', () => {
 
     after(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-            envTwilio.updateWorkerActivity(
+            return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskAliceSid,
                 credentials.multiTaskUpdateActivitySid
@@ -53,10 +53,21 @@ describe('Reservation Reject', () => {
                 assert.equal(reservation.sid.substring(0, 2), 'WR');
                 assert.equal(reservation.task.sid.substring(0, 2), 'WT');
                 assert.equal(reservation.task.taskChannelUniqueName, 'default');
-                return reservation.reject().then(updatedReservation => {
-                    expect(reservation).to.equal(updatedReservation);
-                    expect(reservation.status).equal('rejected');
-                    expect(updatedReservation.status).equal('rejected');
+
+                const promises = [];
+                promises.push(reservation.reject());
+                promises.push(new Promise(resolve => {
+                    reservation.on('rejected', data => {
+                        resolve(data);
+                    });
+                }));
+                // Wait for both the POST api and Websocket event before comparing
+                // Reservation object
+                return Promise.all(promises).then(results => {
+                    assert.equal(results.length, 2);
+                    expect(results[0]).to.equal(results[1]);
+                    expect(results[0].status).equal(results[1].status);
+                    expect(results[1].status).equal('rejected');
                 });
             });
         }).timeout(10000);
