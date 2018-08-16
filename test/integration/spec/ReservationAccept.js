@@ -2,7 +2,10 @@ import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import Task from '../../../lib/Task';
 import { getAccessToken } from '../../util/MakeAccessToken';
-import { expect } from 'chai';
+
+const chai = require('chai');
+const assert = chai.assert;
+const expect = chai.expect;
 
 const credentials = require('../../env');
 
@@ -94,61 +97,105 @@ describe('Reservation Accept', () => {
 
     describe('#receive a reservationCompleted event after deleting an accepted task', () => {
         let acceptedReservation;
-        it('should accept the reservation', done => {
-            envTwilio.createTask(
+        it('should accept the reservation', () => {
+            const promises = [];
+            // Register Listener
+            promises.push(new Promise(resolve => {
+                worker.on('reservationCreated', reservation => {
+                    resolve(reservation);
+                });
+            }));
+            // Create task
+            promises.push(envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
                 '{ "selected_language": "es" }'
-            );
-
-            expect(1).to.equal(worker.reservations.size);
-            worker.on('reservationCreated', async reservation => {
-                acceptedReservation = await reservation.accept().catch(err => {
-                    console.log('failed to accept reservation', err);
-                    throw err;
-                });
-
-                expect(1).to.equal(worker.reservations.size);
-                done();
-            });
-        });
+            ));
+            return Promise
+                    .all(promises)
+                    .then(results => {
+                        assert.equal(results.length, 2);
+                        let reservation = results[0];
+                        return reservation
+                                .accept()
+                                .then(reservation => {
+                                    acceptedReservation = reservation;
+                                    // Verify reservation is reflected in internal state
+                                    expect(1).to.equal(worker.reservations.size);
+                                    // Assert that reservation by this sid exists
+                                    assert.exists(worker.reservations.get(reservation.sid));
+                                });
+                    });
+        }).timeout(5000);
 
         it('should delete the task and receive the completed event', done => {
             envTwilio.deleteTask(credentials.multiTaskWorkspaceSid, acceptedReservation.task.sid);
             acceptedReservation.on('completed', () => done());
             worker.removeAllListeners();
-        });
-    }).timeout(5000);
+        }).timeout(5000);
+    });
 
     describe('#accept reservation, complete task, wait for reservation completed', () => {
-        it('should accept the reservation, complete the task and receive a reservationCompleted event', done => {
-            envTwilio.createTask(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskWorkflowSid,
-                '{ "selected_language": "es" }'
+        it('should accept the reservation, complete the task and receive a reservationCompleted event', () => {
+            const taskAndReservationCreated = [];
+            // Register listener for worker
+            taskAndReservationCreated.push(new Promise(resolve => {
+                worker.on('reservationCreated', reservation => {
+                    resolve(reservation);
+                });
+            }));
+
+            // Create task
+            taskAndReservationCreated.push(
+                envTwilio.createTask(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskWorkflowSid,
+                    '{ "selected_language": "es" }'
+                )
             );
 
-            worker.on('reservationCreated', async reservation => {
-                const acceptedReservation = await reservation.accept().catch(err => {
-                    console.log('failed to accept reservation', err);
-                    throw err;
-                });
+            const reservationAccepted =
+                    Promise
+                        .all(taskAndReservationCreated)
+                        .then(results => {
+                            assert.equal(results.length, 2);
+                            let reservation = results[0];
+                            return reservation
+                                        .accept()
+                                        .catch(err => {
+                                            console.log('failed to accept reservation', err);
+                                            throw err;
+                                        });
+                            }
+                        );
+            const completedReservation = reservation => {
+                const taskAndReservationCompleted = [];
 
-                acceptedReservation.task.complete('Work is done').catch(err => {
-                    console.log('failed to complete reservation', err);
-                    throw err;
-                });
+                taskAndReservationCompleted.push(new Promise(resolve => {
+                    reservation.on('completed', completedReservation => {
+                        resolve(completedReservation);
+                    });
+                }));
 
-                acceptedReservation.on('completed', completedReservation => {
-                    expect(completedReservation.task.reason).to.equal('Work is done');
-                    expect(completedReservation.task.status).to.equal('completed');
-                    done();
-                });
-            });
+                taskAndReservationCompleted.push(
+                    reservation.task.complete('Work is done')
+                                    .catch(err => {
+                                        console.log('failed to complete reservation', err);
+                                        throw err;
+                                    })
+                );
+                return Promise.all(taskAndReservationCompleted);
+            };
+
+            return reservationAccepted
+                                    .then(completedReservation)
+                                    .then(results => {
+                                        assert.equal(results.length, 2);
+                                        let reservation = results[0];
+                                        expect(reservation.task.reason).to.equal('Work is done');
+                                        expect(reservation.task.status).to.equal('completed');
+                                        expect(0).to.equal(worker.reservations.size);
+                                    });
         }).timeout(5000);
-
-        it('should have deleted the reservation', () => {
-            expect(0).to.equal(worker.reservations.size);
-        });
     });
 });
