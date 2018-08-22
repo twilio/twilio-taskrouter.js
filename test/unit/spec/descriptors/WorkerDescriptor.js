@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 
 import Configuration from '../../../../lib/util/Configuration';
-import Request from '../../../../lib/util/Request';
 import WorkerDescriptor from '../../../../lib/descriptors/WorkerDescriptor';
 import { updateWorkerActivityToIdle as instance } from '../../../mock/Responses';
 import { token } from '../../../mock/Token';
@@ -29,7 +28,7 @@ describe('WorkerDescriptor', () => {
         });
 
         it('should set properties using data from the descriptor', () => {
-            const workerDescriptor = new WorkerDescriptor(instance, new Request(config));
+            const workerDescriptor = new WorkerDescriptor(instance, config);
             assert.equal(workerDescriptor.accountSid, instance.account_sid);
             assert.equal(workerDescriptor.workspaceSid, instance.workspace_sid);
             assert.equal(workerDescriptor.sid, instance.sid);

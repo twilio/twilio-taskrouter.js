@@ -6,3 +6,6 @@ lint:
 setup:
 	rm -rf .git/hooks
 	ln -s $(shell pwd)/hooks/ .git/hooks
+
+test: lint
+	yarn build

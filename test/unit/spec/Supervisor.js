@@ -1,20 +1,17 @@
+/* eslint-disable */
+
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 
 const assert = chai.assert;
-const expect = chai.expect;
 const sinon = require('sinon');
 
-import Reservation from '../../../lib/Reservation';
-import Routes from '../../../lib/util/Routes';
 import Supervisor from '../../../lib/Supervisor';
 import Worker from '../../../lib/Worker';
 import { token } from '../../mock/Token';
 import { WorkerConfig } from '../../mock/WorkerConfig';
 import { EventEmitter } from 'events';
 import { API_V1 } from '../../../lib/util/Constants';
-
-const routes = new Routes('WSxxx', 'WKxxx');
 
 describe('Supervisor', () => {
   const fakeInitEvent = {
@@ -97,7 +94,7 @@ describe('Supervisor', () => {
 
       it('should resolve with void when successful', () => {
         return supervisor.monitor('WA123', 'WA321').then(reservation => {
-          assert.equal(reservation, undefined);
+          assert.strictEqual(typeof (reservation), 'undefined');
         });
       });
 
