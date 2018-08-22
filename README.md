@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/twilio/twilio-taskrouter.js.svg?branch=master)](https://travis-ci.org/twilio/twilio-taskrouter.js)
+
+
 twilio-taskrouter.js
 ===============
 
@@ -103,6 +106,12 @@ yarn build
 ```
 
 The builds and docs will be placed in the `dist/` directory.
+
+Before commits, be sure to validate by running:
+
+```
+make lint
+```
 
 Contributing
 ------------

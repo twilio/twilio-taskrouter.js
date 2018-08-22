@@ -8,7 +8,7 @@ node_js:
 sudo: required
 
 script:
-  - yarn build
+  - make test
 
 notifications:
   slack:
