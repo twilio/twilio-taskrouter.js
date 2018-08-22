@@ -50,7 +50,7 @@ function transform(file) {
   var $ = cheerio.load(file.contents.toString());
 
   var filename = file.path.slice(file.base.length);
-  var className = filename.split('.html')[0];
+  var className = filename.split('.html')[0].replace(/\//g, '');
   var div;
 
   // Prefix public constructors.
