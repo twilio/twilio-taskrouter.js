@@ -1,4 +1,5 @@
 const chai = require('chai');
+chai.should();
 const assert = chai.assert;
 const expect = chai.expect;
 
@@ -178,10 +179,11 @@ describe('TaskEvents', () => {
                 const newAttributes = {
                     languages: ['en']
                 };
-                task.setAttributes(newAttributes).then(updatedTask => {
-                    expect(task).to.equal(updatedTask);
-                    expect(task.attributes).to.deep.equal(newAttributes);
-                });
+                return task.setAttributes(newAttributes)
+                    .then(updatedTask => {
+                        expect(task).to.equal(updatedTask);
+                        expect(task.attributes).to.deep.equal(newAttributes);
+                    });
             });
         }).timeout(5000);
 
@@ -201,7 +203,7 @@ describe('TaskEvents', () => {
                     task.setAttributes();
                 }).should.throw(/attributes is a required parameter/);
             });
-        });
+        }).timeout(5000);
     });
 
     describe('#Task Completed', () => {
@@ -245,9 +247,9 @@ describe('TaskEvents', () => {
                     'selected_language': 'es'
                 });
                 assert.equal(taskResArr[0].workflowSid, credentials.multiTaskWorkflowSid);
-                // Make sure the task completion does not remove the reservation from the worker's reservation list
 
-                assert.equal(alice.reservations.size, 1);
+                // Do not assert on reservations.size, because eventually (or before depending on order)
+                // reservation.completed event will clear the map.
             });
         }).timeout(10000);
     });
