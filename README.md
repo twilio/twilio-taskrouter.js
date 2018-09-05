@@ -6,11 +6,11 @@ twilio-taskrouter.js
 
 TaskRouter is Twilio's skills based routing system. With this library, you can manage your Workers in the browser or view the state of your Workspace.
 
-Note that this is a preview release. You may encounter bugs and instability, and
-the APIs available in this release may change in subsequent releases.
+**NOTE: This SDK is in a Developer Preview Release**. This version of TaskRouter is intended for Twilio Flex. If you are using it outside of Twilio Flex, you may encounter bugs and instability, and
+the underlying APIs available in this release may change in subsequent releases.
 
-**We want your feedback!** Email Ben Getson Product Manager for TaskRouter
-at [bgetson@twilio.com](mailto:bgetson@twilio.com) with suggested
+**We want your feedback!** Email Tyler Cole
+at [tcole@twilio.com](mailto:tcole@twilio.com) with suggested
 improvements, feature requests and general feedback. If you need technical
 support, contact [help@twilio.com](mailto:help@twilio.com).
 
