@@ -6,13 +6,13 @@ chai.should();
 const sinon = require('sinon');
 
 import { assignedReservationInstance, pendingReservationInstance } from '../../mock/Reservations';
-import { API_V1, TASK_STATUS_COMPLETED, TASK_STATUS_WRAPPING } from '../../../lib/util/Constants';
+import { API_V1, API_V2, TASK_STATUS_COMPLETED, TASK_STATUS_WRAPPING } from '../../../lib/util/Constants';
 import Configuration from '../../../lib/util/Configuration';
 const Errors = require('../../../lib/util/Constants').twilioErrors;
 const mockEvents = require('../../mock/Events').events;
 import Request from '../../../lib/util/Request';
 import Task from '../../../lib/Task';
-import { taskCompleted, taskWrapping, updatedTaskAttributes } from '../../mock/Responses';
+import { taskCompleted, taskWrapping, updatedTaskAttributes, taskHoldUnhold } from '../../mock/Responses';
 import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 import { token } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
@@ -320,6 +320,84 @@ describe('Task', () => {
                 expect(task.workflowName).to.equal(assignedTaskDescriptor.workflowName);
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
+            });
+        });
+    });
+
+    describe('#hold()', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/CustomerParticipant';
+        const requestParams = {
+            Hold: true,
+            TaskSid: 'WTxx1'
+        };
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should place a Hold request on the Task upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
+
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
+
+            return task.hold().then(() => {
+                expect(task.sid).to.equal(taskHoldUnhold.sid);
+            });
+        });
+
+        it('should return an error if Hold failed', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
+
+            return task.hold().catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
+            });
+        });
+    });
+
+    describe('#unhold()', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/CustomerParticipant';
+        const requestParams = {
+            Hold: false,
+            TaskSid: 'WTxx1'
+        };
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should place a Unhold request on the Task upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
+
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
+
+            return task.unhold().then(() => {
+                expect(task.sid).to.equal(taskHoldUnhold.sid);
+            });
+        });
+
+        it('should return an error if Unhold failed', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const task = new Task(worker, new Request(config), assignedTaskDescriptor);
+
+            return task.unhold().catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
     });
