@@ -52,13 +52,13 @@ describe('Reservations', () => {
         it('should fetch all reservations', () => {
             const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations';
             const requestParams = {
-                ReservationStatus: 'accepted,pending',
+                ReservationStatus: 'accepted,pending,wrapping',
                 PageSize: 1000
             };
 
             sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V2, requestParams).returns(Promise.resolve(mockList));
 
-        const reservationsServices = new ReservationsEntity(worker, new Request(config));
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
 
             return reservationsServices.fetchReservations().then(() => {
                 expect(reservationsServices.reservations.size).to.equal(mockList.contents.length);

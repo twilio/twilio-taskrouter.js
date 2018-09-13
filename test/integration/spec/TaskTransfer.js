@@ -1,5 +1,4 @@
 import EnvTwilio from '../../util/EnvTwilio';
-import Supervisor from '../../../lib/Supervisor';
 import Worker from '../../../lib/Worker';
 
 const chai = require('chai');
@@ -8,58 +7,59 @@ chai.should();
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
-describe('Supervisor Client', function() {
+describe('Task Transfer', function() {
   /* eslint-disable no-invalid-this */
   this.timeout(5000);
   /* eslint-enable */
 
   const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
-  const superToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, null, 'supervisor');
-  const workerToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
+  const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
+  const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
 
+  let alice;
+  let bob;
   let reservation;
-  let supervisor;
-  let worker;
   before(() => {
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-      worker = new Worker(workerToken, {
+      alice = new Worker(aliceToken, {
         ebServer: `${credentials.ebServer}/v1/wschannels`,
         wsServer: `${credentials.wsServer}/v1/wschannels`,
         logLevel: 'error',
       });
 
-      supervisor = new Supervisor(superToken, {
+      bob = new Worker(bobToken, {
         ebServer: `${credentials.ebServer}/v1/wschannels`,
         wsServer: `${credentials.wsServer}/v1/wschannels`,
         logLevel: 'error',
       });
 
-      const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1)
-        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 0))
-        .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid))
+      const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 1)
+        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 0))
+        .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskConnectActivitySid))
         .then(() => envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, JSON.stringify({
           to: 'client:alice',
           conference: { sid: 'CF11111111111111111111111111111111' }
         })));
 
       return Promise.all([
-        new Promise(resolve => supervisor.on('ready', () => resolve())),
-        new Promise(resolve => worker.on('ready', () => resolve())),
+        new Promise(resolve => alice.on('ready', () => resolve())),
+        new Promise(resolve => bob.on('ready', () => resolve())),
         createTask,
-      ]).then(() => {
-          reservation = Array.from(worker.reservations.values())[0];
+      ]).then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1))
+        .then(() => {
+          reservation = Array.from(alice.reservations.values())[0];
           return reservation.accept();
         });
       });
-  });
+    });
 
   after(() => {
-    supervisor.removeAllListeners();
-    worker.removeAllListeners();
+    alice.removeAllListeners();
+    bob.removeAllListeners();
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
   });
 
   it('should get a 200 and resolve the Promise if all goes well', () => {
-    return supervisor.monitor(reservation.task.sid, reservation.sid);
+    return reservation.task.transfer(credentials.multiTaskBobSid);
   });
 });
