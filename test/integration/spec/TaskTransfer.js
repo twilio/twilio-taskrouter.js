@@ -34,8 +34,9 @@ describe('Task Transfer', function() {
       });
 
       const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 1)
-        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 0))
+        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1))
         .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskConnectActivitySid))
+        .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskUpdateActivitySid))
         .then(() => envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, JSON.stringify({
           to: 'client:alice',
           conference: { sid: 'CF11111111111111111111111111111111' }
@@ -44,8 +45,8 @@ describe('Task Transfer', function() {
       return Promise.all([
         new Promise(resolve => alice.on('ready', () => resolve())),
         new Promise(resolve => bob.on('ready', () => resolve())),
-        createTask,
-      ]).then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1))
+      ]).then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid))
+        .then(createTask)
         .then(() => {
           reservation = Array.from(alice.reservations.values())[0];
           return reservation.accept();
@@ -56,10 +57,22 @@ describe('Task Transfer', function() {
   after(() => {
     alice.removeAllListeners();
     bob.removeAllListeners();
-    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
+    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
+        .then(envTwilio.updateWorkerActivity(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskAliceSid,
+            credentials.multiTaskUpdateActivitySid
+        )).then(envTwilio.updateWorkerActivity(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskBobSid,
+            credentials.multiTaskUpdateActivitySid
+        ));
   });
 
-  it('should get a 200 and resolve the Promise if all goes well', () => {
-    return reservation.task.transfer(credentials.multiTaskBobSid);
+  it('should get a 200, resolve and emit a transfer-initiated event if all goes well', () => {
+    return Promise.all([
+      reservation.task.transfer(credentials.multiTaskBobSid),
+      new Promise(resolve => { reservation.task.on('transferInitiated', () => resolve()); }),
+    ]);
   });
 });

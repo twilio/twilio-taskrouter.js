@@ -34,8 +34,8 @@ describe('Supervisor Client', function() {
         logLevel: 'error',
       });
 
-      const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1)
-        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 0))
+      const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 1)
+        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1))
         .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid))
         .then(() => envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, JSON.stringify({
           to: 'client:alice',
@@ -56,7 +56,16 @@ describe('Supervisor Client', function() {
   after(() => {
     supervisor.removeAllListeners();
     worker.removeAllListeners();
-    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
+    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
+        .then(envTwilio.updateWorkerActivity(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskAliceSid,
+            credentials.multiTaskUpdateActivitySid
+        )).then(envTwilio.updateWorkerActivity(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskBobSid,
+            credentials.multiTaskUpdateActivitySid
+        ));
   });
 
   it('should get a 200 and resolve the Promise if all goes well', () => {
