@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import * as assert from 'assert';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -51,22 +52,22 @@ describe('Task Transfer', function() {
           reservation = Array.from(alice.reservations.values())[0];
           return reservation.accept();
         });
-      });
     });
+  });
 
   after(() => {
     alice.removeAllListeners();
     bob.removeAllListeners();
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
-        .then(envTwilio.updateWorkerActivity(
-            credentials.multiTaskWorkspaceSid,
-            credentials.multiTaskAliceSid,
-            credentials.multiTaskUpdateActivitySid
-        )).then(envTwilio.updateWorkerActivity(
-            credentials.multiTaskWorkspaceSid,
-            credentials.multiTaskBobSid,
-            credentials.multiTaskUpdateActivitySid
-        ));
+      .then(envTwilio.updateWorkerActivity(
+        credentials.multiTaskWorkspaceSid,
+        credentials.multiTaskAliceSid,
+        credentials.multiTaskUpdateActivitySid
+      )).then(envTwilio.updateWorkerActivity(
+        credentials.multiTaskWorkspaceSid,
+        credentials.multiTaskBobSid,
+        credentials.multiTaskUpdateActivitySid
+      ));
   });
 
   it('should get a 200, resolve and emit a transfer-initiated event if all goes well', () => {
@@ -74,5 +75,13 @@ describe('Task Transfer', function() {
       reservation.task.transfer(credentials.multiTaskBobSid),
       new Promise(resolve => { reservation.task.on('transferInitiated', () => resolve()); }),
     ]);
+  });
+
+  it('should create a Reservation containing a .transfer object for Bob', (done) => {
+    bob.on('reservationCreated', () => {
+      reservation = Array.from(bob.reservations.values())[0];
+      assert.equal(reservation.transfer.mode, 'WARM');
+      done();
+    });
   });
 });
