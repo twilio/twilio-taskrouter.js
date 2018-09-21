@@ -213,3 +213,31 @@ export const reservationConferenced = {
   task_channel_sid: "TCxxx",
   worker_previous_activity_sid: "WAxxx"
 };
+
+export const reservationCompleted = {
+  account_sid: "ACxxx",
+  workspace_sid: "WSxxx",
+  sid: "WRxx1",
+  date_created: 1519413824,
+  date_updated: 1519413847,
+  task_sid: "WTxx1",
+  worker_sid: "WKxxx",
+  worker_name: "Alice",
+  reservation_status: "completed",
+  task_channel_sid: "TCxxx",
+  worker_previous_activity_sid: "WAxxx"
+};
+
+export const reservationWrapping = {
+  account_sid: "ACxxx",
+  workspace_sid: "WSxxx",
+  sid: "WRxx1",
+  date_created: 1519413824,
+  date_updated: 1519413847,
+  task_sid: "WTxx1",
+  worker_sid: "WKxxx",
+  worker_name: "Alice",
+  reservation_status: "wrapping",
+  task_channel_sid: "TCxxx",
+  worker_previous_activity_sid: "WAxxx"
+};

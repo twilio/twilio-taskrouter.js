@@ -4,7 +4,7 @@ import Configuration from '../../../lib/util/Configuration';
 import Logger from '../../../lib/util/Logger';
 const mockEvents = require('../../mock/Events').events;
 import { pendingReservationInstance, assignedReservationInstance } from '../../mock/Reservations';
-import { reservationAccepted, reservationCalled, reservationDequeued, reservationRedirected, reservationRejected, reservationConferenced } from '../../mock/Responses';
+import { reservationAccepted, reservationCalled, reservationDequeued, reservationRedirected, reservationRejected, reservationConferenced, reservationCompleted, reservationWrapping } from '../../mock/Responses';
 import Reservation from '../../../lib/Reservation';
 import ReservationDescriptor from '../../../lib/descriptors/ReservationDescriptor';
 import Request from '../../../lib/util/Request';
@@ -111,6 +111,76 @@ describe('Reservation', () => {
 
             const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
             return pendingReservation.accept().catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
+            });
+        });
+    });
+
+    describe('#complete', () => {
+        let sandbox;
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations/WRxx1';
+        const requestParams = { ReservationStatus: 'completed' };
+
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should complete the reservation', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(reservationCompleted));
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            return pendingReservation.complete().then(updatedReservation => {
+                expect(updatedReservation).to.equal(pendingReservation);
+                expect(pendingReservation.status).to.equal('completed');
+            });
+        });
+
+        it('should return an error if unable to complete the reservation', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            return pendingReservation.complete().catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
+            });
+        });
+    });
+
+    describe('#wrap', () => {
+        let sandbox;
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations/WRxx1';
+        const requestParams = { ReservationStatus: 'wrapping' };
+
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should wrap the reservation', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(reservationWrapping));
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            return pendingReservation.wrap().then(updatedReservation => {
+                expect(updatedReservation).to.equal(pendingReservation);
+                expect(pendingReservation.status).to.equal('wrapping');
+            });
+        });
+
+        it('should return an error if unable to wrap the reservation', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            return pendingReservation.wrap().catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
