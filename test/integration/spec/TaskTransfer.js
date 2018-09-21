@@ -19,7 +19,8 @@ describe('Task Transfer', function() {
 
   let alice;
   let bob;
-  let reservation;
+  let aliceReservation;
+  let bobReservation;
   before(() => {
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
       alice = new Worker(aliceToken, {
@@ -44,13 +45,13 @@ describe('Task Transfer', function() {
         })));
 
       return Promise.all([
-        new Promise(resolve => alice.on('ready', () => resolve())),
-        new Promise(resolve => bob.on('ready', () => resolve())),
+        new Promise(resolve => alice.once('ready', () => resolve())),
+        new Promise(resolve => bob.once('ready', () => resolve())),
       ]).then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid))
         .then(createTask)
         .then(() => {
-          reservation = Array.from(alice.reservations.values())[0];
-          return reservation.accept();
+          aliceReservation = Array.from(alice.reservations.values())[0];
+          return aliceReservation.accept();
         });
     });
   });
@@ -72,16 +73,65 @@ describe('Task Transfer', function() {
 
   it('should get a 200, resolve and emit a transfer-initiated event if all goes well', () => {
     return Promise.all([
-      reservation.task.transfer(credentials.multiTaskBobSid),
-      new Promise(resolve => { reservation.task.on('transferInitiated', () => resolve()); }),
+      aliceReservation.task.transfer(credentials.multiTaskBobSid),
+      new Promise(resolve => { aliceReservation.task.once('transferInitiated', () => resolve()); }),
+      new Promise(resolve => { bob.once('reservationCreated', () => resolve()); }),
     ]);
   });
 
-  it('should create a Reservation containing a .transfer object for Bob', (done) => {
-    bob.on('reservationCreated', () => {
-      reservation = Array.from(bob.reservations.values())[0];
-      assert.equal(reservation.transfer.mode, 'WARM');
+  it('should create a Reservation containing a .transfer object for Bob', () => {
+    bobReservation = Array.from(bob.reservations.values())[0];
+    assert.equal(bobReservation.transfer.mode, 'WARM');
+  });
+
+  it('should update the task when Bob accepts', (done) => {
+    bobReservation.once('rejected', () => {
+      // Fake it til you make it! This isn't implemented yet, so we're triggering update manually.
+      // (rrowland) Fix this when we have a way to transition transfer status.
+      bobReservation._update({ 
+        account_sid: bobReservation.accountSid,
+        date_created: bobReservation.dateCreated,
+        date_updated: bobReservation.dateUpdated,
+        reservation_status: bobReservation.reservationStatus,
+        sid: bobReservation.sid,
+        task: {
+          addons: JSON.stringify(bobReservation.task.addons) || '{}',
+          age: bobReservation.task.age,
+          attributes: JSON.stringify(bobReservation.task.attributes) || '{}',
+          date_created: bobReservation.task.dateCreated,
+          date_updated: bobReservation.task.dateUpdated,
+          priority: bobReservation.task.priority,
+          queue_name: bobReservation.task.queueName,
+          queue_sid: bobReservation.task.queueSid,
+          reason: bobReservation.task.reason,
+          sid: bobReservation.task.sid,
+          assignment_status: bobReservation.task.status,
+          task_channel_unique_name: bobReservation.task.taskChannelUniqueName,
+          task_channel_sid: bobReservation.task.taskChannelSid,
+          timeout: bobReservation.task.timeout,
+          workflow_name: bobReservation.task.workflowName,
+          workflow_sid: bobReservation.task.workflowSid,
+        },
+        reservation_timeout: bobReservation.reservationTimeout,
+        worker_sid: bobReservation.workerSid,
+        workspace_sid: bobReservation.workspaceSid,
+        task_transfer: {
+          date_created: bobReservation.transfer.dateCreated,
+          date_updated: bobReservation.transfer.dateUpdated,
+          initiating_reservation_sid: bobReservation.transfer.reservationSid,
+          initiating_worker_sid: bobReservation.transfer.workerSid,
+          sid: bobReservation.transfer.sid,
+          transfer_mode: bobReservation.transfer.mode,
+          transfer_status: 'COMPLETED',
+          transfer_to: bobReservation.transfer.to,
+          transfer_type: bobReservation.transfer.type,
+        }
+      });
+
+      assert.equal(bobReservation.transfer.status, 'COMPLETED');
       done();
     });
+
+    bobReservation.reject();
   });
 });
