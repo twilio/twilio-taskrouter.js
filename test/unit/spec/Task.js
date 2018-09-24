@@ -459,21 +459,6 @@ describe('Task', () => {
             task._emitEvent('canceled', mockEvents.task.canceled);
 
             assert.isTrue(spy.calledOnce);
-            assert.equal(task.age, mockEvents.task.canceled.age);
-            assert.deepEqual(task.attributes, JSON.parse(mockEvents.task.canceled.attributes));
-            assert.equalDate(task.dateCreated, new Date(mockEvents.task.canceled.date_created * 1000));
-            assert.equalDate(task.dateUpdated, new Date(mockEvents.task.canceled.date_updated * 1000));
-            assert.equal(task.priority, mockEvents.task.canceled.priority);
-            assert.equal(task.reason, mockEvents.task.canceled.reason);
-            assert.equal(task.sid, mockEvents.task.canceled.sid);
-            assert.equal(task.status, mockEvents.task.canceled.assignment_status);
-            assert.equal(task.taskChannelSid, mockEvents.task.canceled.task_channel_sid);
-            assert.equal(task.taskChannelUniqueName, mockEvents.task.canceled.task_channel_unique_name);
-            assert.equal(task.queueName, mockEvents.task.canceled.queue_name);
-            assert.equal(task.queueSid, mockEvents.task.canceled.queue_sid);
-            assert.equal(task.timeout, mockEvents.task.canceled.timeout);
-            assert.equal(task.workflowName, mockEvents.task.canceled.workflow_name);
-            assert.equal(task.workflowSid, mockEvents.task.canceled.workflow_sid);
         });
 
         it('should emit Event:on(completed)', () => {
@@ -487,21 +472,6 @@ describe('Task', () => {
             task._emitEvent('completed', mockEvents.task.completed);
 
             assert.isTrue(spy.calledOnce);
-            assert.equal(task.age, mockEvents.task.completed.age);
-            assert.deepEqual(task.attributes, JSON.parse(mockEvents.task.completed.attributes));
-            assert.equalDate(task.dateCreated, new Date(mockEvents.task.completed.date_created * 1000));
-            assert.equalDate(task.dateUpdated, new Date(mockEvents.task.completed.date_updated * 1000));
-            assert.equal(task.priority, mockEvents.task.completed.priority);
-            assert.equal(task.reason, mockEvents.task.completed.reason);
-            assert.equal(task.sid, mockEvents.task.completed.sid);
-            assert.equal(task.status, mockEvents.task.completed.assignment_status);
-            assert.equal(task.taskChannelSid, mockEvents.task.completed.task_channel_sid);
-            assert.equal(task.taskChannelUniqueName, mockEvents.task.completed.task_channel_unique_name);
-            assert.equal(task.queueName, mockEvents.task.completed.queue_name);
-            assert.equal(task.queueSid, mockEvents.task.completed.queue_sid);
-            assert.equal(task.timeout, mockEvents.task.completed.timeout);
-            assert.equal(task.workflowName, mockEvents.task.completed.workflow_name);
-            assert.equal(task.workflowSid, mockEvents.task.completed.workflow_sid);
         });
 
         it('should emit Event:on(updated)', () => {
@@ -515,21 +485,6 @@ describe('Task', () => {
             task._emitEvent('updated', mockEvents.task.updated);
 
             assert.isTrue(spy.calledOnce);
-            assert.equal(task.age, mockEvents.task.updated.age);
-            assert.deepEqual(task.attributes, JSON.parse(mockEvents.task.updated.attributes));
-            assert.equalDate(task.dateCreated, new Date(mockEvents.task.updated.date_created * 1000));
-            assert.equalDate(task.dateUpdated, new Date(mockEvents.task.updated.date_updated * 1000));
-            assert.equal(task.priority, mockEvents.task.updated.priority);
-            assert.equal(task.reason, mockEvents.task.updated.reason);
-            assert.equal(task.sid, mockEvents.task.updated.sid);
-            assert.equal(task.status, mockEvents.task.updated.assignment_status);
-            assert.equal(task.taskChannelSid, mockEvents.task.updated.task_channel_sid);
-            assert.equal(task.taskChannelUniqueName, mockEvents.task.updated.task_channel_unique_name);
-            assert.equal(task.queueName, mockEvents.task.updated.queue_name);
-            assert.equal(task.queueSid, mockEvents.task.updated.queue_sid);
-            assert.equal(task.timeout, mockEvents.task.updated.timeout);
-            assert.equal(task.workflowName, mockEvents.task.updated.workflow_name);
-            assert.equal(task.workflowSid, mockEvents.task.updated.workflow_sid);
         });
 
         it('should emit Event:on(wrapup)', () => {
@@ -543,21 +498,6 @@ describe('Task', () => {
             task._emitEvent('wrapup', mockEvents.task.wrappedUp);
 
             assert.isTrue(spy.calledOnce);
-            assert.equal(task.age, mockEvents.task.wrappedUp.age);
-            assert.deepEqual(task.attributes, JSON.parse(mockEvents.task.wrappedUp.attributes));
-            assert.equalDate(task.dateCreated, new Date(mockEvents.task.wrappedUp.date_created * 1000));
-            assert.equalDate(task.dateUpdated, new Date(mockEvents.task.wrappedUp.date_updated * 1000));
-            assert.equal(task.priority, mockEvents.task.wrappedUp.priority);
-            assert.equal(task.reason, mockEvents.task.wrappedUp.reason);
-            assert.equal(task.sid, mockEvents.task.wrappedUp.sid);
-            assert.equal(task.status, mockEvents.task.wrappedUp.assignment_status);
-            assert.equal(task.taskChannelSid, mockEvents.task.wrappedUp.task_channel_sid);
-            assert.equal(task.taskChannelUniqueName, mockEvents.task.wrappedUp.task_channel_unique_name);
-            assert.equal(task.queueName, mockEvents.task.wrappedUp.queue_name);
-            assert.equal(task.queueSid, mockEvents.task.wrappedUp.queue_sid);
-            assert.equal(task.timeout, mockEvents.task.wrappedUp.timeout);
-            assert.equal(task.workflowName, mockEvents.task.wrappedUp.workflow_name);
-            assert.equal(task.workflowSid, mockEvents.task.wrappedUp.workflow_sid);
         });
     });
 });
