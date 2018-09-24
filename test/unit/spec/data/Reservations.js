@@ -52,7 +52,7 @@ describe('Reservations', () => {
         it('should fetch all reservations', () => {
             const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations';
             const requestParams = {
-                ReservationStatus: 'accepted,pending,wrapping',
+                Active: 'true',
                 PageSize: 1000
             };
 

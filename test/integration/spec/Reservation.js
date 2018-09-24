@@ -1,10 +1,8 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
-import Task from '../../../lib/Task';
 import { getAccessToken } from '../../util/MakeAccessToken';
 
 const chai = require('chai');
-const assert = chai.assert;
 const expect = chai.expect;
 
 const credentials = require('../../env');

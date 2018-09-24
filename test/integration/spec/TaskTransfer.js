@@ -88,7 +88,8 @@ describe('Task Transfer', function() {
     bobReservation.once('rejected', () => {
       // Fake it til you make it! This isn't implemented yet, so we're triggering update manually.
       // (rrowland) Fix this when we have a way to transition transfer status.
-      bobReservation._update({ 
+      bobReservation._update({
+        /* eslint-disable camelcase */
         account_sid: bobReservation.accountSid,
         date_created: bobReservation.dateCreated,
         date_updated: bobReservation.dateUpdated,
@@ -126,6 +127,7 @@ describe('Task Transfer', function() {
           transfer_to: bobReservation.transfer.to,
           transfer_type: bobReservation.transfer.type,
         }
+        /* eslint-enable camelcase */
       });
 
       assert.equal(bobReservation.transfer.status, 'COMPLETED');
