@@ -418,7 +418,7 @@ describe('Task', () => {
                 languages: ['en']
             },
             Mode: 'cold',
-            Priority: undefined,
+            Priority: 'undefined',
             ReservationSid: reservationSid,
             To: 'alice',
         };
