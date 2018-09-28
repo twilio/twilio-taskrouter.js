@@ -363,64 +363,64 @@ const taskWrappedUp = {
 };
 
 const transferInitiated = {
-    initiating_reservation_sid: 'WR379079dfb2d83764ba4cd61984842623',
+    initiating_reservation_sid: 'WRxxx',
     date_updated: 1538160762,
     transfer_mode: 'WARM',
-    workspace_sid: 'WSb142c750f99242fec97dab4550681b68',
-    task_sid: 'WT66408a85a32549e8b9377c2df6509154',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
     date_created: 1538160762,
-    account_sid: 'AC7e7c5921367ccee0d48c7b435dd7033f',
+    account_sid: 'ACxxx',
     transfer_type: 'QUEUE',
-    transfer_to: 'WQ865b2c6f49ca5c832ae3f7b8a4fe174a',
+    transfer_to: 'WQxxx',
     transfer_status: 'INITIATED',
-    initiating_worker_sid: 'WKfcc9a1b7d80ebd1d340e142877064a22',
-    sid: 'TTb119180449f6d8486ddbca389858f382'
+    initiating_worker_sid: 'WKxxx',
+    sid: 'TTxxx'
 };
 
 const transferFailed = {
-    initiating_reservation_sid: 'WR379079dfb2d83764ba4cd61984842623',
+    initiating_reservation_sid: 'WRxxx',
     date_updated: 1538160762,
     transfer_mode: 'WARM',
-    workspace_sid: 'WSb142c750f99242fec97dab4550681b68',
-    task_sid: 'WT66408a85a32549e8b9377c2df6509154',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
     date_created: 1538160762,
-    account_sid: 'AC7e7c5921367ccee0d48c7b435dd7033f',
+    account_sid: 'ACxxx',
     transfer_type: 'QUEUE',
-    transfer_to: 'WQ865b2c6f49ca5c832ae3f7b8a4fe174a',
+    transfer_to: 'WQxxx',
     transfer_status: 'FAILED',
-    initiating_worker_sid: 'WKfcc9a1b7d80ebd1d340e142877064a22',
+    initiating_worker_sid: 'WKxxx',
     transfer_failed_reason: 'Transfer failed because the reservation timed out',
-    sid: 'TTb119180449f6d8486ddbca389858f382'
+    sid: 'TTxxx'
 };
 
 const transferCompleted = {
-    initiating_reservation_sid: 'WR379079dfb2d83764ba4cd61984842623',
+    initiating_reservation_sid: 'WRxxx',
     date_updated: 1538160762,
     transfer_mode: 'WARM',
-    workspace_sid: 'WSb142c750f99242fec97dab4550681b68',
-    task_sid: 'WT66408a85a32549e8b9377c2df6509154',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
     date_created: 1538160762,
-    account_sid: 'AC7e7c5921367ccee0d48c7b435dd7033f',
+    account_sid: 'ACxxx',
     transfer_type: 'QUEUE',
-    transfer_to: 'WQ865b2c6f49ca5c832ae3f7b8a4fe174a',
+    transfer_to: 'WQxxx',
     transfer_status: 'COMPLETE',
-    initiating_worker_sid: 'WKfcc9a1b7d80ebd1d340e142877064a22',
-    sid: 'TTb119180449f6d8486ddbca389858f382'
+    initiating_worker_sid: 'WKxxx',
+    sid: 'TTxxx'
 };
 
 const transferAttemptFailed = {
-    initiating_reservation_sid: 'WR379079dfb2d83764ba4cd61984842623',
+    initiating_reservation_sid: 'WRxxx',
     date_updated: 1538160762,
     transfer_mode: 'WARM',
-    workspace_sid: 'WSb142c750f99242fec97dab4550681b68',
-    task_sid:'WT66408a85a32549e8b9377c2df6509154',
+    workspace_sid: 'WSxxx',
+    task_sid:'WTxxx',
     date_created:1538160762,
-    transfer_to: 'WQ865b2c6f49ca5c832ae3f7b8a4fe174a',
+    transfer_to: 'WQxxx',
     transfer_status: 'INITIATED',
-    initiating_worker_sid: 'WKfcc9a1b7d80ebd1d340e142877064a22',
+    initiating_worker_sid: 'WKxxx',
     transfer_failed_reason: 'Transfer attempt failed on reservation reject because there are no more pending reservations',
-    sid: 'TTb119180449f6d8486ddbca389858f382',
-    account_sid: 'AC7e7c5921367ccee0d48c7b435dd7033f',
+    sid: 'TTxxx',
+    account_sid: 'ACxxx',
     transfer_type: 'QUEUE'
 };
 
