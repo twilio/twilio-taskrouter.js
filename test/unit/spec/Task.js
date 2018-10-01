@@ -499,5 +499,54 @@ describe('Task', () => {
 
             assert.isTrue(spy.calledOnce);
         });
+
+        // transfer events (for transfers initiated by the worker)
+        it('should emit Event:on(transferInitiated', () => {
+            const spy = sinon.spy();
+
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            assert.equal(task.status, 'assigned');
+
+            task.on('transferInitiated', spy);
+            task._emitEvent('transferInitiated', mockEvents.task.transferInitiated);
+
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should emit Event:on(transferCompleted', () => {
+            const spy = sinon.spy();
+
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            assert.equal(task.status, 'assigned');
+
+            task.on('transferCompleted', spy);
+            task._emitEvent('transferCompleted', mockEvents.task.transferCompleted);
+
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should emit Event:on(transferAttemptFailed', () => {
+            const spy = sinon.spy();
+
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            assert.equal(task.status, 'assigned');
+
+            task.on('transferAttemptFailed', spy);
+            task._emitEvent('transferAttemptFailed', mockEvents.task.transferAttemptFailed);
+
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should emit Event:on(transferFailed', () => {
+            const spy = sinon.spy();
+
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            assert.equal(task.status, 'assigned');
+
+            task.on('transferFailed', spy);
+            task._emitEvent('transferFailed', mockEvents.task.transferFailed);
+
+            assert.isTrue(spy.calledOnce);
+        });
     });
 });

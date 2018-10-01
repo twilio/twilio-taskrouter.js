@@ -362,6 +362,68 @@ const taskWrappedUp = {
   addons: '{}'
 };
 
+const transferInitiated = {
+    initiating_reservation_sid: 'WRxxx',
+    date_updated: 1538160762,
+    transfer_mode: 'WARM',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
+    date_created: 1538160762,
+    account_sid: 'ACxxx',
+    transfer_type: 'QUEUE',
+    transfer_to: 'WQxxx',
+    transfer_status: 'INITIATED',
+    initiating_worker_sid: 'WKxxx',
+    sid: 'TTxxx'
+};
+
+const transferFailed = {
+    initiating_reservation_sid: 'WRxxx',
+    date_updated: 1538160762,
+    transfer_mode: 'WARM',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
+    date_created: 1538160762,
+    account_sid: 'ACxxx',
+    transfer_type: 'QUEUE',
+    transfer_to: 'WQxxx',
+    transfer_status: 'FAILED',
+    initiating_worker_sid: 'WKxxx',
+    transfer_failed_reason: 'Transfer failed because the reservation timed out',
+    sid: 'TTxxx'
+};
+
+const transferCompleted = {
+    initiating_reservation_sid: 'WRxxx',
+    date_updated: 1538160762,
+    transfer_mode: 'WARM',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
+    date_created: 1538160762,
+    account_sid: 'ACxxx',
+    transfer_type: 'QUEUE',
+    transfer_to: 'WQxxx',
+    transfer_status: 'COMPLETE',
+    initiating_worker_sid: 'WKxxx',
+    sid: 'TTxxx'
+};
+
+const transferAttemptFailed = {
+    initiating_reservation_sid: 'WRxxx',
+    date_updated: 1538160762,
+    transfer_mode: 'WARM',
+    workspace_sid: 'WSxxx',
+    task_sid:'WTxxx',
+    date_created:1538160762,
+    transfer_to: 'WQxxx',
+    transfer_status: 'INITIATED',
+    initiating_worker_sid: 'WKxxx',
+    transfer_failed_reason: 'Transfer attempt failed on reservation reject because there are no more pending reservations',
+    sid: 'TTxxx',
+    account_sid: 'ACxxx',
+    transfer_type: 'QUEUE'
+};
+
 module.exports = {
   events: {
     worker: {
@@ -385,7 +447,11 @@ module.exports = {
         canceled: taskCanceled,
         completed: taskCompleted,
         updated: taskUpdated,
-        wrappedUp: taskWrappedUp
+        wrappedUp: taskWrappedUp,
+        transferInitiated: transferInitiated,
+        transferAttemptFailed: transferAttemptFailed,
+        transferFailed: transferFailed,
+        transferCompleted: transferCompleted
     }
   }
 };
