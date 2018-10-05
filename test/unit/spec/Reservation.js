@@ -509,7 +509,7 @@ describe('Reservation', () => {
         });
     });
 
-    describe('#setEndConferenceOnExit(disconnect)', () => {
+    describe('#updateParticipant(options)', () => {
         let sandbox;
 
         const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/WorkerParticipant';
@@ -524,27 +524,27 @@ describe('Reservation', () => {
 
         afterEach(() => sandbox.restore());
 
-        it('should return an error if the disconnect param is of incorrect type', () => {
+        it('should return an error if the optional params fail type check', () => {
             (() => {
                 const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-                assignedReservation.setEndConferenceOnExit('true');
-            }).should.throw(/<boolean>disconnect is a required parameter/);
+                assignedReservation.updateParticipant({ endConferenceOnExit: 'true' });
+            }).should.throw(/endConferenceOnExit does not meet the required type/);
         });
 
-        it('should set EndConferenceOnExit on the Worker leg and return self', () => {
+        it('should update properties on the Worker leg and return self', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(assignedReservationDescriptor));
 
             const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-            assignedReservation.setEndConferenceOnExit(true).then(sameRes => {
+            assignedReservation.updateParticipant({ endConferenceOnExit: true }).then(sameRes => {
                 expect(assignedReservation).to.be.equal(sameRes);
             });
         });
 
-        it('should return an error if setEndConferenceOnExit failed', () => {
+        it('should return an error if updating the worker leg failed', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
             const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-            return assignedReservation.setEndConferenceOnExit(true).catch(err => {
+            assignedReservation.updateParticipant({ endConferenceOnExit: true }).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
