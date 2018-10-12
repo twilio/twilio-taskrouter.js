@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { API_V1, API_V2 } from '../../../lib/util/Constants';
+import { API_V1 } from '../../../lib/util/Constants';
 import Configuration from '../../../lib/util/Configuration';
 import Logger from '../../../lib/util/Logger';
 const mockEvents = require('../../mock/Events').events;
@@ -505,48 +505,6 @@ describe('Reservation', () => {
             return pendingReservation.conference({ maxParticipants: 10 }).then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('pending');
-            });
-        });
-    });
-
-    describe('#updateParticipant(options)', () => {
-        let sandbox;
-
-        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/WorkerParticipant';
-        const requestParams = {
-            ReservationSid: 'WRxx1',
-            EndConferenceOnExit: true
-        };
-
-        beforeEach(() => {
-            sandbox = sinon.sandbox.create();
-        });
-
-        afterEach(() => sandbox.restore());
-
-        it('should return an error if the optional params fail type check', () => {
-            (() => {
-                const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-                assignedReservation.updateParticipant({ endConferenceOnExit: 'true' });
-            }).should.throw(/endConferenceOnExit does not meet the required type/);
-        });
-
-        it('should update properties on the Worker leg and return self', () => {
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(assignedReservationDescriptor));
-
-            const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-            assignedReservation.updateParticipant({ endConferenceOnExit: true }).then(sameRes => {
-                expect(assignedReservation).to.be.equal(sameRes);
-            });
-        });
-
-        it('should return an error if updating the worker leg failed', () => {
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
-
-            const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-            assignedReservation.updateParticipant({ endConferenceOnExit: true }).catch(err => {
-                expect(err.name).to.equal('TASKROUTER_ERROR');
-                expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
     });
