@@ -332,46 +332,7 @@ describe('Task', () => {
         });
     });
 
-    describe('#hold()', () => {
-        let sandbox;
-
-        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/CustomerParticipant';
-        const requestParams = {
-            Hold: true,
-            TaskSid: 'WTxx1'
-        };
-
-        beforeEach(() => {
-            sandbox = sinon.sandbox.create();
-        });
-
-        afterEach(() => {
-            sandbox.restore();
-        });
-
-        it('should place a Hold request on the Task upon successful execution', () => {
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
-
-            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
-
-            return task.hold().then(() => {
-                expect(task.sid).to.equal(taskHoldUnhold.sid);
-            });
-        });
-
-        it('should return an error if Hold failed', () => {
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
-
-            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
-
-            return task.hold().catch(err => {
-                expect(err.name).to.equal('TASKROUTER_ERROR');
-                expect(err.message).to.equal('Failed to parse JSON.');
-            });
-        });
-    });
-
-    describe('#unhold()', () => {
+    describe('#updateParticipant(options)', () => {
         let sandbox;
 
         const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/CustomerParticipant';
@@ -388,29 +349,36 @@ describe('Task', () => {
             sandbox.restore();
         });
 
-        it('should place a Unhold request on the Task upon successful execution', () => {
+        it('should return an error if the optional params fail type check', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+                task.updateParticipant({ hold: 'true' });
+            }).should.throw(/hold does not meet the required type/);
+        });
+
+        it('should place a hold/unhold request on the Task upon successful execution', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
 
             const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
 
-            return task.unhold().then(() => {
+            return task.updateParticipant({ hold: false }).then(() => {
                 expect(task.sid).to.equal(taskHoldUnhold.sid);
             });
         });
 
-        it('should return an error if Unhold failed', () => {
+        it('should return an error if hold/unhold failed', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
             const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
 
-            return task.unhold().catch(err => {
+            return task.updateParticipant({ hold: false }).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
     });
 
-    describe('transfer(to, options)', () => {
+    describe('#transfer(to, options)', () => {
         let sandbox;
         const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1/Transfers';
         const requestParams = {
