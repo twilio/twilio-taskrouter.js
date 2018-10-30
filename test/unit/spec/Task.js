@@ -1,3 +1,4 @@
+/* eslint-disable no-undefined */
 const chai = require('chai');
 const assert = chai.assert;
 const expect = chai.expect;
@@ -386,7 +387,7 @@ describe('Task', () => {
                 languages: ['en']
             },
             Mode: 'cold',
-            Priority: 'undefined',
+            Priority: undefined,
             ReservationSid: reservationSid,
             To: 'alice',
         };
