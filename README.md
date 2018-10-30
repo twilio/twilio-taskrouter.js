@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/twilio/twilio-taskrouter.js.svg?branch=master)](https://travis-ci.org/twilio/twilio-taskrouter.js)
+[![npm version](https://badge.fury.io/js/twilio-taskrouter.svg)](https://badge.fury.io/js/twilio-taskrouter)
 
 
 twilio-taskrouter.js
