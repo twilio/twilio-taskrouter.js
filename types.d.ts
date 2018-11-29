@@ -128,6 +128,7 @@ export interface ConferenceOptions {
     startConferenceOnEnter?:boolean;
     endConferenceOnExit?:boolean;
     endConferenceOnCustomerExit?:boolean;
+    beepOnCustomerEntrance?:boolean;
     waitUrl?:string;
     waitMethod?:string;
     earlyMedia?:boolean;
