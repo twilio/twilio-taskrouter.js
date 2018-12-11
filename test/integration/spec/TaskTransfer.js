@@ -88,9 +88,8 @@ describe('Task Transfer', function() {
                     credentials.multiTaskWorkspaceSid,
                     credentials.multiTaskBobSid,
                     credentials.multiTaskConnectActivitySid
-                ).then(() => {
-                    return reservation.accept();
-                }).then(acceptedReservation => {
+                ).then(() => reservation.accept()
+                ).then(acceptedReservation => {
                     // Transfer the task, verify that transfer was initiated and have Bob reject
                     return Promise.all([
                                 acceptedReservation.task.transfer(credentials.multiTaskBobSid),
