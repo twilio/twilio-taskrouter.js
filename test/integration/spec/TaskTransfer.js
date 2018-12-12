@@ -1,6 +1,5 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
-import * as assert from 'assert';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -134,6 +133,3 @@ describe('Task Transfer', function() {
         }).timeout(15000);
     });
 });
-
-//TODO : Allow accepting transfer reservations using status update and add tests for successful transfers.
-
