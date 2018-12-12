@@ -29,7 +29,7 @@ Usage
 
 The following is a simple example showing a Worker waiting for Reservations.
 For more information, refer to the
-[API Docs](//media.twiliocdn.com/taskrouter/js/v2/docs).
+[API Docs](//twilio.github.io/twilio-taskrouter.js/index.html).
 
 ```js
 const TaskRouter = require('twilio-taskrouter');
