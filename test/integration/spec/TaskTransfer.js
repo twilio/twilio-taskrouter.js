@@ -4,6 +4,7 @@ import * as assert from 'assert';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
+const expect = chai.expect;
 chai.should();
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
@@ -16,124 +17,123 @@ describe('Task Transfer', function() {
   const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
   const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
   const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
-
   let alice;
   let bob;
-  let aliceReservation;
-  let bobReservation;
-  before(() => {
-    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-      alice = new Worker(aliceToken, {
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`,
-        logLevel: 'error',
-      });
 
-      bob = new Worker(bobToken, {
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`,
-        logLevel: 'error',
-      });
-
-      const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 1)
-        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1))
-        .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskConnectActivitySid))
-        .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskUpdateActivitySid))
-        .then(() => envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, JSON.stringify({
-          to: 'client:alice',
-          conference: { sid: 'CF11111111111111111111111111111111' }
-        })));
-
-      return Promise.all([
-        new Promise(resolve => alice.once('ready', () => resolve())),
-        new Promise(resolve => bob.once('ready', () => resolve())),
-      ]).then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid))
-        .then(createTask)
-        .then(() => {
-          aliceReservation = Array.from(alice.reservations.values())[0];
-          return aliceReservation.accept();
+    before(() => {
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+            return envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                credentials.multiTaskUpdateActivitySid
+            );
+        }).then(() => {
+            return envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskBobSid,
+                credentials.multiTaskUpdateActivitySid
+            );
         });
     });
-  });
 
-  after(() => {
-    alice.removeAllListeners();
-    bob.removeAllListeners();
-    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
-      .then(envTwilio.updateWorkerActivity(
-        credentials.multiTaskWorkspaceSid,
-        credentials.multiTaskAliceSid,
-        credentials.multiTaskUpdateActivitySid
-      )).then(envTwilio.updateWorkerActivity(
-        credentials.multiTaskWorkspaceSid,
-        credentials.multiTaskBobSid,
-        credentials.multiTaskUpdateActivitySid
-      ));
-  });
-
-  it('should get a 200, resolve and emit a transfer-initiated event if all goes well', () => {
-    return Promise.all([
-      aliceReservation.task.transfer(credentials.multiTaskBobSid),
-      new Promise(resolve => { aliceReservation.task.once('transferInitiated', () => resolve()); }),
-      new Promise(resolve => { bob.once('reservationCreated', () => resolve()); }),
-    ]);
-  });
-
-  it('should create a Reservation containing a .transfer object for Bob', () => {
-    bobReservation = Array.from(bob.reservations.values())[0];
-    assert.equal(bobReservation.transfer.mode, 'WARM');
-  });
-
-  it('should update the task when Bob accepts', (done) => {
-    bobReservation.once('rejected', () => {
-      // Fake it til you make it! This isn't implemented yet, so we're triggering update manually.
-      // (rrowland) Fix this when we have a way to transition transfer status.
-      bobReservation._update({
-        /* eslint-disable camelcase */
-        account_sid: bobReservation.accountSid,
-        date_created: bobReservation.dateCreated,
-        date_updated: bobReservation.dateUpdated,
-        reservation_status: bobReservation.reservationStatus,
-        sid: bobReservation.sid,
-        task: {
-          addons: JSON.stringify(bobReservation.task.addons) || '{}',
-          age: bobReservation.task.age,
-          attributes: JSON.stringify(bobReservation.task.attributes) || '{}',
-          date_created: bobReservation.task.dateCreated,
-          date_updated: bobReservation.task.dateUpdated,
-          priority: bobReservation.task.priority,
-          queue_name: bobReservation.task.queueName,
-          queue_sid: bobReservation.task.queueSid,
-          reason: bobReservation.task.reason,
-          sid: bobReservation.task.sid,
-          assignment_status: bobReservation.task.status,
-          task_channel_unique_name: bobReservation.task.taskChannelUniqueName,
-          task_channel_sid: bobReservation.task.taskChannelSid,
-          timeout: bobReservation.task.timeout,
-          workflow_name: bobReservation.task.workflowName,
-          workflow_sid: bobReservation.task.workflowSid,
-        },
-        reservation_timeout: bobReservation.reservationTimeout,
-        worker_sid: bobReservation.workerSid,
-        workspace_sid: bobReservation.workspaceSid,
-        task_transfer: {
-          date_created: bobReservation.transfer.dateCreated,
-          date_updated: bobReservation.transfer.dateUpdated,
-          initiating_reservation_sid: bobReservation.transfer.reservationSid,
-          initiating_worker_sid: bobReservation.transfer.workerSid,
-          sid: bobReservation.transfer.sid,
-          transfer_mode: bobReservation.transfer.mode,
-          transfer_status: 'COMPLETED',
-          transfer_to: bobReservation.transfer.to,
-          transfer_type: bobReservation.transfer.type,
-        }
-        /* eslint-enable camelcase */
-      });
-
-      assert.equal(bobReservation.transfer.status, 'COMPLETED');
-      done();
+    after(() => {
+        alice.removeAllListeners();
+        bob.removeAllListeners();
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+            return envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                credentials.multiTaskUpdateActivitySid
+            );
+        }).then(() => {
+            return envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskBobSid,
+                credentials.multiTaskUpdateActivitySid
+            );
+        });
     });
 
-    bobReservation.reject();
-  });
+    describe('#Failed Transfer to a worker', () => {
+
+        it('should accept reservation, transfer the task and reject the transfer', done => {
+
+            alice = new Worker(aliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'error',
+            });
+
+            // bob stays offline
+            bob = new Worker(bobToken, {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'error',
+            });
+
+            envTwilio.createTask(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskWorkflowSid,
+                JSON.stringify({
+                    to: 'client:alice',
+                    conference: { sid: 'CF11111111111111111111111111111111' }
+                })
+            );
+
+            return alice.on('reservationCreated', reservation => {
+
+                // Make Bob available
+                return envTwilio.updateWorkerActivity(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskBobSid,
+                    credentials.multiTaskConnectActivitySid
+                ).then(() => reservation.accept()
+                ).then(acceptedReservation => {
+                    // Transfer the task, verify that transfer was initiated and have Bob reject
+                    return Promise.all([
+                                acceptedReservation.task.transfer(credentials.multiTaskBobSid),
+                                new Promise(resolve => {
+                                    acceptedReservation.task.on('transferInitiated', () => resolve());
+                                }),
+                                new Promise(resolve => {
+                                    bob.once('reservationCreated', transferReservation => {
+                                        // Verify that transfer object is on the created reservation
+                                        expect(transferReservation.transfer.mode).equals('WARM');
+                                        expect(transferReservation.transfer.to).equals(bob.sid);
+                                        expect(transferReservation.transfer.workerSid).equals(alice.sid);
+                                        expect(transferReservation.transfer.type).equals('WORKER');
+                                        expect(transferReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
+                                        expect(transferReservation.transfer.sid.substring(0, 2)).equals('TT');
+                                        expect(transferReservation.transfer.status).equals('initiated');
+
+                                        transferReservation.reject().then(() => {
+                                            // verify that on rejecting the transfer reservation, the transfer object
+                                            // is updated as well with the failed status
+                                            transferReservation.once('rejected', rejectedReservation => {
+                                                expect(rejectedReservation.transfer.mode).equals('WARM');
+                                                expect(rejectedReservation.transfer.to).equals(bob.sid);
+                                                expect(rejectedReservation.transfer.workerSid).equals(alice.sid);
+                                                expect(rejectedReservation.transfer.type).equals('WORKER');
+                                                expect(rejectedReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
+                                                expect(rejectedReservation.transfer.sid.substring(0, 2)).equals('TT');
+                                                expect(rejectedReservation.transfer.status).equals('failed');
+                                                resolve();
+                                            });
+                                        });
+                                    });
+                                }),
+                                new Promise(resolve => {
+                                    acceptedReservation.task.on('transferFailed', () => resolve());
+                                }),
+
+                    ]).then(() => done());
+                });
+            });
+
+        }).timeout(15000);
+    });
 });
+
+//TODO : Allow accepting transfer reservations using status update and add tests for successful transfers.
+
