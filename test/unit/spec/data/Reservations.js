@@ -108,13 +108,5 @@ describe('Reservations', () => {
                 expect(reservationsServices.reservations.size).to.equal(mockList.contents.length);
             });
         });
-
-        // TO DO: Post Paging Bug
-
-        // it('should paginate for the next page if needed', () => {
-        // });
     });
-
-    // TO DO: Event test for Event: on('reservationAdded')
-    // TO DO: Event test for Event: on('reservationDeleted')
 });
