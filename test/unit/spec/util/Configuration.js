@@ -29,7 +29,7 @@ describe('Configuration', () => {
         const options = {
             ebServer: 'https://event-bridge.dev-us1.twilio.com/v1/wschannels',
             wsServer: 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels',
-            region: 'ie1'
+            region: 'ie1-ix'
         };
 
         const config = new Configuration(token, options);
