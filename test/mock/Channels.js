@@ -18,7 +18,7 @@ export const defaultChannelInstance = {
 
 // Channels PageSize=1000
 export const pageSize1000 = {
-  total: 10,
+  total: 5,
   contents: [{
     account_sid: 'ACxxx',
     workspace_sid: 'WSxxx',
@@ -89,76 +89,6 @@ export const pageSize1000 = {
     date_created: 1510257438,
     date_updated: 1518729347,
     last_reserved_time: 1510257438136
-  }, {
-    account_sid: 'ACxxx',
-    workspace_sid: 'WSxxx',
-    sid: 'WCxx6',
-    worker_sid: 'WKxxx',
-    task_channel_sid: 'TCxx6',
-    configured_capacity: 1,
-    available: 1,
-    assigned_tasks: 0,
-    available_capacity_percentage: 100,
-    task_channel_unique_name: 'custom1',
-    date_created: 1510257438,
-    date_updated: 1518729348,
-    last_reserved_time: 1510257438149
-    }, {
-    account_sid: 'ACxxx',
-    workspace_sid: 'WSxxx',
-    sid: 'WCxx7',
-    worker_sid: 'WKxxx',
-    task_channel_sid: 'TCxx7',
-    configured_capacity: 1,
-    available: 1,
-    assigned_tasks: 0,
-    available_capacity_percentage: 100,
-    task_channel_unique_name: 'custom2',
-    date_created: 1510257438,
-    date_updated: 1518729348,
-    last_reserved_time: 1510257438162
-    }, {
-    account_sid: 'ACxxx',
-    workspace_sid: 'WSxxx',
-    sid: 'WCxx8',
-    worker_sid: 'WKxxx',
-    task_channel_sid: 'TCxx8',
-    configured_capacity: 1,
-    available: 1,
-    assigned_tasks: 0,
-    available_capacity_percentage: 100,
-    task_channel_unique_name: 'custom3',
-    date_created: 1510257438,
-    date_updated: 1518729348,
-    last_reserved_time: 1510257438175
-  }, {
-    account_sid: 'ACxxx',
-    workspace_sid: 'WSxxx',
-    sid: 'WCxx9',
-    worker_sid: 'WKxxx',
-    task_channel_sid: 'TCxx9',
-    configured_capacity: 1,
-    available: 1,
-    assigned_tasks: 0,
-    available_capacity_percentage: 100,
-    task_channel_unique_name: 'custom4',
-    date_created: 1510257438,
-    date_updated: 1518729348,
-    last_reserved_time: 1510257438188
-  }, {
-    account_sid: 'ACxxx',
-    workspace_sid: 'WSxxx',
-    sid: 'WCxx10',
-    worker_sid: 'WKxxx',
-    task_channel_sid: 'TCxx10',
-    configured_capacity: 1,
-    available: 1,
-    assigned_tasks: 0,
-    available_capacity_percentage: 100,
-    task_channel_unique_name: 'custom5',
-    date_created: 1510257438,
-    date_updated: 1518729348,
-    last_reserved_time: 1510257438204
   }],
   start: 0,
   end: 0,
