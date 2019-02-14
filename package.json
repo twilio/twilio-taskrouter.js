@@ -1,13 +1,14 @@
 {
   "name": "twilio-taskrouter",
   "title": "Twilio TaskRouter",
-  "version": "0.2.7-dev",
+  "version": "0.2.17-dev",
   "description": "Twilio TaskRouter JavaScript library",
   "homepage": "https://www.twilio.com",
   "author": "Wanjun Li <wli@twilio.com>",
   "contributors": [
     "Martin Amps <martin@twilio.com>",
-    "Mehul Chopra <mchopra@twilio.com>"
+    "Mehul Chopra <mchopra@twilio.com>",
+    "Alex Laird <alaird@twilio.com>"
   ],
   "license": "MIT",
   "keywords": [
@@ -40,12 +41,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/twilio/twilio-taskrouter-worker.js.git"
+    "url": "https://github.com/twilio/twilio-taskrouter.js.git"
   },
   "dependencies": {
     "lodash": "^4.17.5",
     "loglevel": "^1.4.1",
-    "release-tool": "MartinAmps/release-tool",
     "ws": "^5.1.0",
     "xmlhttprequest": "^1.8.0"
   },
@@ -72,6 +72,7 @@
     "mock-socket": "^7.1.0",
     "npm": "^5.7.1",
     "npm-run-all": "^4.0.1",
+    "release-tool": "MartinAmps/release-tool",
     "sinon": "^4.5.0",
     "sinon-chai": "^3.0.0",
     "twilio": "^3.6.1",

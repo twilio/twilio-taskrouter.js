@@ -78,12 +78,35 @@ describe('Reservations', () => {
             });
         });
 
-        // TO DO: Post Paging Bug
+        it('should clear old reservations before refreshing the reservation map', () => {
+            const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations';
+            const requestParams = {
+                Active: 'true',
+                PageSize: 1000
+            };
 
-        // it('should paginate for the next page if needed', () => {
-        // });
+            sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V2, requestParams).returns(Promise.resolve(mockList));
+
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            return reservationsServices.fetchReservations().then(() => {
+                expect(reservationsServices.reservations.size).to.equal(mockList.contents.length);
+
+                reservationsServices.reservations.forEach(reservation => {
+                    if (reservation.sid === 'WRxx1') {
+                        assert.equal(reservation.accountSid, mockInstance.account_sid);
+                        assert.equal(reservation.workspaceSid, mockInstance.workspace_sid);
+                        assert.equal(reservation.sid, mockInstance.sid);
+                        assert.equal(reservation.workerSid, mockInstance.worker_sid);
+                        assert.equal(reservation.status, mockInstance.reservation_status);
+                        assert.equal(reservation.timeout, mockInstance.reservation_timeout);
+                        assert.deepEqual(reservation.dateCreated, new Date(mockInstance.date_created * 1000));
+                        assert.deepEqual(reservation.dateUpdated, new Date(mockInstance.date_updated * 1000));
+                    }
+                });
+            }).then(() => reservationsServices.fetchReservations()).then(() => {
+                expect(reservationsServices.reservations.size).to.equal(mockList.contents.length);
+            });
+        });
     });
-
-    // TO DO: Event test for Event: on('reservationAdded')
-    // TO DO: Event test for Event: on('reservationDeleted')
 });
