@@ -1,3 +1,20 @@
+0.2.17
+============
+New Features
+------------
+Add `mute` and `beepOnExit` options when calling `reservation.updateParticipant()`
+
+Maintenance
+------------
+Update testing of channels on newly created Workspaces
+
+
+0.2.16
+============
+Maintenance
+------------
+Expose `region` parameter on signaling layer
+
 0.2.15
 ============
 Bug Fixes
