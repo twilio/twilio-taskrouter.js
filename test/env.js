@@ -34,4 +34,9 @@ try {
   }
 });
 
+if (env.hasOwnProperty('env') && env.env &&
+    !env.env.includes('dev') && !env.env.includes('stage')) {
+    env.env = env.env.concat('.us1');
+}
+
 module.exports = env;
