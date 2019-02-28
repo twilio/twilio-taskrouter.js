@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { doesNotReject } from 'assert';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -16,87 +17,121 @@ describe('ActivityRejectReservations', () => {
     let defaultChannelName = 'default';
     let defaultChannelCapacity = 3;
 
-    before(() => {
+    beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
-        .then(() => {
-            return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, defaultChannelCapacity).then(() => {
-                envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskConnectActivitySid).then(() => {
-                const promises = [];
-                for (let i = 0; i < 3; i++) {
-                    promises.push(envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, '{}'));
-                }
-                return Promise.all(promises);
+            .then(() => {
+                return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, defaultChannelCapacity).then(() => {
+                    envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskConnectActivitySid).then(() => {
+                    const promises = [];
+                    for (let i = 0; i < 3; i++) {
+                        promises.push(envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, '{}'));
+                    }
+                    return Promise.all(promises);
+                    });
                 });
             });
-        });
 
     });
 
-    after(() => {
-         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
-         .then(() => {
+    afterEach(() => {
+         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskAliceSid,
                 credentials.multiTaskUpdateActivitySid);
-        }).then(() => {
-            return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
-        });
+            }).then(() => {
+                return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
+            });
         
     });
 
-    it('should set reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
-        multiTaskWorker = new Worker(multiTaskToken,  {
-            ebServer: `${credentials.ebServer}/v1/wschannels`,
-            wsServer: `${credentials.wsServer}/v1/wschannels`
-        });
-
-        let connectActivity;
-        let updateActivity;
-        return new Promise(resolve =>  {
-            multiTaskWorker.on('ready', resolve);
-        }).then(async() => {
-            const promises = [];
-            multiTaskWorker.reservations.forEach(reservation => {
-                assert.equal(reservation.status, 'pending');
-                assert.equal(reservation.sid.substring(0, 2), 'WR');
-                assert.equal(reservation.task.sid.substring(0, 2), 'WT');
-                assert.equal(reservation.task.taskChannelUniqueName, 'default');
-                promises.push(new Promise(resolve => {
-                    reservation.on('rejected', data => {
-                        resolve(data);
-                    });
-                }));
-            })
-            multiTaskWorker.activities.forEach(activity => {
-                if (activity.sid === credentials.multiTaskConnectActivitySid) {
-                    connectActivity = activity;
-                }
-                if (activity.sid === credentials.multiTaskUpdateActivitySid) {
-                    updateActivity = activity;
-                }
+    describe('successful update with reject pending reservations', () => {
+        it('should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
+            multiTaskWorker = new Worker(multiTaskToken,  {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
-            assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
-            const options = {rejectPendingReservations: true};
-            const updatedActivity = await updateActivity.setAsCurrent(options);
-            expect(multiTaskWorker.activity).to.deep.equal(updatedActivity);
-            multiTaskWorker.channels.forEach( channel => {
-                if(channel.name === defaultChannelName) {
-                    assert.isFalse(channel.available);
-                }
-            })
-            assert.isTrue(updatedActivity.isCurrent);
-            assert.isFalse(connectActivity.isCurrent);
-            
-            return Promise.all(promises).then(() => {
+            let connectActivity;
+            let updateActivity;
+            return new Promise(resolve =>  {
+                multiTaskWorker.on('ready', resolve);
+            }).then(async() => {
+                const promises = [];
                 multiTaskWorker.reservations.forEach(reservation => {
-                    expect(reservation.status).equal('rejected');
+                    assert.equal(reservation.status, 'pending');
+                    assert.equal(reservation.sid.substring(0, 2), 'WR');
+                    assert.equal(reservation.task.sid.substring(0, 2), 'WT');
+                    assert.equal(reservation.task.taskChannelUniqueName, 'default');
+                    promises.push(new Promise(resolve => {
+                        reservation.on('rejected', data => {
+                            resolve(data);
+                        });
+                    }));
+                })
+                multiTaskWorker.activities.forEach(activity => {
+                    if (activity.sid === credentials.multiTaskConnectActivitySid) {
+                        connectActivity = activity;
+                    }
+                    if (activity.sid === credentials.multiTaskUpdateActivitySid) {
+                        updateActivity = activity;
+                    }
                 });
-            })
-        })       
 
-    }).timeout(5000);
+                assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
+                const options = {rejectPendingReservations: true};
+                const updatedActivity = await updateActivity.setAsCurrent(options);
+                expect(multiTaskWorker.activity).to.deep.equal(updatedActivity);
+                multiTaskWorker.channels.forEach( channel => {
+                    if (channel.name === defaultChannelName) {
+                        assert.isFalse(channel.available);
+                    }
+                })
+                assert.isTrue(updatedActivity.isCurrent);
+                assert.isFalse(connectActivity.isCurrent);
+                
+                return Promise.all(promises).then(() => {
+                    multiTaskWorker.reservations.forEach(reservation => {
+                        expect(reservation.status).equal('rejected');
+                    });
+                })
+            })       
+
+        }).timeout(5000);
+    });
+
+    describe('unsuccessful update with reject pending reservations', () => {
+        it('should not reject the pending reservations for the Worker when the flag is set to true, and the activity is unavailable', async() => {
+            multiTaskWorker = new Worker(multiTaskToken,  {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
+            });
+
+            let availableUpdateActivity;
+            return new Promise(resolve =>  {
+                multiTaskWorker.on('ready', resolve);
+            }).then(async() => {
+                multiTaskWorker.reservations.forEach(reservation => {
+                    assert.equal(reservation.status, 'pending');
+                    assert.equal(reservation.sid.substring(0, 2), 'WR');
+                    assert.equal(reservation.task.sid.substring(0, 2), 'WT');
+                    assert.equal(reservation.task.taskChannelUniqueName, 'default');
+                })
+                multiTaskWorker.activities.forEach(activity => {
+                    if (activity.sid === credentials.multiTaskConnectActivitySid) {
+                        availableUpdateActivity = activity;
+                    }
+                });
+
+                assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
+                const options = {rejectPendingReservations: true};
+                expect(() => availableUpdateActivity.setAsCurrent(options)).to.throw(
+                    'Unable to reject pending reservations when updating to an Available activity state.');
+            })       
+
+        }).timeout(5000);
+    });
+
 
 
 });
