@@ -173,7 +173,7 @@ describe('Activity', () => {
                 }
             });
 
-            const options = {rejectPendingReservations: true};
+            const options = { rejectPendingReservations: true };
             expect(() => idleActivity.setAsCurrent(options)).to.throw('Unable to reject pending reservations when updating to an Available activity state.');
         });
 
