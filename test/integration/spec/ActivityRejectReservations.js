@@ -1,6 +1,5 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
-import { doesNotReject } from 'assert';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -42,9 +41,7 @@ describe('ActivityRejectReservations', () => {
             }).then(() => {
                 return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
             });
-        
     });
-
     describe('successful update with reject pending reservations', () => {
         it('should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
@@ -68,7 +65,7 @@ describe('ActivityRejectReservations', () => {
                             resolve(data);
                         });
                     }));
-                })
+                });
                 multiTaskWorker.activities.forEach(activity => {
                     if (activity.sid === credentials.multiTaskConnectActivitySid) {
                         connectActivity = activity;
@@ -79,23 +76,22 @@ describe('ActivityRejectReservations', () => {
                 });
 
                 assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
-                const options = {rejectPendingReservations: true};
+                const options = { rejectPendingReservations: true };
                 const updatedActivity = await updateActivity.setAsCurrent(options);
                 expect(multiTaskWorker.activity).to.deep.equal(updatedActivity);
                 multiTaskWorker.channels.forEach( channel => {
                     if (channel.name === defaultChannelName) {
                         assert.isFalse(channel.available);
                     }
-                })
+                });
                 assert.isTrue(updatedActivity.isCurrent);
                 assert.isFalse(connectActivity.isCurrent);
-                
                 return Promise.all(promises).then(() => {
                     multiTaskWorker.reservations.forEach(reservation => {
                         expect(reservation.status).equal('rejected');
                     });
-                })
-            })       
+                });
+            });
 
         }).timeout(5000);
     });
@@ -116,7 +112,7 @@ describe('ActivityRejectReservations', () => {
                     assert.equal(reservation.sid.substring(0, 2), 'WR');
                     assert.equal(reservation.task.sid.substring(0, 2), 'WT');
                     assert.equal(reservation.task.taskChannelUniqueName, 'default');
-                })
+                });
                 multiTaskWorker.activities.forEach(activity => {
                     if (activity.sid === credentials.multiTaskConnectActivitySid) {
                         availableUpdateActivity = activity;
@@ -124,14 +120,12 @@ describe('ActivityRejectReservations', () => {
                 });
 
                 assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
-                const options = {rejectPendingReservations: true};
+                const options = { rejectPendingReservations: true };
                 expect(() => availableUpdateActivity.setAsCurrent(options)).to.throw(
                     'Unable to reject pending reservations when updating to an Available activity state.');
-            })       
+            });
 
         }).timeout(5000);
     });
-
-
 
 });
