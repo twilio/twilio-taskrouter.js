@@ -1,3 +1,9 @@
+0.2.18
+============
+New Features
+------------
+Expose an optional parameter `rejectPendingReservations` when updating a Worker's activity to unavailable which will reject all pending reservations.
+
 0.2.17
 ============
 New Features
