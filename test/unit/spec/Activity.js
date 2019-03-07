@@ -144,5 +144,38 @@ describe('Activity', () => {
                 expect(offlineActivity.isCurrent).to.be.true;
             });
         });
+
+        it('should return an error when updating to Idle with rejectPendingReservations as true', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Error));
+
+            const activities = new Map();
+            mockList.contents.forEach(activityPayload => {
+                const activityDescriptor = new ActivityDescriptor(activityPayload);
+                activities.set(activityPayload.sid, new Activity(worker, activityDescriptor));
+            });
+
+            sinon.stub(worker, 'activities').get(() => activities);
+            let idleActivity;
+
+            worker.activities.forEach(activity => {
+                if (activity.name === 'Offline') {
+                    activity._isCurrent = true;
+                    worker.activity = activity;
+
+                    assert.equal(worker.activity, activity);
+                    assert.isTrue(worker.activity.isCurrent);
+                } else {
+                    if (activity.name === 'Idle') {
+                        idleActivity = activity;
+                    }
+                    assert.notEqual(worker.activity, activity);
+                    assert.isFalse(activity.isCurrent);
+                }
+            });
+
+            const options = { rejectPendingReservations: true };
+            expect(() => idleActivity.setAsCurrent(options)).to.throw('Unable to reject pending reservations when updating to an Available activity state.');
+        });
+
     });
 });

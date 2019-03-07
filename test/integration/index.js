@@ -1,4 +1,5 @@
 require('./spec/Activity');
+require('./spec/ActivityRejectReservations');
 require('./spec/Channel');
 require('./spec/ReservationReject');
 require('./spec/ReservationAccept');
