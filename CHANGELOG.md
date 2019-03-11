@@ -1,3 +1,9 @@
+0.2.19
+============
+Maintenance
+------------
+Improve integration tests flakiness
+
 0.2.18
 ============
 New Features
