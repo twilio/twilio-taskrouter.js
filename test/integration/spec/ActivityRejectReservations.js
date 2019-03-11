@@ -20,12 +20,12 @@ describe('ActivityRejectReservations', () => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
             .then(() => {
                 return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, defaultChannelCapacity).then(() => {
-                    envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskConnectActivitySid).then(() => {
-                    const promises = [];
-                    for (let i = 0; i < 3; i++) {
-                        promises.push(envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, '{}'));
-                    }
-                    return Promise.all(promises);
+                    envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid).then(() => {
+                        const promises = [];
+                        for (let i = 0; i < 3; i++) {
+                            promises.push(envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, '{}'));
+                        }
+                        return Promise.all(promises);
                     });
                 });
             });
@@ -42,17 +42,27 @@ describe('ActivityRejectReservations', () => {
                 return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
             });
     });
+
     describe('successful update with reject pending reservations', () => {
         it('should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
             let connectActivity;
             let updateActivity;
-            return new Promise(resolve =>  {
-                multiTaskWorker.on('ready', resolve);
+            const createdReservations = [];
+
+            return new Promise(resolve => {
+                multiTaskWorker.on('reservationCreated', reservation => {
+                    createdReservations.push(reservation);
+
+                    if (createdReservations.length === 3) {
+                        resolve(createdReservations);
+                    }
+                });
             }).then(async() => {
                 const promises = [];
                 multiTaskWorker.reservations.forEach(reservation => {
@@ -66,6 +76,7 @@ describe('ActivityRejectReservations', () => {
                         });
                     }));
                 });
+
                 multiTaskWorker.activities.forEach(activity => {
                     if (activity.sid === credentials.multiTaskConnectActivitySid) {
                         connectActivity = activity;
@@ -76,6 +87,7 @@ describe('ActivityRejectReservations', () => {
                 });
 
                 assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
+
                 const options = { rejectPendingReservations: true };
                 const updatedActivity = await updateActivity.setAsCurrent(options);
                 expect(multiTaskWorker.activity).to.deep.equal(updatedActivity);
@@ -99,13 +111,22 @@ describe('ActivityRejectReservations', () => {
     describe('unsuccessful update with reject pending reservations', () => {
         it('should not reject the pending reservations for the Worker when the flag is set to true, and the activity is unavailable', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
+            const createdReservations = [];
             let availableUpdateActivity;
-            return new Promise(resolve =>  {
-                multiTaskWorker.on('ready', resolve);
+
+            return new Promise(resolve => {
+                multiTaskWorker.on('reservationCreated', reservation => {
+                    createdReservations.push(reservation);
+
+                    if (createdReservations.length === 3) {
+                        resolve(createdReservations);
+                    }
+                });
             }).then(async() => {
                 multiTaskWorker.reservations.forEach(reservation => {
                     assert.equal(reservation.status, 'pending');
@@ -127,5 +148,4 @@ describe('ActivityRejectReservations', () => {
 
         }).timeout(5000);
     });
-
 });
