@@ -1,7 +1,7 @@
 {
   "name": "twilio-taskrouter",
   "title": "Twilio TaskRouter",
-  "version": "0.2.18",
+  "version": "0.2.19-dev",
   "description": "Twilio TaskRouter JavaScript library",
   "homepage": "https://www.twilio.com",
   "author": "Wanjun Li <wli@twilio.com>",
