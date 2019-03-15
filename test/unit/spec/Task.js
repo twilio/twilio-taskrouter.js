@@ -379,6 +379,53 @@ describe('Task', () => {
         });
     });
 
+    describe('#hold(options)', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/HoldWorkerParticipant';
+        const requestParams = {
+            TaskSid: 'WTxx1',
+            TargetWorkerSid: 'WKxxB',
+            Hold: true
+        };
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should return an error if the optional params fail type check', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+                task.hold({ TargetWorkerSid: 'WKxxB', Hold: 'true' });
+            }).should.throw(/Option key: Hold does not meet the required type./);
+        });
+
+        it('should place a hold/unhold request on the Task upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
+
+            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+
+            return task.hold({ TargetWorkerSid: 'WKxxB', Hold: true }).then(() => {
+                expect(task.sid).to.equal(taskHoldUnhold.sid);
+            });
+        });
+
+        it('should return an error if hold/unhold failed', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+
+            return task.hold({ TargetWorkerSid: 'WKxxB', Hold: true }).catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
+            });
+        });
+    });
+
     describe('#transfer(to, options)', () => {
         let sandbox;
         const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1/Transfers';
