@@ -1,5 +1,9 @@
 0.2.19
 ============
+New Features
+------------
+Workers can now kick another Worker's active call leg from a Conference by calling the `kick(workerSid)` method on a `Task` 
+
 Maintenance
 ------------
 Improve integration tests flakiness
