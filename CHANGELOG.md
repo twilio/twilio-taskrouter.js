@@ -2,7 +2,7 @@
 ============
 New Features
 ------------
-Add task.hold() with TargetWorkerSid and hold = true or false.\ for holding another worker participant in the conference.
+Add task.hold(targetWorkerSid, onHold) for holding/unholding specified target worker participant in the conference.
 
 0.2.19
 ============

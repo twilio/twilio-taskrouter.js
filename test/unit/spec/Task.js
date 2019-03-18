@@ -379,7 +379,7 @@ describe('Task', () => {
         });
     });
 
-    describe('#hold(options)', () => {
+    describe('#hold(targetWorkerSid, onHold)', () => {
         let sandbox;
 
         const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/HoldWorkerParticipant';
@@ -397,11 +397,11 @@ describe('Task', () => {
             sandbox.restore();
         });
 
-        it('should return an error if the optional params fail type check', () => {
+        it('should return an error if the parameters fail type check', () => {
             (() => {
                 const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
-                task.hold({ TargetWorkerSid: 'WKxxB', Hold: 'true' });
-            }).should.throw(/Option key: Hold does not meet the required type./);
+                task.hold(null, false);
+            }).should.throw('Error calling method holdWorker(). <string> targetWorkerSid is a required parameter.');
         });
 
         it('should place a hold/unhold request on the Task upon successful execution', () => {
@@ -409,7 +409,7 @@ describe('Task', () => {
 
             const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
 
-            return task.hold({ TargetWorkerSid: 'WKxxB', Hold: true }).then(() => {
+            return task.hold('WKxxB', true).then(() => {
                 expect(task.sid).to.equal(taskHoldUnhold.sid);
             });
         });
@@ -419,7 +419,7 @@ describe('Task', () => {
 
             const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
 
-            return task.hold({ TargetWorkerSid: 'WKxxB', Hold: true }).catch(err => {
+            return task.hold('WKxxB', true).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
