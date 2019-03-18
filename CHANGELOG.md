@@ -1,3 +1,9 @@
+0.2.20
+============
+New Features
+------------
+Add task.hold() with TargetWorkerSid and hold = true or false.\ for holding another worker participant in the conference.
+
 0.2.19
 ============
 Maintenance
