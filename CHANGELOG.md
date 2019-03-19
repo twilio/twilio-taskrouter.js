@@ -1,3 +1,9 @@
+0.2.20
+============
+New Features
+------------
+Add task.hold(targetWorkerSid, onHold) for holding/unholding specified target worker participant in the conference.
+
 0.2.19
 ============
 New Features
