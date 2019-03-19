@@ -401,7 +401,7 @@ describe('Task', () => {
             (() => {
                 const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
                 task.hold(null, false);
-            }).should.throw('Error calling method holdWorker(). <string> targetWorkerSid is a required parameter.');
+            }).should.throw('Error calling method hold(). <string>targetWorkerSid is a required parameter.');
         });
 
         it('should place a hold/unhold request on the Task upon successful execution', () => {
@@ -459,6 +459,52 @@ describe('Task', () => {
                 },
                 mode: 'cold',
                 foo: 'bar',
+            });
+        });
+    });
+
+    describe('#kick(workerSid)', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/KickWorkerParticipant';
+        const requestParams = {
+            TaskSid: 'WTxx1',
+            TargetWorkerSid: 'WKxx2'
+        };
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should return an error if the target worker sid to kick is not provided', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+                task.kick();
+            }).should.throw(/<string>workerSid is a required parameter/);
+        });
+
+        it('should place a kick request on the Task upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
+
+            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+
+            return task.kick('WKxx2').then(() => {
+                expect(task.sid).to.equal(taskHoldUnhold.sid);
+            });
+        });
+
+        it('should return an error if hold/unhold failed', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
+
+            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+
+            return task.kick('WKxx2').catch(err => {
+                expect(err.name).to.equal('TASKROUTER_ERROR');
+                expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
     });

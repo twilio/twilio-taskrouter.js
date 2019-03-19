@@ -6,6 +6,10 @@ Add task.hold(targetWorkerSid, onHold) for holding/unholding specified target wo
 
 0.2.19
 ============
+New Features
+------------
+Workers can now kick another Worker's active call leg from a Conference by calling the `kick(workerSid)` method on a `Task` 
+
 Maintenance
 ------------
 Improve integration tests flakiness
