@@ -1,3 +1,11 @@
+0.3.0
+============
+New Features
+------------
+- A `Task` now exposes a property `transfers` which contains two keys `incoming` and `outgoing` containing related transfer information, if the incoming `Reservation` was the result of a transfer and if the Worker issued an outgoing transfer, respectively
+- Exposes a new method `cancel()` callable by `task.transfers.outgoing.cancel()` that allows a Worker to cancel an in-progress transfer
+- A new event `transferCanceled` is now emitted on the Task when an outgoing transfer has successfully been canceled
+
 0.2.20
 ============
 New Features

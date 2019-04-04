@@ -12,6 +12,9 @@ const docs = process.argv[2];
 const publicClasses = [
   'lib/Activity.js',
   'lib/Channel.js',
+  'lib/core/transfer/OutgoingTransfer.js',
+  'lib/core/transfer/IncomingTransfer.js',
+  'lib/core/transfer/Transfers.js',
   'lib/Reservation.js',
   'lib/Task.js',
   'lib/TaskQueue.js',
@@ -27,9 +30,12 @@ const publicConstructors = [
 const privateConstructors = [
   'Activity',
   'Channel',
+  'IncomingTransfer',
+  'OutgoingTransfer',
   'Reservation',
   'Task',
   'TaskQueue',
+  'Transfers'
 ];
 
 spawnSync('node', [

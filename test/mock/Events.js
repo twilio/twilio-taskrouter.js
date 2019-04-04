@@ -372,9 +372,11 @@ const transferInitiated = {
     account_sid: 'ACxxx',
     transfer_type: 'QUEUE',
     transfer_to: 'WQxxx',
-    transfer_status: 'INITIATED',
+    transfer_status: 'initiated',
     initiating_worker_sid: 'WKxxx',
-    sid: 'TTxxx'
+    sid: 'TTxxx',
+    initiating_workflow_sid: 'WWxxx',
+    initiating_queue_sid: 'WQxxx'
 };
 
 const transferFailed = {
@@ -387,10 +389,12 @@ const transferFailed = {
     account_sid: 'ACxxx',
     transfer_type: 'QUEUE',
     transfer_to: 'WQxxx',
-    transfer_status: 'FAILED',
+    transfer_status: 'failed',
     initiating_worker_sid: 'WKxxx',
     transfer_failed_reason: 'Transfer failed because the reservation timed out',
-    sid: 'TTxxx'
+    sid: 'TTxxx',
+    initiating_workflow_sid: 'WWxxx',
+    initiating_queue_sid: 'WQxxx'
 };
 
 const transferCompleted = {
@@ -403,9 +407,11 @@ const transferCompleted = {
     account_sid: 'ACxxx',
     transfer_type: 'QUEUE',
     transfer_to: 'WQxxx',
-    transfer_status: 'COMPLETE',
+    transfer_status: 'complete',
     initiating_worker_sid: 'WKxxx',
-    sid: 'TTxxx'
+    sid: 'TTxxx',
+    initiating_workflow_sid: 'WWxxx',
+    initiating_queue_sid: 'WQxxx'
 };
 
 const transferAttemptFailed = {
@@ -416,13 +422,76 @@ const transferAttemptFailed = {
     task_sid:'WTxxx',
     date_created:1538160762,
     transfer_to: 'WQxxx',
-    transfer_status: 'INITIATED',
+    transfer_status: 'initiated',
     initiating_worker_sid: 'WKxxx',
     transfer_failed_reason: 'Transfer attempt failed on reservation reject because there are no more pending reservations',
     sid: 'TTxxx',
+    initiating_workflow_sid: 'WWxxx',
     account_sid: 'ACxxx',
-    transfer_type: 'QUEUE'
+    transfer_type: 'QUEUE',
+    initiating_queue_sid: 'WQxxx'
 };
+
+const transferCanceled = {
+    initiating_reservation_sid: 'WRxxx',
+    date_updated: 1553288010,
+    transfer_mode: 'WARM',
+    workspace_sid: 'WSxxx',
+    task_sid: 'WTxxx',
+    date_created: 1553288000,
+    transfer_to: 'WKxx2',
+    transfer_status: 'canceled',
+    initiating_worker_sid: 'WKxxx',
+    sid: 'TTxxx',
+    initiating_workflow_sid: 'WWxxx',
+    account_sid: 'ACxxx',
+    transfer_type: 'WORKER',
+    initiating_queue_sid: 'WQxxx'
+};
+
+const reservationCanceledForIncomingTransfer = {
+    worker_sid: 'WKxx2',
+    date_updated: 1554313056,
+    reservation_status: 'pending',
+    task: {
+        reason: null,
+        date_updated: 1554313056,
+        assignment_status: 'assigned',
+        workflow_name: 'Default Fifo Workflow',
+        addons: '{}',
+        date_created: 1554313045,
+        workflow_sid: 'WWxxx',
+        task_channel_unique_name: 'voice',
+        priority: 0,
+        timeout: 86400,
+        sid: 'WTxxx',
+        queue_name: 'Sample Queue',
+        task_channel_sid: 'TCxxx',
+        queue_sid: 'WQxxx',
+        attributes: '{}',
+        age: 17
+    },
+    workspace_sid: 'WSxxx',
+    date_created: 1554313056,
+    worker_name: 'Bob',
+    reservation_timeout: 2000,
+    worker_previous_activity_sid: 'WAxxx',
+    account_sid: 'ACxxx',
+    task_transfer: {
+        initiating_reservation_sid: 'WRxxx',
+        date_updated: 1554313062,
+        transfer_mode: 'WARM',
+        date_created: 1554313056,
+        initiating_workflow_sid: 'WWxxx',
+        transfer_type: 'WORKER',
+        transfer_to: 'WKxxx',
+        transfer_status: 'canceled',
+        initiating_worker_sid: 'WKxxx',
+        initiating_queue_sid: 'WQxxx',
+        sid: 'TTxxx'
+    },
+    sid: 'WRxx2'
+ }
 
 module.exports = {
   events: {
@@ -441,7 +510,9 @@ module.exports = {
         canceled: reservationCanceled,
         rescinded: reservationRescinded,
         timedOut: reservationTimedOut,
-        completed: reservationCompleted
+        completed: reservationCompleted,
+        canceledForIncomingTransfer: reservationCanceledForIncomingTransfer
+
     },
     task: {
         canceled: taskCanceled,
@@ -451,7 +522,8 @@ module.exports = {
         transferInitiated: transferInitiated,
         transferAttemptFailed: transferAttemptFailed,
         transferFailed: transferFailed,
-        transferCompleted: transferCompleted
+        transferCompleted: transferCompleted,
+        transferCanceled: transferCanceled
     }
   }
 };

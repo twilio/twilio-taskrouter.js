@@ -3,7 +3,7 @@ import { API_V1, API_V2 } from '../../../lib/util/Constants';
 import Configuration from '../../../lib/util/Configuration';
 import Logger from '../../../lib/util/Logger';
 const mockEvents = require('../../mock/Events').events;
-import { pendingReservationInstance, assignedReservationInstance } from '../../mock/Reservations';
+import { pendingReservationInstance, assignedReservationInstance, acceptedReservationWithActiveOutgoingTransfer, acceptedReservationWithIncomingAndActiveOutgoingTransfer, pendingReservationIncomingTransfer } from '../../mock/Reservations';
 import { reservationAccepted, reservationCalled, reservationDequeued, reservationRedirected, reservationRejected, reservationConferenced, reservationCompleted, reservationWrapping } from '../../mock/Responses';
 import Reservation from '../../../lib/Reservation';
 import ReservationDescriptor from '../../../lib/descriptors/ReservationDescriptor';
@@ -24,6 +24,7 @@ const sinon = require('sinon');
 const twimlCallUrl = 'https://handler.twilio.com/twiml/EHcbe53cec06c0cdc662c7fa799aeeefff';
 
 import { WorkerConfig } from '../../mock/WorkerConfig';
+import AssertionUtils from '../../util/AssertionUtils';
 
 describe('Reservation', () => {
     const config = new Configuration(token);
@@ -33,6 +34,11 @@ describe('Reservation', () => {
 
     const pendingReservationDescriptor = new ReservationDescriptor(pendingReservationInstance, worker);
     const assignedReservationDescriptor = new ReservationDescriptor(assignedReservationInstance, worker);
+
+    // transfers
+    const acceptedReservationWithActiveOutgoingTransferDescriptor = new ReservationDescriptor(acceptedReservationWithActiveOutgoingTransfer, worker);
+    const acceptedReservationWithIncomingAndActiveOutgoingTransferDescriptor = new ReservationDescriptor(acceptedReservationWithIncomingAndActiveOutgoingTransfer, worker);
+    const pendingTransferReservationDescriptor = new ReservationDescriptor(pendingReservationIncomingTransfer, worker);
 
     describe('constructor', () => {
         it('should throw an error if worker is missing', () => {
@@ -47,38 +53,27 @@ describe('Reservation', () => {
             }).should.throw(/descriptor is a required parameter/);
         });
 
-        it('should set the properties of the Reservation on an API GET', () => {
-            const res = new Reservation(worker, new Request(config), assignedReservationDescriptor);
+        describe('should sync on API GET', () => {
+            it('for simple reservation object', () => {
+                const res = new Reservation(worker, new Request(config), assignedReservationDescriptor);
+                AssertionUtils.assertReservation(res, assignedReservationInstance);
+                assert.equal(res._worker, worker);
+                assert.instanceOf(res._log, Logger);
+            });
 
-            assert.equal(res.accountSid, assignedReservationInstance.account_sid);
-            assert.equal(res.workspaceSid, assignedReservationInstance.workspace_sid);
-            assert.equal(res.sid, assignedReservationInstance.sid);
-            assert.equal(res.workerSid, assignedReservationInstance.worker_sid);
-            assert.equal(res.status, assignedReservationInstance.reservation_status);
-            assert.equal(res.timeout, assignedReservationInstance.reservation_timeout);
-            assert.deepEqual(res.dateCreated, new Date(assignedReservationInstance.date_created * 1000));
-            assert.deepEqual(res.dateUpdated, new Date(assignedReservationInstance.date_updated * 1000));
-            assert.isTrue(typeof res.taskDescriptor === 'undefined');
+            it('for reservation with outgoing transfer info', () => {
+                const res = new Reservation(worker, new Request(config), acceptedReservationWithActiveOutgoingTransferDescriptor);
+                AssertionUtils.assertReservation(res, acceptedReservationWithActiveOutgoingTransfer);
+                assert.equal(res._worker, worker);
+                assert.instanceOf(res._log, Logger);
+            });
 
-            assert.deepEqual(res.task.addOns, JSON.parse(assignedReservationInstance.task.addons));
-            assert.equal(res.task.age, assignedReservationInstance.task.age);
-            assert.deepEqual(res.task.attributes, JSON.parse(assignedReservationInstance.task.attributes));
-            assert.deepEqual(res.task.dateCreated, new Date(assignedReservationInstance.task.date_created * 1000));
-            assert.deepEqual(res.task.dateUpdated, new Date(assignedReservationInstance.task.date_updated * 1000));
-            assert.equal(res.task.priority, assignedReservationInstance.task.priority);
-            assert.equal(res.task.queueName, assignedReservationInstance.task.queue_name);
-            assert.equal(res.task.queueSid, assignedReservationInstance.task.queue_sid);
-            assert.equal(res.task.reason, assignedReservationInstance.task.reason);
-            assert.equal(res.task.sid, assignedReservationInstance.task.sid);
-            assert.equal(res.task.status, assignedReservationInstance.task.assignment_status);
-            assert.equal(res.task.taskChannelUniqueName, assignedReservationInstance.task.task_channel_unique_name);
-            assert.equal(res.task.taskChannelSid, assignedReservationInstance.task.task_channel_sid);
-            assert.equal(res.task.timeout, assignedReservationInstance.task.timeout);
-            assert.equal(res.task.workflowSid, assignedReservationInstance.task.workflow_sid);
-            assert.equal(res.task.workflowName, assignedReservationInstance.task.workflow_name);
-
-            assert.equal(res._worker, worker);
-            assert.instanceOf(res._log, Logger);
+            it('for reservation with incoming/outgoing transfer info', () => {
+                const res = new Reservation(worker, new Request(config), acceptedReservationWithIncomingAndActiveOutgoingTransferDescriptor);
+                AssertionUtils.assertReservation(res, acceptedReservationWithIncomingAndActiveOutgoingTransfer);
+                assert.equal(res._worker, worker);
+                assert.instanceOf(res._log, Logger);
+            });
         });
     });
 
@@ -567,6 +562,10 @@ describe('Reservation', () => {
             // check that the task's status was also updated
             assert.equal(pendingReservation.task.status, mockEvents.reservation.accepted.task.assignment_status);
             assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.accepted.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
         });
 
         it('should emit Event:on(completed) and update the Reservation and Task', () => {
@@ -585,6 +584,10 @@ describe('Reservation', () => {
             assert.equal(assignedReservation.task.status, mockEvents.reservation.completed.task.assignment_status);
             assert.equal(assignedReservation.task.reason, mockEvents.reservation.completed.task.reason);
             assert.deepEqual(assignedReservation.task.dateUpdated, new Date(mockEvents.reservation.completed.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(assignedReservation.task.transfers.incoming);
+            assert.isNull(assignedReservation.task.transfers.outgoing);
         });
 
         it('should emit Event:on(rejected) and update the Reservation and Task', () => {
@@ -602,6 +605,10 @@ describe('Reservation', () => {
             // check that the task's status was also updated
             assert.equal(pendingReservation.task.status, mockEvents.reservation.rejected.task.assignment_status);
             assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.rejected.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
         });
 
         it('should emit Event:on(timeout) and update the Reservation and Task', () => {
@@ -619,6 +626,10 @@ describe('Reservation', () => {
             // check that the task's status was also updated
             assert.equal(pendingReservation.task.status, mockEvents.reservation.timedOut.task.assignment_status);
             assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.timedOut.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
         });
 
 
@@ -637,6 +648,10 @@ describe('Reservation', () => {
             // check that the task's status was also updated
             assert.equal(pendingReservation.task.status, mockEvents.reservation.canceled.task.assignment_status);
             assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.canceled.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
         });
 
         it('should emit Event:on(rescinded) and update the Reservation and Task', () => {
@@ -654,6 +669,32 @@ describe('Reservation', () => {
             // check that the task's status was also updated
             assert.equal(pendingReservation.task.status, mockEvents.reservation.rescinded.task.assignment_status);
             assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.rescinded.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
+        });
+    });
+
+    describe('#_update()', () => {
+        it('should update the incoming transfer, if applicable', () => {
+            const spy = sinon.spy();
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingTransferReservationDescriptor);
+            assert.equal(pendingReservation.status, 'pending');
+            assert.equal(pendingReservation.task.transfers.incoming.status, 'initiated');
+            assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            pendingReservation.on('canceled', spy);
+            pendingReservation._emitEvent('canceled', mockEvents.reservation.canceledForIncomingTransfer);
+
+            assert.isTrue(spy.calledOnce);
+            // TO-DO: Uncomment after CCIS-3823 is addressed
+            // assert.equal(pendingReservation.status, 'canceled');
+            assert.equal(pendingReservation.sid, mockEvents.reservation.canceledForIncomingTransfer.sid);
+            assert.equal(pendingReservation.task.transfers.incoming.status, 'canceled');
+            // verify that the outgoing transfer is still unset
+            assert.isNull(pendingReservation.task.transfers.outgoing);
         });
     });
 });

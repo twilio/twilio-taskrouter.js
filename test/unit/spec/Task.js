@@ -1,4 +1,6 @@
 /* eslint-disable no-undefined */
+import OutgoingTransfer from '../../../lib/core/transfer/OutgoingTransfer';
+
 const chai = require('chai');
 const assert = chai.assert;
 const expect = chai.expect;
@@ -19,6 +21,8 @@ import { token } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
 import { WorkerConfig } from '../../mock/WorkerConfig';
 import Routes from '../../../lib/util/Routes';
+import Transfers from '../../../lib/core/transfer/Transfers';
+import TransferDescriptor from '../../../lib/descriptors/TransferDescriptor';
 
 describe('Task', () => {
     const config = new Configuration(token);
@@ -26,12 +30,12 @@ describe('Task', () => {
     const routes = new Routes('WSxxx', 'WKxxx');
     sinon.stub(worker, 'getRoutes').returns(routes);
 
+    const reservationSid = assignedReservationInstance.sid;
     const assignedTaskData = assignedReservationInstance.task;
     const assignedTaskDescriptor = new TaskDescriptor(assignedTaskData, new Request(config));
 
     const pendingTaskData = pendingReservationInstance.task;
     const pendingTaskDescriptor = new TaskDescriptor(pendingTaskData, new Request(config));
-    const reservationSid = 'Foo';
 
     describe('constructor', () => {
         it('should throw an error if worker is missing', () => {
@@ -40,15 +44,9 @@ describe('Task', () => {
             }).should.throw(/worker is a required parameter/);
         });
 
-        it('should throw an error if reservationSid is missing', () => {
-            (() => {
-                new Task(worker, new Request(config));
-            }).should.throw(/reservationSid is a required parameter/);
-        });
-
         it('should throw an error if task descriptor is missing', () => {
             (() => {
-                new Task(worker, new Request(config), reservationSid);
+                new Task(worker, new Request(config));
             }).should.throw(/descriptor is a required parameter/);
         });
 
@@ -61,7 +59,7 @@ describe('Task', () => {
             assert.equalDate(task.dateUpdated, new Date(assignedTaskData.date_updated * 1000));
             assert.equal(task.priority, assignedTaskData.priority);
             assert.equal(task.reason, assignedTaskData.reason);
-            assert.equal(task.reservationSid, reservationSid);
+            assert.equal(task.reservationSid, assignedReservationInstance.sid);
             assert.equal(task.sid, assignedTaskData.sid);
             assert.equal(task.status, assignedTaskData.assignment_status);
             assert.equal(task.taskChannelSid, assignedTaskData.task_channel_sid);
@@ -291,7 +289,7 @@ describe('Task', () => {
             (() => {
                 task.setAttributes();
             }).should.throw(/attributes is a required parameter/);
-            assert.equal(task.attributes, assignedTaskDescriptor.attributes);
+            assert.deepEqual(task.attributes, assignedTaskDescriptor.attributes);
         });
 
         it('should return an error if attributes update failed', () => {
@@ -352,7 +350,7 @@ describe('Task', () => {
 
         it('should return an error if the optional params fail type check', () => {
             (() => {
-                const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+                const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
                 task.updateParticipant({ hold: 'true' });
             }).should.throw(/hold does not meet the required type/);
         });
@@ -360,7 +358,7 @@ describe('Task', () => {
         it('should place a hold/unhold request on the Task upon successful execution', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
 
-            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
 
             return task.updateParticipant({ hold: false }).then(() => {
                 expect(task.sid).to.equal(taskHoldUnhold.sid);
@@ -370,7 +368,7 @@ describe('Task', () => {
         it('should return an error if hold/unhold failed', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
-            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
 
             return task.updateParticipant({ hold: false }).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
@@ -449,7 +447,7 @@ describe('Task', () => {
 
         it('should send the correct POST', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve());
-            sandbox.stub(Task.prototype, '_update').returns(Promise.resolve());
+            sandbox.stub(Transfers.prototype, '_updateOutgoing').returns(Promise.resolve());
 
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
 
@@ -562,53 +560,49 @@ describe('Task', () => {
             assert.isTrue(spy.calledOnce);
         });
 
-        // transfer events (for transfers initiated by the worker)
-        it('should emit Event:on(transferInitiated', () => {
-            const spy = sinon.spy();
-
+        describe('For transfer events', () => {
+            let spy;
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            assert.equal(task.status, 'assigned');
+            // create a mock outgoing object
+            task.transfers.outgoing = new OutgoingTransfer(worker, new Request(config), assignedTaskDescriptor.sid, new TransferDescriptor(mockEvents.task.transferInitiated));
+            beforeEach(() => {
+                spy = sinon.spy();
+            });
+            // transfer events (for transfers initiated by the worker)
+            it('should emit Event:on(transferInitiated', () => {
+                task.on('transferInitiated', spy);
+                task._emitEvent('transferInitiated', mockEvents.task.transferInitiated);
+                assert.equal(task.transfers.outgoing.status, 'initiated');
+                assert.isTrue(spy.calledOnce);
+            });
 
-            task.on('transferInitiated', spy);
-            task._emitEvent('transferInitiated', mockEvents.task.transferInitiated);
+            it('should emit Event:on(transferCompleted', () => {
+                task.on('transferCompleted', spy);
+                task._emitEvent('transferCompleted', mockEvents.task.transferCompleted);
+                assert.equal(task.transfers.outgoing.status, 'complete');
+                assert.isTrue(spy.calledOnce);
+            });
 
-            assert.isTrue(spy.calledOnce);
-        });
+            it('should emit Event:on(transferAttemptFailed', () => {
+                task.on('transferAttemptFailed', spy);
+                task._emitEvent('transferAttemptFailed', mockEvents.task.transferAttemptFailed);
+                assert.equal(task.transfers.outgoing.status, 'initiated');
+                assert.isTrue(spy.calledOnce);
+            });
 
-        it('should emit Event:on(transferCompleted', () => {
-            const spy = sinon.spy();
+            it('should emit Event:on(transferFailed', () => {
+                task.on('transferFailed', spy);
+                task._emitEvent('transferFailed', mockEvents.task.transferFailed);
+                assert.equal(task.transfers.outgoing.status, 'failed');
+                assert.isTrue(spy.calledOnce);
+            });
 
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            assert.equal(task.status, 'assigned');
-
-            task.on('transferCompleted', spy);
-            task._emitEvent('transferCompleted', mockEvents.task.transferCompleted);
-
-            assert.isTrue(spy.calledOnce);
-        });
-
-        it('should emit Event:on(transferAttemptFailed', () => {
-            const spy = sinon.spy();
-
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            assert.equal(task.status, 'assigned');
-
-            task.on('transferAttemptFailed', spy);
-            task._emitEvent('transferAttemptFailed', mockEvents.task.transferAttemptFailed);
-
-            assert.isTrue(spy.calledOnce);
-        });
-
-        it('should emit Event:on(transferFailed', () => {
-            const spy = sinon.spy();
-
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            assert.equal(task.status, 'assigned');
-
-            task.on('transferFailed', spy);
-            task._emitEvent('transferFailed', mockEvents.task.transferFailed);
-
-            assert.isTrue(spy.calledOnce);
+            it('should emit Event:on(transferCanceled', () => {
+                task.on('transferCanceled', spy);
+                task._emitEvent('transferCanceled', mockEvents.task.transferCanceled);
+                assert.equal(task.transfers.outgoing.status, 'canceled');
+                assert.isTrue(spy.calledOnce);
+            });
         });
     });
 });

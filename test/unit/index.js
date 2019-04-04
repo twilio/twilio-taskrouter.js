@@ -13,6 +13,9 @@ global.WebSocket = WS;
 
 require('./spec/Activity');
 require('./spec/Channel');
+require('./spec/core/transfer/OutgoingTransfer');
+require('./spec/core/transfer/Transfer');
+require('./spec/core/transfer/Transfers');
 require('./spec/Reservation');
 require('./spec/Supervisor');
 require('./spec/Task');

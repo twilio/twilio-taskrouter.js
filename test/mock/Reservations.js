@@ -31,6 +31,50 @@ export const pendingReservationInstance = {
   worker_previous_activity_sid: 'WAxxx'
 };
 
+export const pendingReservationIncomingTransfer = {
+  worker_sid:'WKxx2',
+  date_updated:1554313056,
+  reservation_status:'pending',
+  task:{
+    reason:null,
+    date_updated:1554313056,
+    assignment_status:'reserved',
+    workflow_name:'Default Fifo Workflow',
+    addons:'{}',
+    date_created:1554313045,
+    workflow_sid:'WWxxx',
+    task_channel_unique_name:'voice',
+    priority:0,
+    timeout:86400,
+    sid:'WTxxx',
+    queue_name: 'Sample Queue',
+    task_channel_sid:'TCxxx',
+    queue_sid:'WQxxx',
+    attributes: '{}',
+    age:11
+  },
+  workspace_sid:'WSxxx',
+  date_created:1554313056,
+  worker_name:'Bob',
+  reservation_timeout:2000,
+  worker_previous_activity_sid:'WAxxx',
+  account_sid:'ACxxx',
+  task_transfer:{
+    initiating_reservation_sid:'WRxxx',
+    date_updated:1554313056,
+    transfer_mode:'WARM',
+    date_created:1554313056,
+    initiating_workflow_sid:'WWxxx',
+    transfer_type:'WORKER',
+    transfer_to:'WKxx2',
+    transfer_status:'initiated',
+    initiating_worker_sid:'WKxxx',
+    initiating_queue_sid:'WQxxx',
+    sid:'TTxxx'
+  },
+  sid:'WRxx2'
+}
+
 export const assignedReservationInstance = {
   account_sid: 'ACxxx',
   workspace_sid: 'WSxxx',
@@ -58,6 +102,106 @@ export const assignedReservationInstance = {
     sid: 'WTxx1',
     date_created: 1518809969,
     date_updated: 1518809969
+  },
+  worker_previous_activity_sid: 'WAxxx'
+};
+
+export const acceptedReservationWithActiveOutgoingTransfer = {
+  account_sid: 'ACxxx',
+  workspace_sid: 'WSxxx',
+  sid: 'WRxx8',
+  date_created: 1553124517,
+  date_updated: 1553124519,
+  worker_sid: 'WKxxx',
+  worker_name: 'Alice',
+  reservation_status: 'accepted',
+  reservation_timeout: 1000,
+  task: {
+    sid: 'WTxx8',
+    date_created: 1553124517,
+    date_updated: 1553124538,
+    workflow_sid: 'WWxxx',
+    workflow_name: 'IncomingCalls',
+    queue_sid: 'WQxxx',
+    queue_name: 'English TaskQ',
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'voice',
+    attributes: '{}',
+    assignment_status: 'reserved',
+    priority: 0,
+    reason: null,
+    timeout: 86400,
+    age: 39,
+    addons: '{}'
+  },
+  active_outgoing_task_transfer: {
+    sid: 'TTxxx',
+    transfer_type: 'WORKER',
+    transfer_mode: 'WARM',
+    transfer_to: 'WKxx2',
+    transfer_status: 'initiated',
+    date_created: 1553124538,
+    date_updated: 1553124538,
+    initiating_reservation_sid: 'WRxx2',
+    initiating_worker_sid: 'WKxxx',
+    initiating_queue_sid: 'WQxxx',
+    initiating_workflow_sid: 'WWxxx'
+  },
+  worker_previous_activity_sid: 'WAxxx'
+};
+
+export const acceptedReservationWithIncomingAndActiveOutgoingTransfer = {
+  account_sid: 'ACxxx',
+  workspace_sid: 'WSxxx',
+  sid: 'WRxx9',
+  date_created: 1553189910,
+  date_updated: 1553189920,
+  worker_sid: 'WKxx2',
+  worker_name: 'Bob',
+  reservation_status: 'accepted',
+  reservation_timeout: 1000,
+  task: {
+    sid: 'WTxx9',
+    date_created: 1553189894,
+    date_updated: 1553189922,
+    workflow_sid: 'WWxxx',
+    workflow_name: 'IncomingCalls',
+    queue_sid: 'WQxxx',
+    queue_name: 'English TaskQ',
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'voice',
+    attributes: '{}',
+    assignment_status: 'reserved',
+    priority: 0,
+    reason: null,
+    timeout: 86400,
+    age: 271,
+    addons: '{}' },
+  task_transfer: {
+    sid: 'TTxxx',
+    transfer_type: 'WORKER',
+    transfer_mode: 'COLD',
+    transfer_to: 'WKxxx',
+    transfer_status: 'complete',
+    date_created: 1553189910,
+    date_updated: 1553189920,
+    initiating_reservation_sid: 'WRxxx',
+    initiating_worker_sid: 'WKxxx',
+    initiating_queue_sid: 'WQxxx',
+    initiating_workflow_sid: 'WWxxx'
+  },
+  active_outgoing_task_transfer: {
+    sid: 'TTxx2',
+    transfer_type: 'WORKER',
+    transfer_mode: 'WARM',
+    transfer_to: 'WKxx3',
+    transfer_status: 'initiated',
+    date_created: 1553189922,
+    date_updated: 1553189922,
+    initiating_reservation_sid: 'WRxx2',
+    initiating_worker_sid: 'WKxx2',
+    initiating_queue_sid: 'WQxxx',
+    initiating_workflow_sid: 'WWxxx'
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -266,9 +410,9 @@ export const reservations = {
       date_updated: 1518810002
     },
     worker_previous_activity_sid: 'WAxxx'
-  }],
+  }].concat(acceptedReservationWithActiveOutgoingTransfer, acceptedReservationWithIncomingAndActiveOutgoingTransfer),
   page: 0,
-  total: 7,
+  total: 9,
   start: 0,
   end: 0,
   meta: {

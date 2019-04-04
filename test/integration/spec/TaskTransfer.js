@@ -19,7 +19,7 @@ describe('Task Transfer', function() {
   let alice;
   let bob;
 
-    before(() => {
+    beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
@@ -35,7 +35,7 @@ describe('Task Transfer', function() {
         });
     });
 
-    after(() => {
+    afterEach(() => {
         alice.removeAllListeners();
         bob.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
@@ -53,8 +53,91 @@ describe('Task Transfer', function() {
         });
     });
 
-    describe('#Failed Transfer to a worker', () => {
+    describe('Cancel Transfer for Worker B', () => {
+        it('should cancel the transfer and cause the reservation to cancel', done => {
+            alice = new Worker(aliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'error',
+            });
 
+            // bob stays offline
+            bob = new Worker(bobToken, {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'error',
+            });
+
+            envTwilio.createTask(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskWorkflowSid,
+                JSON.stringify({
+                    to: 'client:alice',
+                    conference: { sid: 'CF11111111111111111111111111111111' }
+                })
+            );
+
+            return alice.on('reservationCreated', reservation => {
+                // Make Bob available
+                return envTwilio.updateWorkerActivity(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskBobSid,
+                    credentials.multiTaskConnectActivitySid
+                ).then(() => reservation.accept()
+                ).then(acceptedReservation => {
+                    // Transfer the task, verify that transfer was initiated and have Bob reject
+                    return Promise.all([
+                                acceptedReservation.task.transfer(credentials.multiTaskBobSid),
+                                new Promise(resolve => {
+                                    acceptedReservation.task.on('transferInitiated', () => resolve());
+                                }),
+                                new Promise(resolve => {
+                                    bob.once('reservationCreated', transferReservation => {
+                                        // Verify that transfer object is on the created reservation
+                                        expect(transferReservation.transfer.mode).equals('WARM');
+                                        expect(transferReservation.transfer.to).equals(bob.sid);
+                                        expect(transferReservation.transfer.workerSid).equals(alice.sid);
+                                        expect(transferReservation.transfer.type).equals('WORKER');
+                                        expect(transferReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
+                                        expect(transferReservation.transfer.sid.substring(0, 2)).equals('TT');
+                                        expect(transferReservation.transfer.status).equals('initiated');
+
+                                        // also verify task.transfers.incoming object
+                                        expect(transferReservation.task.transfers.incoming.mode).equals('WARM');
+                                        expect(transferReservation.task.transfers.incoming.to).equals(bob.sid);
+                                        expect(transferReservation.task.transfers.incoming.workerSid).equals(alice.sid);
+                                        expect(transferReservation.task.transfers.incoming.type).equals('WORKER');
+                                        expect(transferReservation.task.transfers.incoming.reservationSid.substring(0, 2)).equals('WR');
+                                        expect(transferReservation.task.transfers.incoming.sid.substring(0, 2)).equals('TT');
+                                        expect(transferReservation.task.transfers.incoming.status).equals('initiated');
+
+                                        transferReservation.once('canceled', () => {
+                                            // TO-DO: Uncomment after CCIS-3823 is addressed
+                                            // expect(transferReservation.status).equals('canceled');
+                                            expect(transferReservation.task.transfers.incoming.status, 'canceled');
+                                            expect(transferReservation.task.status, 'assigned');
+                                            expect(transferReservation.status, 'canceled');
+                                            resolve();
+                                        });
+
+                                        // have alice cancel the reservation
+                                        acceptedReservation.task.transfers.outgoing.cancel().then(canceledTransfer => {
+                                            expect(canceledTransfer.status).equals('canceled');
+                                        });
+                                    });
+                                }),
+                                new Promise(resolve => {
+                                    acceptedReservation.task.on('transferCanceled', () => resolve());
+                                }),
+
+                    ]).then(() => done());
+                });
+            });
+        }).timeout(15000);
+    });
+
+    describe('#Failed Transfer to a worker', () => {
         it('should accept reservation, transfer the task and reject the transfer', done => {
 
             alice = new Worker(aliceToken, {
@@ -105,6 +188,15 @@ describe('Task Transfer', function() {
                                         expect(transferReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
                                         expect(transferReservation.transfer.sid.substring(0, 2)).equals('TT');
                                         expect(transferReservation.transfer.status).equals('initiated');
+
+                                        // also verify task.transfers.incoming object
+                                        expect(transferReservation.task.transfers.incoming.mode).equals('WARM');
+                                        expect(transferReservation.task.transfers.incoming.to).equals(bob.sid);
+                                        expect(transferReservation.task.transfers.incoming.workerSid).equals(alice.sid);
+                                        expect(transferReservation.task.transfers.incoming.type).equals('WORKER');
+                                        expect(transferReservation.task.transfers.incoming.reservationSid.substring(0, 2)).equals('WR');
+                                        expect(transferReservation.task.transfers.incoming.sid.substring(0, 2)).equals('TT');
+                                        expect(transferReservation.task.transfers.incoming.status).equals('initiated');
 
                                         transferReservation.reject().then(() => {
                                             // verify that on rejecting the transfer reservation, the transfer object

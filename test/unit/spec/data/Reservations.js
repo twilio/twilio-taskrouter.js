@@ -7,6 +7,7 @@ import { WorkerConfig } from '../../../mock/WorkerConfig';
 import { token } from '../../../mock/Token';
 import Configuration from '../../../../lib/util/Configuration';
 import Routes from '../../../../lib/util/Routes';
+import AssertionUtils from '../../../util/AssertionUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -57,24 +58,10 @@ describe('Reservations', () => {
             };
 
             sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V2, requestParams).returns(Promise.resolve(mockList));
-
             const reservationsServices = new ReservationsEntity(worker, new Request(config));
-
             return reservationsServices.fetchReservations().then(() => {
-                expect(reservationsServices.reservations.size).to.equal(mockList.contents.length);
-
-                reservationsServices.reservations.forEach(reservation => {
-                    if (reservation.sid === 'WRxx1') {
-                        assert.equal(reservation.accountSid, mockInstance.account_sid);
-                        assert.equal(reservation.workspaceSid, mockInstance.workspace_sid);
-                        assert.equal(reservation.sid, mockInstance.sid);
-                        assert.equal(reservation.workerSid, mockInstance.worker_sid);
-                        assert.equal(reservation.status, mockInstance.reservation_status);
-                        assert.equal(reservation.timeout, mockInstance.reservation_timeout);
-                        assert.deepEqual(reservation.dateCreated, new Date(mockInstance.date_created * 1000));
-                        assert.deepEqual(reservation.dateUpdated, new Date(mockInstance.date_updated * 1000));
-                    }
-                });
+                expect(reservationsServices.reservations.size).to.equal(mockList.total);
+                mockList.contents.forEach(reservation => AssertionUtils.assertReservation(reservationsServices.reservations.get(reservation.sid), reservation));
             });
         });
 
