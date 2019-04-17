@@ -1,3 +1,9 @@
+0.3.1
+============
+Bug Fixes
+------------
+- `Reservation` events should reflect most up-to-date status of `canceled` when a `Transfer` is canceled
+
 0.3.0
 ============
 New Features

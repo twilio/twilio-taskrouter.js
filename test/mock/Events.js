@@ -452,7 +452,7 @@ const transferCanceled = {
 const reservationCanceledForIncomingTransfer = {
     worker_sid: 'WKxx2',
     date_updated: 1554313056,
-    reservation_status: 'pending',
+    reservation_status: 'canceled',
     task: {
         reason: null,
         date_updated: 1554313056,

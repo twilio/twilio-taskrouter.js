@@ -689,8 +689,7 @@ describe('Reservation', () => {
             pendingReservation._emitEvent('canceled', mockEvents.reservation.canceledForIncomingTransfer);
 
             assert.isTrue(spy.calledOnce);
-            // TO-DO: Uncomment after CCIS-3823 is addressed
-            // assert.equal(pendingReservation.status, 'canceled');
+            assert.equal(pendingReservation.status, 'canceled');
             assert.equal(pendingReservation.sid, mockEvents.reservation.canceledForIncomingTransfer.sid);
             assert.equal(pendingReservation.task.transfers.incoming.status, 'canceled');
             // verify that the outgoing transfer is still unset

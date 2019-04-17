@@ -113,11 +113,9 @@ describe('Task Transfer', function() {
                                         expect(transferReservation.task.transfers.incoming.status).equals('initiated');
 
                                         transferReservation.once('canceled', () => {
-                                            // TO-DO: Uncomment after CCIS-3823 is addressed
-                                            // expect(transferReservation.status).equals('canceled');
-                                            expect(transferReservation.task.transfers.incoming.status, 'canceled');
-                                            expect(transferReservation.task.status, 'assigned');
-                                            expect(transferReservation.status, 'canceled');
+                                            expect(transferReservation.status).equals('canceled');
+                                            expect(transferReservation.task.transfers.incoming.status).equals('canceled');
+                                            expect(transferReservation.task.status).equals('assigned');
                                             resolve();
                                         });
 
