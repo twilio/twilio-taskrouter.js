@@ -137,7 +137,6 @@ describe('Task Transfer', function() {
 
     describe('#Failed Transfer to a worker', () => {
         it('should accept reservation, transfer the task and reject the transfer', done => {
-
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 ebServer: `${credentials.ebServer}/v1/wschannels`,

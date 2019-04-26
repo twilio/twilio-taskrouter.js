@@ -153,7 +153,6 @@ const reservationRejected = {
     sid: 'WRxx1'
 };
 
-
 const reservationCanceled = {
     worker_sid: 'WKxxx',
     date_updated: 1521491096,
@@ -272,6 +271,81 @@ const reservationCompleted = {
     worker_previous_activity_sid: 'WAxxx',
     account_sid: 'ACxxx',
     sid: 'WRxx1'
+};
+
+const reservationWrapping = {
+    worker_sid: 'WKxxx',
+    date_updated: 1556049971,
+    reservation_status: 'wrapping',
+    task: {
+        reason: null,
+        date_updated: 1556049971,
+        assignment_status: 'reserved',
+        workflow_name: 'IncomingRequests',
+        addons: '{}',
+        date_created: 1556049960,
+        workflow_sid: 'WWxxx',
+        task_channel_unique_name: 'voice',
+        priority:0,
+        timeout: 86400,
+        sid: 'WTxx1',
+        queue_name: 'Sample Queue',
+        task_channel_sid: 'TCxxx',
+        queue_sid: 'WQxxx',
+        attributes: '{}',
+        age: 11
+    },
+    workspace_sid: 'WSxxx',
+    date_created: 1556049960,
+    worker_name: 'Alice',
+    reservation_timeout: 2000,
+    worker_previous_activity_sid: 'WAxxx',
+    account_sid: 'ACxxx',
+    sid: 'WRxx1'
+};
+
+const reservationCreatedForWorker2ByTransfer = {
+	worker_sid: 'WKxxx',
+	date_updated: 1556049971,
+	reservation_status: 'pending',
+	task: {
+		reason: null,
+		date_updated: 1556049971,
+		assignment_status: 'reserved',
+		workflow_name: 'IncomingRequests',
+		addons: '{}',
+		date_created: 1556049960,
+		workflow_sid: 'WWxxx',
+		task_channel_unique_name: 'voice',
+		priority: 0,
+		timeout:86400,
+		sid: 'WTxx1',
+		queue_name: 'EnglishTaskQ',
+		task_channel_sid: 'TCxxx',
+		queue_sid: 'WQxxx',
+		attributes: '{}',
+		age:11
+	},
+	workspace_sid: 'WSxxx',
+	date_created:1556049971,
+	worker_name: 'Alice',
+	reservation_timeout: 2000,
+	worker_previous_activity_sid: 'WAxxx',
+	account_sid: 'ACxxx',
+	task_transfer: {
+		initiating_reservation_sid: 'WRxx1',
+		date_updated: 1556049971,
+		transfer_mode: 'COLD',
+		date_created:1556049971,
+		initiating_workflow_sid: 'WWxxx',
+		transfer_type: 'QUEUE',
+		transfer_to: 'WQxxx',
+		transfer_status: 'initiated',
+		initiating_worker_sid: 'WKxxx',
+		initiating_queue_sid: 'WQxxx',
+		sid: 'TTxxx'
+	},
+	sid: 'WRxx2'
 };
 
 const taskUpdated = {
@@ -505,12 +579,14 @@ module.exports = {
     },
     reservation: {
         created: reservationCreated,
+        createdByColdTransfer: reservationCreatedForWorker2ByTransfer,
         accepted: reservationAccepted,
         rejected: reservationRejected,
         canceled: reservationCanceled,
         rescinded: reservationRescinded,
         timedOut: reservationTimedOut,
         completed: reservationCompleted,
+        wrapping: reservationWrapping,
         canceledForIncomingTransfer: reservationCanceledForIncomingTransfer
 
     },

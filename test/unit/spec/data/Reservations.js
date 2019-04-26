@@ -96,4 +96,84 @@ describe('Reservations', () => {
             });
         });
     });
+
+    describe('#getTasks', () => {
+        it('should maintain a reverse lookup of TaskSid to ReservationSids and append if referencing the same reservation', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            // many reservations for the same worker for the same task
+            const reservationData2 = Object.assign({}, mockInstance, { sid: 'WRxx2' });
+
+            reservationsServices.insert(mockInstance);
+            reservationsServices.insert(reservationData2);
+
+            const taskReservationsList = reservationsServices.getTasks('WTxx1');
+            assert.equal(taskReservationsList.length, 2);
+            const task1 = taskReservationsList[0];
+            const task2 = taskReservationsList[1];
+
+            assert.equal(task1.reservationSid, 'WRxx1');
+            assert.equal(task1.sid, 'WTxx1');
+            assert.equal(task2.reservationSid, 'WRxx2');
+            assert.equal(task2.sid, 'WTxx1');
+            assert.notEqual(task1, task2);
+        });
+
+        it('should return null if looking up a task that has not been tracked', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            mockList.contents.forEach(mockReservation => {
+                reservationsServices.insert(mockReservation);
+            });
+
+            assert.isNull(reservationsServices.getTasks('WTxx10'));
+        });
+    });
+
+    describe('_insertReservation(reservationDescriptor)', () => {
+        it('should track a new mapping for each unique Task', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            mockList.contents.forEach(mockReservation => {
+                reservationsServices.insert(mockReservation);
+            });
+
+            assert.equal(reservationsServices._reservationSidsByTask.size, 9);
+            reservationsServices._reservationSidsByTask.forEach(rt => {
+                assert.equal(rt.size, 1);
+            });
+        });
+
+        it('should not insert the same reservationTask twice', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            reservationsServices.insert(mockInstance);
+            reservationsServices.insert(mockInstance);
+
+            const taskReservationsList = reservationsServices.getTasks('WTxx1');
+            assert.equal(taskReservationsList.length, 1);
+            const task1 = taskReservationsList[0];
+
+            assert.equal(task1.reservationSid, 'WRxx1');
+            assert.equal(task1.sid, 'WTxx1');
+        });
+
+        it('should append to the set if a new Task is seen', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            reservationsServices.insert(mockInstance);
+            reservationsServices.insert(Object.assign({}, mockInstance, { sid: 'WRxx2' }));
+
+            assert.equal(reservationsServices._reservationSidsByTask.size, 1);
+            const taskReservationsList = reservationsServices.getTasks('WTxx1');
+            assert.equal(taskReservationsList.length, 2);
+
+            const task1 = taskReservationsList[0];
+            assert.equal(task1.reservationSid, 'WRxx1');
+            assert.equal(task1.sid, 'WTxx1');
+            const task2 = taskReservationsList[1];
+            assert.equal(task2.reservationSid, 'WRxx2');
+            assert.equal(task2.sid, 'WTxx1');
+        });
+    });
 });

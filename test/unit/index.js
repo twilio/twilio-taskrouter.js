@@ -20,6 +20,7 @@ require('./spec/Reservation');
 require('./spec/Supervisor');
 require('./spec/Task');
 require('./spec/Worker');
+require('./spec/WorkerEvents');
 require('./spec/signaling/EventBridgeSignaling');
 require('./spec/util/Configuration');
 require('./spec/util/Logger');

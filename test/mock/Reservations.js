@@ -206,6 +206,50 @@ export const acceptedReservationWithIncomingAndActiveOutgoingTransfer = {
   worker_previous_activity_sid: 'WAxxx'
 };
 
+export const pendingReservationWithIncomingTransfer = {
+	worker_sid: 'WKxxx',
+	date_updated: 1556049971,
+	reservation_status: 'pending',
+	task: {
+		reason: null,
+		date_updated: 1556049971,
+		assignment_status: 'reserved',
+		workflow_name: 'IncomingRequests',
+		addons: '{}',
+		date_created: 1556049960,
+		workflow_sid: 'WWxxx',
+		task_channel_unique_name: 'voice',
+		priority: 0,
+		timeout:86400,
+		sid: 'WTxxx',
+		queue_name: 'EnglishTaskQ',
+		task_channel_sid: 'TCxxx',
+		queue_sid: 'WQxxx',
+		attributes: '{}',
+		age:11
+	},
+	workspace_sid: 'WSxxx',
+	date_created:1556049971,
+	worker_name: 'Alice',
+	reservation_timeout: 2000,
+	worker_previous_activity_sid: 'WAxxx',
+	account_sid: 'ACxxx',
+	task_transfer: {
+		initiating_reservation_sid: 'WRxx1',
+		date_updated: 1556049971,
+		transfer_mode: 'COLD',
+		date_created:1556049971,
+		initiating_workflow_sid: 'WWxxx',
+		transfer_type: 'QUEUE',
+		transfer_to: 'WQxxx',
+		transfer_status: 'initiated',
+		initiating_worker_sid: 'WKxxx',
+		initiating_queue_sid: 'WQxxx',
+		sid: 'TTxxx'
+	},
+	sid: 'WRxx2'
+};
+
 export const reservations = {
   contents: [{
     account_sid: 'ACxxx',

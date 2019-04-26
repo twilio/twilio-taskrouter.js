@@ -1,3 +1,9 @@
+0.3.2
+============
+Bug Fixes
+------------
+- Correctly handle `Task` and `Transfer` events if a Worker has more than one reference to the same `Task`
+
 0.3.1
 ============
 Bug Fixes
