@@ -23,6 +23,7 @@ try {
   'multiTaskAliceSid',
   'multiTaskBobSid',
   'multiTaskConnectActivitySid',
+  'multiTaskQueueSid',
   'multiTaskUpdateActivitySid',
   'multiTaskNumActivities',
   'multiTaskNumChannels',
