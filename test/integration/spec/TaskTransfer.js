@@ -194,6 +194,8 @@ describe('Task Transfer', function() {
                                         expect(transferReservation.task.transfers.incoming.reservationSid.substring(0, 2)).equals('WR');
                                         expect(transferReservation.task.transfers.incoming.sid.substring(0, 2)).equals('TT');
                                         expect(transferReservation.task.transfers.incoming.status).equals('initiated');
+                                        // expect task assignment is reserved before reject
+                                        expect(transferReservation.task.status).equals('reserved');
 
                                         transferReservation.reject().then(() => {
                                             // verify that on rejecting the transfer reservation, the transfer object
@@ -206,6 +208,8 @@ describe('Task Transfer', function() {
                                                 expect(rejectedReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
                                                 expect(rejectedReservation.transfer.sid.substring(0, 2)).equals('TT');
                                                 expect(rejectedReservation.transfer.status).equals('failed');
+                                                //expect task assignment is assigned after transfer failed event
+                                                expect(transferReservation.task.status).equals('assigned');
                                                 resolve();
                                             });
                                         });
@@ -214,10 +218,6 @@ describe('Task Transfer', function() {
                                 new Promise(resolve => {
                                     acceptedReservation.task.on('transferFailed', () => resolve());
                                 }),
-                                new Promise(resolve => {
-                                    acceptedReservation.task.on('updated', () => resolve());
-                                })
-
                     ]).then(() => done());
                 });
             });
@@ -284,6 +284,8 @@ describe('Task Transfer', function() {
                                         expect(transferReservation.task.transfers.incoming.reservationSid.substring(0, 2)).equals('WR');
                                         expect(transferReservation.task.transfers.incoming.sid.substring(0, 2)).equals('TT');
                                         expect(transferReservation.task.transfers.incoming.status).equals('initiated');
+                                         // expect task assignment is reserved before reject
+                                         expect(transferReservation.task.status).equals('reserved');
 
                                         transferReservation.reject().then(() => {
                                             // verify that on rejecting the transfer reservation, the transfer object has a status of initiated
@@ -295,17 +297,17 @@ describe('Task Transfer', function() {
                                                 expect(rejectedReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
                                                 expect(rejectedReservation.transfer.sid.substring(0, 2)).equals('TT');
                                                 expect(rejectedReservation.transfer.status).equals('initiated');
+                                                // expect task assignment is initiated after transfer attempt fails
+                                                expect(transferReservation.task.status).equals('pending');
                                                 resolve();
                                             });
                                         });
+
                                     });
                                 }),
                                 new Promise(resolve => {
                                     acceptedReservation.task.on('transferAttemptFailed', () => resolve());
                                 }),
-                                new Promise(resolve => {
-                                    acceptedReservation.task.on('updated', () => resolve());
-                                })
 
                     ]).then(() => done());
                 });
