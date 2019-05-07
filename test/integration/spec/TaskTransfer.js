@@ -8,7 +8,7 @@ chai.should();
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
-describe.only('Task Transfer', function() {
+describe('Task Transfer', function() {
   /* eslint-disable no-invalid-this */
   this.timeout(5000);
   /* eslint-enable */
@@ -21,31 +21,30 @@ describe.only('Task Transfer', function() {
 
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-            alice = new Worker(aliceToken, {
-                connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
-                logLevel: 'error',
-            });
             return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskAliceSid,
                 credentials.multiTaskUpdateActivitySid
             );
         }).then(() => {
-             // bob stays offline
-             bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
-                logLevel: 'error',
-            });
-
             return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskBobSid,
                 credentials.multiTaskUpdateActivitySid
             );
         }).then(() => {
+            alice = new Worker(aliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'error',
+            });
+            // bob stays offline
+            bob = new Worker(bobToken, {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                logLevel: 'error',
+            });
             return envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
