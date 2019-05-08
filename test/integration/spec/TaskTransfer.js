@@ -27,11 +27,6 @@ describe('Task Transfer', function() {
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error',
             });
-            return envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskAliceSid,
-                credentials.multiTaskUpdateActivitySid
-            );
         }).then(() => {
             // bob stays offline
             bob = new Worker(bobToken, {
@@ -39,11 +34,6 @@ describe('Task Transfer', function() {
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error',
             });
-            return envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskBobSid,
-                credentials.multiTaskUpdateActivitySid
-            );
         }).then(() => {
             return envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
