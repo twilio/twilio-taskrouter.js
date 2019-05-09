@@ -27,6 +27,11 @@ describe('Task Transfer', function() {
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error',
             });
+            return envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                credentials.multiTaskUpdateActivitySid
+            );
         }).then(() => {
             // bob stays offline
             bob = new Worker(bobToken, {
@@ -34,6 +39,11 @@ describe('Task Transfer', function() {
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error',
             });
+            return envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskBobSid,
+                credentials.multiTaskUpdateActivitySid
+            );
         }).then(() => {
             return envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
@@ -119,7 +129,7 @@ describe('Task Transfer', function() {
     });
 
     describe('#Failed Transfer to a worker', () => {
-        it('should accept reservation, transfer the task and reject the transfer', done => {
+        it('should accept reservation, transfer the task and reject the warm transfer to worker', done => {
 
             return alice.on('reservationCreated', reservation => {
 
@@ -184,7 +194,7 @@ describe('Task Transfer', function() {
     });
 
     describe('#Failed Attempt Transfer to a worker', () => {
-        it('should accept reservation, transfer the task and reject the transfer', done => {
+        it('should accept reservation, transfer the task and reject the warm transfer to queue', done => {
 
             return alice.on('reservationCreated', reservation => {
 
