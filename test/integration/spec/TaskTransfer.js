@@ -238,7 +238,6 @@ describe('Task Transfer', function() {
                                                 expect(rejectedReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
                                                 expect(rejectedReservation.transfer.sid.substring(0, 2)).equals('TT');
                                                 expect(rejectedReservation.transfer.status).equals('initiated');
-                                                resolve();
                                             });
                                         }).then(() => {
                                             acceptedReservation.task.once('updated', updatedTask => {
