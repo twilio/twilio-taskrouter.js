@@ -1,6 +1,4 @@
 /* eslint-disable no-undefined */
-import OutgoingTransfer from '../../../lib/core/transfer/OutgoingTransfer';
-
 const chai = require('chai');
 const assert = chai.assert;
 const expect = chai.expect;
@@ -13,6 +11,7 @@ import { API_V1, API_V2, TASK_STATUS_COMPLETED, TASK_STATUS_WRAPPING } from '../
 import Configuration from '../../../lib/util/Configuration';
 const Errors = require('../../../lib/util/Constants').twilioErrors;
 const mockEvents = require('../../mock/Events').events;
+import OutgoingTransfer from '../../../lib/core/transfer/OutgoingTransfer';
 import Request from '../../../lib/util/Request';
 import Task from '../../../lib/Task';
 import { taskCompleted, taskWrapping, updatedTaskAttributes, taskHoldUnhold } from '../../mock/Responses';
@@ -559,50 +558,38 @@ describe('Task', () => {
 
             assert.isTrue(spy.calledOnce);
         });
+    });
 
-        describe('For transfer events', () => {
-            let spy;
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            // create a mock outgoing object
+    describe('_emitEvent() for transfers', () => {
+        let spy;
+        const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+
+        beforeEach(() => {
+            spy = sinon.spy();
             task.transfers.outgoing = new OutgoingTransfer(worker, new Request(config), assignedTaskDescriptor.sid, new TransferDescriptor(mockEvents.task.transferInitiated));
-            beforeEach(() => {
-                spy = sinon.spy();
-            });
-            // transfer events (for transfers initiated by the worker)
-            it('should emit Event:on(transferInitiated', () => {
-                task.on('transferInitiated', spy);
-                task._emitEvent('transferInitiated', mockEvents.task.transferInitiated);
-                assert.equal(task.transfers.outgoing.status, 'initiated');
-                assert.isTrue(spy.calledOnce);
-            });
+        });
 
-            it('should emit Event:on(transferCompleted', () => {
-                task.on('transferCompleted', spy);
-                task._emitEvent('transferCompleted', mockEvents.task.transferCompleted);
-                assert.equal(task.transfers.outgoing.status, 'complete');
-                assert.isTrue(spy.calledOnce);
-            });
+        // transfer events (for transfers initiated by the worker)
+        it('should emit Event:on(transferInitiated', () => {
+            task.on('transferInitiated', spy);
+            task._emitEvent('transferInitiated', mockEvents.task.transferInitiated);
+            assert.equal(task.transfers.outgoing.status, 'initiated');
+            assert.isTrue(spy.calledOnce);
+        });
 
-            it('should emit Event:on(transferAttemptFailed', () => {
-                task.on('transferAttemptFailed', spy);
-                task._emitEvent('transferAttemptFailed', mockEvents.task.transferAttemptFailed);
-                assert.equal(task.transfers.outgoing.status, 'initiated');
-                assert.isTrue(spy.calledOnce);
-            });
+        it('should not emit Event:on(transferInitiated) if the outgoing transfer is null', () => {
+            task.transfers.outgoing = null;
+            task.on('transferInitiated', spy);
+            task._emitEvent('transfer-initiated', mockEvents.task.transferInitiated);
+            assert.isFalse(spy.called);
+            assert.isNull(task.transfers.outgoing);
+        });
 
-            it('should emit Event:on(transferFailed', () => {
-                task.on('transferFailed', spy);
-                task._emitEvent('transferFailed', mockEvents.task.transferFailed);
-                assert.equal(task.transfers.outgoing.status, 'failed');
-                assert.isTrue(spy.calledOnce);
-            });
-
-            it('should emit Event:on(transferCanceled', () => {
-                task.on('transferCanceled', spy);
-                task._emitEvent('transferCanceled', mockEvents.task.transferCanceled);
-                assert.equal(task.transfers.outgoing.status, 'canceled');
-                assert.isTrue(spy.calledOnce);
-            });
+        it('should not emit Event:on(transferInitiated) if the outgoing transfer has mismatched sids', () => {
+            task.transfers.outgoing.sid = 'TTxx2';
+            task.on('transferInitiated', spy);
+            task._emitEvent('transfer-initiated', mockEvents.task.transferInitiated);
+            assert.isFalse(spy.called);
         });
     });
 });

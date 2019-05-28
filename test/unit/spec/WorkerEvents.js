@@ -99,10 +99,6 @@ describe('WorkerEvents', () => {
             reservationsServices.insert(mockEvents.reservation.createdByColdTransfer);
 
             const taskReservationsList = reservationsServices.getTasks(t1);
-            taskReservationsList.forEach(t => {
-                t.on('transferCompleted', spy);
-            });
-
             assert.equal(taskReservationsList.length, 2);
             assert.notEqual(taskReservationsList[0], taskReservationsList[1]);
 
@@ -111,10 +107,13 @@ describe('WorkerEvents', () => {
 
             return taskReservationsList[0].transfer(w1, { mode: 'COLD' }).then(transferredTask => {
                 assert.isNotNull(transferredTask.transfers.outgoing);
+                transferredTask.transfers.outgoing.on('completed', spy);
 
                 // eslint-disable-next-line camelcase
                 worker._signaling.emit('task.transfer-completed', Object.assign({}, mockEvents.task.transferCompleted, { initiating_reservation_sid: r1, task_sid: t1 }));
                 assert.equal(spy.callCount, 1);
+                // check that the first wrapping reservation does not have a transfer object
+                assert.isNull(taskReservationsList[1].transfers.outgoing);
             });
         });
     });

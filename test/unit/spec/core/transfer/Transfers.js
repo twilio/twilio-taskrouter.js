@@ -1,7 +1,11 @@
 import AssertionUtils from '../../../../util/AssertionUtils';
+const chai = require('chai');
+const assert = chai.assert;
 import { acceptedReservationWithIncomingAndActiveOutgoingTransfer as mockReservation } from '../../../../mock/Reservations';
 import Request from '../../../../../lib/util/Request';
 import Configuration from '../../../../../lib/util/Configuration';
+const mockEvents = require('../../../../mock/Events').events;
+const sinon = require('sinon');
 import Transfers from '../../../../../lib/core/transfer/Transfers';
 import { token } from '../../../../mock/Token';
 import Worker from '../../../../../lib/Worker';
@@ -87,6 +91,65 @@ describe('Transfers', () => {
             // Only the incoming transfer status should be updated
             AssertionUtils.assertTransfer(transfers.incoming, updatedTransferInstance);
             AssertionUtils.assertTransfer(transfers.outgoing, mockReservation.active_outgoing_task_transfer);
+        });
+    });
+
+    describe('_emitEvent(eventType, rawEventData)', () => {
+        let transfers;
+
+        beforeEach(() => {
+            transfers = new Transfers(worker, request, taskDescriptor);
+        });
+
+        it('should not emit an event or update if the outgoing transfer is null when an event is received', () => {
+            transfers.outgoing = null;
+            transfers._emitEvent('transfer-failed', {});
+            assert.isNull(transfers.outgoing);
+        });
+
+        it('should not emit an event or update if the sid of the event does not match the existing outgoing instance', () => {
+            transfers.outgoing.sid = 'TTxx3';
+            transfers._emitEvent('transfer-failed', mockEvents.task.transferFailed);
+            // check that the outgoing sid has not been updated
+            assert.equal(transfers.outgoing.sid, 'TTxx3');
+        });
+
+        it('should emit the event and set the outgoing transfer to null on terminal event transfer-failed', () => {
+            const spy = sinon.spy();
+            transfers.outgoing.on('failed', spy);
+            transfers._emitEvent('transfer-failed', Object.assign({}, mockEvents.task.transferFailed, { sid: 'TTxx2' }));
+            assert.isTrue(spy.calledOnce);
+            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferFailed, { sid: 'TTxx2' })));
+            assert.isNull(transfers.outgoing);
+        });
+
+        it('should emit the event and set the outgoing transfer to null on terminal event transfer-completed', () => {
+            const spy = sinon.spy();
+            transfers.outgoing.on('completed', spy);
+            transfers._emitEvent('transfer-completed', Object.assign({}, mockEvents.task.transferCompleted, { sid: 'TTxx2' }));
+            assert.isTrue(spy.calledOnce);
+            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferCompleted, { sid: 'TTxx2' })));
+            assert.isNull(transfers.outgoing);
+        });
+
+        it('should emit the event and set the outgoing transfer to null on terminal event transfer-canceled', () => {
+            const spy = sinon.spy();
+            transfers.outgoing.on('canceled', spy);
+            transfers._emitEvent('transfer-canceled', Object.assign({}, mockEvents.task.transferCanceled, { sid: 'TTxx2' }));
+            assert.isTrue(spy.calledOnce);
+            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferCanceled, { sid: 'TTxx2' })));
+            assert.isNull(transfers.outgoing);
+        });
+
+        it('should emit the event and set update outgoing transfer on non-terminal event transfer-attempt-failed', () => {
+            const spy = sinon.spy();
+            transfers.outgoing.on('attemptFailed', spy);
+            transfers._emitEvent('transfer-attempt-failed', Object.assign({}, mockEvents.task.transferAttemptFailed, { sid: 'TTxx2' }));
+            assert.isTrue(spy.calledOnce);
+            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferAttemptFailed, { sid: 'TTxx2' })));
+            assert.isNotNull(transfers.outgoing);
+            assert.equal(transfers.outgoing.status, 'initiated');
+            assert.equal(transfers.outgoing.transferFailedReason, 'Transfer attempt failed on reservation reject because there are no more pending reservations');
         });
     });
 });

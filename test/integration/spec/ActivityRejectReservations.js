@@ -9,7 +9,6 @@ const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
 describe('ActivityRejectReservations', () => {
-
     const multiTaskToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     let multiTaskWorker;

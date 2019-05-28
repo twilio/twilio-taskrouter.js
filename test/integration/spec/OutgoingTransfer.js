@@ -70,8 +70,8 @@ describe('OutgoingTransfer', () => {
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
                                         assert.deepEqual(canceledTransfer, transferredTask.transfers.outgoing);
-                                        acceptedReservation.task.once('transferCanceled', updatedTask => {
-                                            assert.deepEqual(updatedTask, acceptedReservation.task);
+                                        acceptedReservation.task.transfers.outgoing.on('canceled', updatedTransfer => {
+                                            assert.deepEqual(updatedTransfer, acceptedReservation.task.transfers.outgoing);
                                             done();
                                         });
                                     });

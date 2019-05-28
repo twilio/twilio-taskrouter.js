@@ -4,8 +4,9 @@ import * as sinon from 'sinon';
 import { acceptedReservationWithActiveOutgoingTransfer as mockOutgoingInstance } from '../../../../mock/Reservations';
 import { canceledTaskTransfer } from '../../../../mock/Transfers';
 import { API_V2, TRANSFER_STATUS } from '../../../../../lib/util/Constants';
-import Request from '../../../../../lib/util/Request';
 import Configuration from '../../../../../lib/util/Configuration';
+const mockEvents = require('../../../../mock/Events').events;
+import Request from '../../../../../lib/util/Request';
 import OutgoingTransfer from '../../../../../lib/core/transfer/OutgoingTransfer';
 import Routes from '../../../../../lib/util/Routes';
 import { token } from '../../../../mock/Token';
@@ -88,6 +89,60 @@ describe('OutgoingTransfer', () => {
             } catch (e) {
                 assert.deepEqual(e, err);
             }
+        });
+    });
+
+    describe('#_emitEvent(eventType, payload)', () => {
+        it('should emit Event:on(attemptFailed)', () => {
+            const spy = sinon.spy();
+
+            const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
+            assert.equal(outgoingTransfer.status, 'initiated');
+
+            outgoingTransfer.on('attemptFailed', spy);
+
+            outgoingTransfer._emitEvent('attemptFailed', mockEvents.task.transferAttemptFailed);
+
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should emit Event:on(failed)', () => {
+            const spy = sinon.spy();
+
+            const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
+            assert.equal(outgoingTransfer.status, 'initiated');
+
+            outgoingTransfer.on('failed', spy);
+
+            outgoingTransfer._emitEvent('failed', mockEvents.task.transferFailed);
+
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should emit Event:on(canceled)', () => {
+            const spy = sinon.spy();
+
+            const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
+            assert.equal(outgoingTransfer.status, 'initiated');
+
+            outgoingTransfer.on('canceled', spy);
+
+            outgoingTransfer._emitEvent('canceled', mockEvents.task.transferCanceled);
+
+            assert.isTrue(spy.calledOnce);
+        });
+
+        it('should emit Event:on(completed)', () => {
+            const spy = sinon.spy();
+
+            const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
+            assert.equal(outgoingTransfer.status, 'initiated');
+
+            outgoingTransfer.on('completed', spy);
+
+            outgoingTransfer._emitEvent('completed', mockEvents.task.transferCompleted);
+
+            assert.isTrue(spy.calledOnce);
         });
     });
 });
