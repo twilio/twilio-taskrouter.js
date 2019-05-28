@@ -17,7 +17,7 @@ describe('Common Worker Client', () => {
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
 
     let alice;
-    before(() => {
+    beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
@@ -27,7 +27,7 @@ describe('Common Worker Client', () => {
         });
     });
 
-    after(() => {
+    afterEach(() => {
         alice.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid);
     });
@@ -76,6 +76,7 @@ describe('Common Worker Client', () => {
             alice.updateToken(updateAliceToken);
             assert.equal(alice._config.token, updateAliceToken);
             assert.isTrue(spy.calledOnce);
+            assert.isTrue(alice._signaling.reconnect);
         }).timeout(5000);
     });
 
