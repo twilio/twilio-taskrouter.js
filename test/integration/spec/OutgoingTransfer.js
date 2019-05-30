@@ -38,16 +38,16 @@ describe('OutgoingTransfer', () => {
             connectActivitySid: credentials.multiTaskConnectActivitySid,
             ebServer: ebServerUrl,
             wsServer: wsServerUrl,
-            logLevel: 'error',
+            logLevel: 'error'
         });
 
         // bob stays offline
         bob = new Worker(bobToken, {
             ebServer: ebServerUrl,
             wsServer: wsServerUrl,
-            logLevel: 'error',
+            logLevel: 'error'
         });
-        return cleanupEnv().then(createTaskForAlicePromise);
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(createTaskForAlicePromise);
     });
 
     afterEach(() => {

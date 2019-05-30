@@ -27,31 +27,21 @@ describe('Task Transfer', function() {
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error',
             });
-            return envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskAliceSid,
-                credentials.multiTaskUpdateActivitySid
-            );
-        }).then(() => {
             // bob stays offline
             bob = new Worker(bobToken, {
+                connectActivitySid: credentials.multiTaskUpdateActivitySid,
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
                 logLevel: 'error',
             });
-            return envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskBobSid,
-                credentials.multiTaskUpdateActivitySid
-            );
-        }).then(() => {
+
             return envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
                 JSON.stringify({
-                    to: 'client:alice',
-                    conference: { sid: 'CF11111111111111111111111111111111' }
-                })
+                                   to: 'client:alice',
+                                   conference: { sid: 'CF11111111111111111111111111111111' }
+                               })
             );
         });
     });
@@ -60,24 +50,22 @@ describe('Task Transfer', function() {
         alice.removeAllListeners();
         bob.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-            return envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskAliceSid,
-                credentials.multiTaskUpdateActivitySid
-            );
-        }).then(() => {
-            return envTwilio.updateWorkerActivity(
+            return Promise.all([
+                envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskBobSid,
-                credentials.multiTaskUpdateActivitySid
-            );
+                credentials.multiTaskUpdateActivitySid),
+                envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                credentials.multiTaskUpdateActivitySid)]);
         });
     });
 
     describe('Cancel Transfer for Worker B', () => {
         it('should cancel the transfer and cause the reservation to cancel', done => {
 
-            return alice.on('reservationCreated', reservation => {
+            alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(
                     credentials.multiTaskWorkspaceSid,
@@ -120,9 +108,9 @@ describe('Task Transfer', function() {
                                 }),
                                 new Promise(resolve => {
                                     acceptedReservation.task.on('transferCanceled', () => resolve());
-                                }),
+                                })
 
-                    ]).then(() => done());
+                    ]).then(() => done()).catch(done);
                 });
             });
         }).timeout(15000);
@@ -131,7 +119,7 @@ describe('Task Transfer', function() {
     describe('#Failed Transfer to a worker', () => {
         it('should accept reservation, transfer the task and reject the warm transfer to worker', done => {
 
-            return alice.on('reservationCreated', reservation => {
+            alice.on('reservationCreated', reservation => {
 
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(
@@ -195,16 +183,14 @@ describe('Task Transfer', function() {
 
     describe('#Failed Attempt Transfer to a worker', () => {
         it('should accept reservation, transfer the task and reject the warm transfer to queue', done => {
-
-            return alice.on('reservationCreated', reservation => {
-
+            alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(
                     credentials.multiTaskWorkspaceSid,
                     credentials.multiTaskBobSid,
-                    credentials.multiTaskConnectActivitySid
-                ).then(() => reservation.accept()
-                ).then(acceptedReservation => {
+                    credentials.multiTaskConnectActivitySid)
+                    .then(() => reservation.accept())
+                    .then(acceptedReservation => {
                     // Transfer the task to queue, verify that transfer was initiated and have Bob reject
                     return Promise.all([
                                 acceptedReservation.task.transfer(credentials.multiTaskQueueSid),
@@ -251,13 +237,11 @@ describe('Task Transfer', function() {
                                     acceptedReservation.task.on('transferAttemptFailed', () => resolve());
                                 }),
 
-                    ]).then(() => done());
+                    ]).then(() => done()).catch(done);
                 });
             });
-
         }).timeout(15000);
     });
-
 });
 
 function verifyReservationHasTransfer(fromWorkerSid, toSid, transferReservation) {
