@@ -11,11 +11,11 @@ describe('NonMuliTask Worker Client', () => {
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskBobSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
 
-    before(() => {
+    beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid);
     });
 
-    after(() => {
+    afterEach(() => {
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid).then(() => {
             return Promise.all([
                 envTwilio.updateWorkerActivity(credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskAliceSid, credentials.nonMultiTaskUpdateActivitySid),  // busy
@@ -25,7 +25,7 @@ describe('NonMuliTask Worker Client', () => {
     });
 
     describe('initialization of Non Multi Task Worker', () => {
-        before(() => {
+        beforeEach(() => {
             return envTwilio.updateWorkerActivity(credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskBobSid, credentials.nonMultiTaskUpdateActivitySid);
         });
 
@@ -99,7 +99,7 @@ describe('NonMuliTask Worker Client', () => {
     });
 
     describe('Non Multi Task Worker with pending Reservations', () => {
-        before(() => {
+        beforeEach(() => {
             return envTwilio.updateWorkerActivity(credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskBobSid, credentials.nonMultiTaskConnectActivitySid).then(() => {
                 const promises = [];
                 for (let i = 0; i < 2; i++) {

@@ -20,48 +20,54 @@ describe('Supervisor Client', function() {
   let reservation;
   let supervisor;
   let worker;
-  before(() => {
-    return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+  beforeEach(done => {
+    envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
       worker = new Worker(workerToken, {
         ebServer: `${credentials.ebServer}/v1/wschannels`,
         wsServer: `${credentials.wsServer}/v1/wschannels`,
         logLevel: 'error',
+        connectActivitySid: credentials.multiTaskConnectActivitySid
       });
 
       supervisor = new Supervisor(superToken, {
         ebServer: `${credentials.ebServer}/v1/wschannels`,
         wsServer: `${credentials.wsServer}/v1/wschannels`,
-        logLevel: 'error',
+        logLevel: 'error'
       });
+      const createTask = envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid,
+                                              JSON.stringify({
+                                                               to: 'client:alice',
+                                                               conference: { sid: 'CF11111111111111111111111111111111' }
+                                                             }));
 
-      const createTask = envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 'default', 1)
-        .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, 'default', 1))
-        .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid))
-        .then(() => envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, JSON.stringify({
-          to: 'client:alice',
-          conference: { sid: 'CF11111111111111111111111111111111' }
-        })));
-
-      return Promise.all([
-        new Promise(resolve => supervisor.on('ready', () => resolve())),
-        new Promise(resolve => worker.on('ready', () => resolve())),
-        createTask,
-      ]).then(() => {
-          reservation = Array.from(worker.reservations.values())[0];
-          return reservation.accept();
-        });
+      return envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid)
+          .then(() => Promise.all([
+                          envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid,
+                                                         credentials.multiTaskAliceSid,
+                                                         'default', 1),
+                          envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid,
+                                                         credentials.multiTaskBobSid, 'default',
+                                                         1),
+                          createTask,
+                          new Promise(resolve => supervisor.on('ready', () => resolve())),
+                          new Promise(resolve => worker.on('ready', () => resolve()))
+                      ]))
+          .then(() => {
+            reservation = Array.from(worker.reservations.values())[0];
+            return reservation.accept();
       });
+    }).then(() => done()).catch(done);
   });
 
-  after(() => {
+  afterEach(() => {
     supervisor.removeAllListeners();
     worker.removeAllListeners();
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
-        .then(envTwilio.updateWorkerActivity(
+        .then(() => envTwilio.updateWorkerActivity(
             credentials.multiTaskWorkspaceSid,
             credentials.multiTaskAliceSid,
             credentials.multiTaskUpdateActivitySid
-        )).then(envTwilio.updateWorkerActivity(
+        )).then(() => envTwilio.updateWorkerActivity(
             credentials.multiTaskWorkspaceSid,
             credentials.multiTaskBobSid,
             credentials.multiTaskUpdateActivitySid

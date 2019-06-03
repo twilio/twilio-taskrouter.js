@@ -54,7 +54,7 @@ describe('Reservation', () => {
           expect(reservation.status).equal('completed');
           expect(updatedReservation.status).equal('completed');
           done();
-        }).catch(e => console.info(e));
+        }).catch(done);
       });
     }).timeout(5000);
   });
@@ -71,7 +71,7 @@ describe('Reservation', () => {
           expect(reservation.status).equal('wrapping');
           expect(updatedReservation.status).equal('wrapping');
           done();
-        }).catch(e => console.info(e));
+        }).catch(done);
       });
     }).timeout(5000);
   });

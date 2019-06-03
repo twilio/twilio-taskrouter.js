@@ -1,3 +1,9 @@
+0.3.3
+============
+Bug Fixes
+------------
+- Stop reconnecting the websocket connection if token expires
+
 0.3.2
 ============
 Bug Fixes

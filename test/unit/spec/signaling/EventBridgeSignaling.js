@@ -1,11 +1,14 @@
-import { token as initialToken } from '../../../mock/Token';
-
-const chai = require('chai');
-const assert = chai.assert;
+/* eslint no-unused-expressions: 0 */
 import EventBridgeSignaling from '../../../../lib/signaling/EventBridgeSignaling';
 import Logger from '../../../../lib/util/Logger';
 import Worker from '../../../../lib/Worker';
 import { WorkerConfig } from '../../../mock/WorkerConfig';
+import { token as initialToken, updatedToken } from '../../../mock/Token';
+
+const chai = require('chai');
+const sinon = require('sinon');
+const assert = chai.assert;
+const expect = chai.expect;
 
 describe('EventBridgeSignaling', () => {
   describe('constructor', () => {
@@ -48,6 +51,31 @@ describe('EventBridgeSignaling', () => {
         const signaling = new EventBridgeSignaling(worker);
         signaling.updateToken();
       }).should.throw(/To update the Twilio token, a new Twilio token must be passed in/);
+    });
+
+    it('should reconnect if connection was closed', () => {
+      const worker = new Worker(initialToken, WorkerConfig);
+      const signaling = new EventBridgeSignaling(worker);
+      signaling.webSocket.readyState = signaling.webSocket.CLOSED;
+      let createSpy = sinon.spy(EventBridgeSignaling.prototype, 'createWebSocket');
+      signaling.updateToken(updatedToken);
+      assert.isTrue(signaling.reconnect);
+      expect(createSpy).to.have.been.calledOnce;
+    });
+
+    it('should clear the original token timeout and create a new timeout', () => {
+      const worker = new Worker(initialToken, WorkerConfig);
+      const signaling = new EventBridgeSignaling(worker);
+
+      signaling.updateToken(updatedToken);
+      const firstTimer = signaling.tokenTimer;
+      assert.isNotNull(firstTimer);
+
+      signaling.updateToken(updatedToken);
+      const secondTimer = signaling.tokenTimer;
+      assert.isNotNull(secondTimer);
+
+      assert.notEqual(firstTimer, secondTimer);
     });
   });
 });

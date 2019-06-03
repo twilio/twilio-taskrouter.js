@@ -126,7 +126,7 @@ describe('ActivityRejectReservations', () => {
                         resolve(createdReservations);
                     }
                 });
-            }).then(async() => {
+            }).then(() => {
                 multiTaskWorker.reservations.forEach(reservation => {
                     assert.equal(reservation.status, 'pending');
                     assert.equal(reservation.sid.substring(0, 2), 'WR');

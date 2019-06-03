@@ -1,6 +1,7 @@
 require('./spec/Activity');
 require('./spec/ActivityRejectReservations');
 require('./spec/Channel');
+require('./spec/EventBridgeSignaling');
 require('./spec/OutgoingTransfer');
 require('./spec/ReservationReject');
 require('./spec/ReservationAccept');

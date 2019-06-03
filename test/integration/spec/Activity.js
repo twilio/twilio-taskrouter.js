@@ -14,11 +14,11 @@ describe('Activity', () => {
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     let worker;
 
-    before(() => {
+    beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid);
     });
 
-    after(() => {
+    afterEach(() => {
         worker.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid).then(() => {
             return envTwilio.updateWorkerActivity(
@@ -29,7 +29,7 @@ describe('Activity', () => {
         });
     });
 
-    describe('#setAsCurrent', () => {
+    describe('#setAsCurrent', done => {
         it('should set this connect activity on the Worker, and then update it', () => {
             worker = new Worker(token, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
@@ -39,7 +39,7 @@ describe('Activity', () => {
 
             let connectActivity;
             let updateActivity;
-            return worker.on('activityUpdated', async connectWorker => {
+            worker.on('activityUpdated', async connectWorker => {
                 assert.isNotNull(worker.activities);
                 assert.equal(worker.activities.size, 4);
 
@@ -59,6 +59,7 @@ describe('Activity', () => {
                 expect(worker.activity).to.deep.equal(updatedActivity);
                 assert.isTrue(updateActivity.isCurrent);
                 assert.isFalse(connectActivity.isCurrent);
+                done();
             });
         }).timeout(5000);
     });

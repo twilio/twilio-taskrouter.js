@@ -87,10 +87,7 @@ describe('Reservation Accept', () => {
                     expect(completedTask.reason).to.equal('Work is done');
                     worker.removeAllListeners();
                     done();
-                }).catch(err => {
-                    console.log('failed to accept and complete task', err);
-                    throw err;
-                });
+                }).catch(done);
             });
         }).timeout(5000);
     });
