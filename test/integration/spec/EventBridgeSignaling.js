@@ -9,7 +9,6 @@ const JWT = require('../../util/MakeAccessToken');
 
 describe('EventBridgeSignaling', () => {
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
-
     let alice;
 
     beforeEach(() => {
@@ -22,6 +21,10 @@ describe('EventBridgeSignaling', () => {
                 logLevel: 'error',
             });
         });
+    });
+
+    afterEach(() => {
+        alice.removeAllListeners();
     });
 
     describe('Worker on token expiration', () => {
