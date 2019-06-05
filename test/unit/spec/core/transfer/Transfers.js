@@ -114,39 +114,46 @@ describe('Transfers', () => {
             assert.equal(transfers.outgoing.sid, 'TTxx3');
         });
 
-        it('should emit the event and set the outgoing transfer to null on terminal event transfer-failed', () => {
+        it('should emit the event and update the outgoing transfer on event transfer-failed', () => {
+            const failedTransfer = Object.assign({}, mockEvents.task.transferFailed, { sid: 'TTxx2' });
             const spy = sinon.spy();
             transfers.outgoing.on('failed', spy);
-            transfers._emitEvent('transfer-failed', Object.assign({}, mockEvents.task.transferFailed, { sid: 'TTxx2' }));
+            transfers._emitEvent('transfer-failed', failedTransfer);
             assert.isTrue(spy.calledOnce);
-            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferFailed, { sid: 'TTxx2' })));
-            assert.isNull(transfers.outgoing);
+            spy.returned(sinon.match.same(failedTransfer));
+            assert.equal(transfers.outgoing.status, 'failed');
+            assert.equal(transfers.outgoing.sid, 'TTxx2');
         });
 
-        it('should emit the event and set the outgoing transfer to null on terminal event transfer-completed', () => {
+        it('should emit the event and update the outgoing transfer on event transfer-completed', () => {
+            const completedTransfer = Object.assign({}, mockEvents.task.transferCompleted, { sid: 'TTxx2' });
             const spy = sinon.spy();
             transfers.outgoing.on('completed', spy);
-            transfers._emitEvent('transfer-completed', Object.assign({}, mockEvents.task.transferCompleted, { sid: 'TTxx2' }));
+            transfers._emitEvent('transfer-completed', completedTransfer);
             assert.isTrue(spy.calledOnce);
-            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferCompleted, { sid: 'TTxx2' })));
-            assert.isNull(transfers.outgoing);
+            spy.returned(sinon.match.same(completedTransfer));
+            assert.equal(transfers.outgoing.status, 'complete');
+            assert.equal(transfers.outgoing.sid, 'TTxx2');
         });
 
-        it('should emit the event and set the outgoing transfer to null on terminal event transfer-canceled', () => {
+        it('should emit the event and update the outgoing transfer on event transfer-canceled', () => {
+            const canceledTransfer = Object.assign({}, mockEvents.task.transferCanceled, { sid: 'TTxx2' });
             const spy = sinon.spy();
             transfers.outgoing.on('canceled', spy);
-            transfers._emitEvent('transfer-canceled', Object.assign({}, mockEvents.task.transferCanceled, { sid: 'TTxx2' }));
+            transfers._emitEvent('transfer-canceled', canceledTransfer);
             assert.isTrue(spy.calledOnce);
-            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferCanceled, { sid: 'TTxx2' })));
-            assert.isNull(transfers.outgoing);
+            spy.returned(sinon.match.same(canceledTransfer));
+            assert.equal(transfers.outgoing.status, 'canceled');
+            assert.equal(transfers.outgoing.sid, 'TTxx2');
         });
 
-        it('should emit the event and set update outgoing transfer on non-terminal event transfer-attempt-failed', () => {
+        it('should emit the event and update outgoing transfer on event transfer-attempt-failed', () => {
+            const attemptFailedTransfer = Object.assign({}, mockEvents.task.transferAttemptFailed, { sid: 'TTxx2' });
             const spy = sinon.spy();
             transfers.outgoing.on('attemptFailed', spy);
-            transfers._emitEvent('transfer-attempt-failed', Object.assign({}, mockEvents.task.transferAttemptFailed, { sid: 'TTxx2' }));
+            transfers._emitEvent('transfer-attempt-failed', attemptFailedTransfer);
             assert.isTrue(spy.calledOnce);
-            spy.returned(sinon.match.same(Object.assign({}, mockEvents.task.transferAttemptFailed, { sid: 'TTxx2' })));
+            spy.returned(sinon.match.same(attemptFailedTransfer));
             assert.isNotNull(transfers.outgoing);
             assert.equal(transfers.outgoing.status, 'initiated');
             assert.equal(transfers.outgoing.transferFailedReason, 'Transfer attempt failed on reservation reject because there are no more pending reservations');
