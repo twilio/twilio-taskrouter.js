@@ -121,7 +121,7 @@ describe('Transfers', () => {
             transfers._emitEvent('transfer-failed', failedTransfer);
             assert.isTrue(spy.calledOnce);
             spy.returned(sinon.match.same(failedTransfer));
-            assert.equal(transfers.outgoing.status, 'failed');
+            assert.equal(transfers.outgoing.status, TRANSFER_STATUS.failed);
             assert.equal(transfers.outgoing.sid, 'TTxx2');
         });
 
@@ -132,7 +132,7 @@ describe('Transfers', () => {
             transfers._emitEvent('transfer-completed', completedTransfer);
             assert.isTrue(spy.calledOnce);
             spy.returned(sinon.match.same(completedTransfer));
-            assert.equal(transfers.outgoing.status, 'complete');
+            assert.equal(transfers.outgoing.status, TRANSFER_STATUS.complete);
             assert.equal(transfers.outgoing.sid, 'TTxx2');
         });
 
@@ -143,7 +143,7 @@ describe('Transfers', () => {
             transfers._emitEvent('transfer-canceled', canceledTransfer);
             assert.isTrue(spy.calledOnce);
             spy.returned(sinon.match.same(canceledTransfer));
-            assert.equal(transfers.outgoing.status, 'canceled');
+            assert.equal(transfers.outgoing.status, TRANSFER_STATUS.canceled);
             assert.equal(transfers.outgoing.sid, 'TTxx2');
         });
 
@@ -155,7 +155,7 @@ describe('Transfers', () => {
             assert.isTrue(spy.calledOnce);
             spy.returned(sinon.match.same(attemptFailedTransfer));
             assert.isNotNull(transfers.outgoing);
-            assert.equal(transfers.outgoing.status, 'initiated');
+            assert.equal(transfers.outgoing.status, TRANSFER_STATUS.initiated);
             assert.equal(transfers.outgoing.transferFailedReason, 'Transfer attempt failed on reservation reject because there are no more pending reservations');
         });
     });

@@ -560,7 +560,7 @@ describe('Task', () => {
         });
     });
 
-    describe('_emitOutgoingTransferEvent() for transfers', () => {
+    describe('_emitEventForOutgoingTransfer() for transfers', () => {
         let spy;
         const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
 
@@ -570,9 +570,9 @@ describe('Task', () => {
         });
 
         // transfer events (for transfers initiated by the worker)
-        it('should emit Event:on(transferInitiated', () => {
+        it('should emit Event:on(transferInitiated)', () => {
             task.on('transferInitiated', spy);
-            task._emitOutgoingTransferEvent('transfer-initiated', mockEvents.task.transferInitiated);
+            task._emitEventForOutgoingTransfer('transfer-initiated', mockEvents.task.transferInitiated);
             assert.equal(task.transfers.outgoing.status, 'initiated');
             assert.isTrue(spy.calledOnce);
         });
@@ -580,7 +580,7 @@ describe('Task', () => {
         it('should not emit Event:on(transferInitiated) if the outgoing transfer is null', () => {
             task.transfers.outgoing = null;
             task.on('transferInitiated', spy);
-            task._emitOutgoingTransferEvent('transfer-initiated', mockEvents.task.transferInitiated);
+            task._emitEventForOutgoingTransfer('transfer-initiated', mockEvents.task.transferInitiated);
             assert.isFalse(spy.called);
             assert.isNull(task.transfers.outgoing);
         });
@@ -588,14 +588,14 @@ describe('Task', () => {
         it('should not emit Event:on(transferInitiated) if the outgoing transfer has mismatched sids', () => {
             task.transfers.outgoing.sid = 'TTxx2';
             task.on('transferInitiated', spy);
-            task._emitOutgoingTransferEvent('transfer-initiated', mockEvents.task.transferInitiated);
+            task._emitEventForOutgoingTransfer('transfer-initiated', mockEvents.task.transferInitiated);
             assert.isFalse(spy.called);
         });
 
         it('should only emit events for transferInitiated on the Task', () => {
             task.transfers.outgoing.sid = 'TTxx2';
             task.on('transferFailed', spy);
-            task._emitOutgoingTransferEvent('transfer-failed', mockEvents.task.transferFailed);
+            task._emitEventForOutgoingTransfer('transfer-failed', mockEvents.task.transferFailed);
             assert.isFalse(spy.called);
         });
     });

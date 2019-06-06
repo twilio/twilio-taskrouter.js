@@ -97,7 +97,7 @@ describe('OutgoingTransfer', () => {
             const spy = sinon.spy();
 
             const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
-            assert.equal(outgoingTransfer.status, 'initiated');
+            assert.equal(outgoingTransfer.status, TRANSFER_STATUS.initiated);
 
             outgoingTransfer.on('attemptFailed', spy);
 
@@ -110,7 +110,7 @@ describe('OutgoingTransfer', () => {
             const spy = sinon.spy();
 
             const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
-            assert.equal(outgoingTransfer.status, 'initiated');
+            assert.equal(outgoingTransfer.status, TRANSFER_STATUS.initiated);
 
             outgoingTransfer.on('failed', spy);
 
@@ -123,7 +123,7 @@ describe('OutgoingTransfer', () => {
             const spy = sinon.spy();
 
             const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
-            assert.equal(outgoingTransfer.status, 'initiated');
+            assert.equal(outgoingTransfer.status, TRANSFER_STATUS.initiated);
 
             outgoingTransfer.on('canceled', spy);
 
@@ -136,7 +136,7 @@ describe('OutgoingTransfer', () => {
             const spy = sinon.spy();
 
             const outgoingTransfer = new OutgoingTransfer(worker, new Request(config), taskSid, outgoingTransferDescriptor);
-            assert.equal(outgoingTransfer.status, 'initiated');
+            assert.equal(outgoingTransfer.status, TRANSFER_STATUS.initiated);
 
             outgoingTransfer.on('completed', spy);
 
