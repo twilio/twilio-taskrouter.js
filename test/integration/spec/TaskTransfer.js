@@ -64,7 +64,6 @@ describe('Task Transfer', function() {
 
     describe('Cancel Transfer for Worker B', () => {
         it('should cancel the transfer and cause the reservation to cancel', done => {
-
             alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(
@@ -77,7 +76,13 @@ describe('Task Transfer', function() {
                     return Promise.all([
                                 acceptedReservation.task.transfer(credentials.multiTaskBobSid),
                                 new Promise(resolve => {
-                                    acceptedReservation.task.on('transferInitiated', () => resolve());
+                                    acceptedReservation.task.on('transferInitiated', outgoingTransfer => {
+                                        expect(outgoingTransfer.status).to.equal('initiated');
+                                        outgoingTransfer.on('canceled', outgoingTransfer => {
+                                            expect(outgoingTransfer.status).to.equal('canceled');
+                                            resolve();
+                                        });
+                                    });
                                 }),
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
@@ -105,11 +110,7 @@ describe('Task Transfer', function() {
                                             expect(canceledTransfer.status).equals('canceled');
                                         });
                                     });
-                                }),
-                                new Promise(resolve => {
-                                    acceptedReservation.task.on('transferCanceled', () => resolve());
                                 })
-
                     ]).then(() => done()).catch(done);
                 });
             });
@@ -118,9 +119,7 @@ describe('Task Transfer', function() {
 
     describe('#Failed Transfer to a worker', () => {
         it('should accept reservation, transfer the task and reject the warm transfer to worker', done => {
-
             alice.on('reservationCreated', reservation => {
-
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(
                     credentials.multiTaskWorkspaceSid,
@@ -132,11 +131,16 @@ describe('Task Transfer', function() {
                     return Promise.all([
                                 acceptedReservation.task.transfer(credentials.multiTaskBobSid),
                                 new Promise(resolve => {
-                                    acceptedReservation.task.on('transferInitiated', () => resolve());
+                                    acceptedReservation.task.on('transferInitiated', outgoingTransfer => {
+                                        expect(outgoingTransfer.status).to.equal('initiated');
+                                        outgoingTransfer.on('failed', outgoingTransfer => {
+                                            expect(outgoingTransfer.status).to.equal('failed');
+                                            resolve();
+                                        });
+                                    });
                                 }),
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
-
                                         verifyReservationHasTransfer(alice.sid, bob.sid, transferReservation);
                                         verifyTaskTransfersIncoming(alice.sid, bob.sid, transferReservation);
 
@@ -170,10 +174,7 @@ describe('Task Transfer', function() {
                                             });
                                         });
                                     });
-                                }),
-                                new Promise(resolve => {
-                                    acceptedReservation.task.on('transferFailed', () => resolve());
-                                }),
+                                })
                     ]).then(() => done());
                 });
             });
@@ -195,7 +196,13 @@ describe('Task Transfer', function() {
                     return Promise.all([
                                 acceptedReservation.task.transfer(credentials.multiTaskQueueSid),
                                 new Promise(resolve => {
-                                    acceptedReservation.task.on('transferInitiated', () => resolve());
+                                    acceptedReservation.task.on('transferInitiated', outgoingTransfer => {
+                                        expect(outgoingTransfer.status).to.equal('initiated');
+                                        outgoingTransfer.on('attemptFailed', outgoingTransfer => {
+                                            expect(outgoingTransfer.status).to.equal('initiated');
+                                            resolve();
+                                        });
+                                    });
                                 }),
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
@@ -232,11 +239,7 @@ describe('Task Transfer', function() {
                                             });
                                         });
                                     });
-                                }),
-                                new Promise(resolve => {
-                                    acceptedReservation.task.on('transferAttemptFailed', () => resolve());
-                                }),
-
+                                })
                     ]).then(() => done()).catch(done);
                 });
             });

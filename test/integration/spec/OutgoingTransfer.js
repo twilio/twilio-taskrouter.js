@@ -67,11 +67,14 @@ describe('OutgoingTransfer', () => {
                         // Transfer the task
                         return acceptedReservation.task.transfer(credentials.multiTaskBobSid)
                             .then(transferredTask => {
+                                assert.deepStrictEqual(acceptedReservation.task, transferredTask);
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
-                                        assert.deepEqual(canceledTransfer, transferredTask.transfers.outgoing);
-                                        acceptedReservation.task.once('transferCanceled', updatedTask => {
-                                            assert.deepEqual(updatedTask, acceptedReservation.task);
+                                        assert.equal(canceledTransfer.status, 'canceled');
+                                        assert.deepStrictEqual(transferredTask.transfers.outgoing, canceledTransfer);
+                                        acceptedReservation.task.transfers.outgoing.on('canceled', updatedTransfer => {
+                                            assert.equal(updatedTransfer.status, 'canceled');
+                                            assert.deepStrictEqual(updatedTransfer, acceptedReservation.task.transfers.outgoing);
                                             done();
                                         });
                                     });
@@ -91,7 +94,7 @@ describe('OutgoingTransfer', () => {
                             .then(transferredTask => {
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
-                                        assert.deepEqual(canceledTransfer, transferredTask.transfers.outgoing);
+                                        assert.deepStrictEqual(transferredTask.transfers.outgoing, canceledTransfer);
                                         acceptedReservation.task.once('updated', updatedTask => {
                                             assert.equal(updatedTask.status, 'assigned');
                                             done();
@@ -115,7 +118,7 @@ describe('OutgoingTransfer', () => {
                             .then(transferredTask => {
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
-                                        assert.deepEqual(canceledTransfer, transferredTask.transfers.outgoing);
+                                        assert.deepStrictEqual(transferredTask.transfers.outgoing, canceledTransfer);
                                         // canceling the same outgoing task again
                                         return transferredTask.transfers.outgoing.cancel().catch(err => {
                                             assert.equal(err.response.status, 400);

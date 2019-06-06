@@ -1,3 +1,13 @@
+0.4.0
+============
+Breaking Changes
+------------
+Transfer events, except for `transferInitiated`, previously emitted on the `Task` have been moved down one level to the appropriate `OutgoingTransfer` instance
+
+Maintenance
+------------
+Improve integration tests flakiness
+
 0.3.3
 ============
 Bug Fixes
