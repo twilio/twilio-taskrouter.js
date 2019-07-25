@@ -138,4 +138,21 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
     });
+
+    describe('Multi Task Worker creates Task', () => {
+        it('should be able to create a Task for self', () => {
+            const multiTaskAlice = new Worker(aliceMultiToken, {
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
+            });
+
+            return new Promise(resolve => {
+                multiTaskAlice.on('ready', resolve);
+            }).then(() => {
+                return multiTaskAlice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid).then(createdTaskSid => {
+                    assert.isTrue(createdTaskSid.startsWith('WT'));
+                });
+            });
+        });
+    });
 });

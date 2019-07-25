@@ -241,3 +241,26 @@ export const reservationWrapping = {
   task_channel_sid: "TCxxx",
   worker_previous_activity_sid: "WAxxx"
 };
+
+export const createTask = {
+  account_sid: 'ACxxx',
+  workspace_sid: 'WSxxx',
+  sid: 'WTxxx',
+  date_created: 1564181321,
+  date_updated: 1564181321,
+  attributes: '{"from":"worker","outbound_to":"customer"}',
+  assignment_status: 'pending',
+  workflow_sid: 'WWxxx',
+  workflow_name: 'IncomingCalls',
+  queue_sid: 'WQxxx',
+  queue_name: 'English TaskQ',
+  priority: 0,
+  age: 0,
+  reason: null,
+  timeout: 86400,
+  task_channel_sid: 'TCxxx',
+  task_channel_unique_name: 'default',
+  routing_target: 'WKxxx',
+  counter: 0,
+  addons: '{}'
+};
