@@ -48,7 +48,7 @@ describe('WorkerDescriptor', () => {
 
             (() => {
                 new WorkerDescriptor(workerInstanceData, config);
-            }).should.throw(/Unexpected token/);
+            }).should.throw();
         });
     });
 });
