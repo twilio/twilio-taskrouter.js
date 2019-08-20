@@ -1,6 +1,7 @@
 /* eslint no-unused-expressions: 0 */
 const chai = require('chai');
 chai.use(require('sinon-chai'));
+chai.use(require('chai-as-promised'));
 
 const assert = chai.assert;
 const expect = chai.expect;
@@ -210,12 +211,9 @@ describe('Worker', () => {
     });
 
     it('should return an Error if the create task failed', () => {
-      sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
-
-      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx').catch(err => {
-        expect(err.name).to.equal('TASKROUTER_ERROR');
-        expect(err.message).to.equal('Failed to parse JSON.');
-      });
+      const error = Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.');
+      sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(error));
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx').should.be.rejectedWith(error);
     });
   });
 
