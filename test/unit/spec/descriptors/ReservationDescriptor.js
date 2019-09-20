@@ -58,6 +58,7 @@ describe('ReservationDescriptor', () => {
             assert.equal(taskDescriptor.timeout, instance.task.timeout);
             assert.equal(taskDescriptor.workflowSid, instance.task.workflow_sid);
             assert.equal(taskDescriptor.workflowName, instance.task.workflow_name);
+            assert.isNull(taskDescriptor.routingTarget);
 
             // check that the reservation's taskDescriptor matches
             assert.deepEqual(reservationDescriptor.taskDescriptor, taskDescriptor);

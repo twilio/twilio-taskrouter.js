@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import TaskDescriptor from '../../../../lib/descriptors/TaskDescriptor';
 import { pendingReservationInstance as instance } from '../../../mock/Reservations';
+import { pendingReservationInstanceForOutbound as outboundInstance } from '../../../mock/Reservations';
 
 describe('TaskDescriptor', () => {
     describe('constructor', () => {
@@ -35,6 +36,29 @@ describe('TaskDescriptor', () => {
             assert.equal(taskDescriptor.timeout, instance.task.timeout);
             assert.equal(taskDescriptor.workflowSid, instance.task.workflow_sid);
             assert.equal(taskDescriptor.workflowName, instance.task.workflow_name);
+            assert.isNull(instance.task.routing_target);
+        });
+
+        it('should set properties using data from the outbound descriptor', () => {
+            // task data on the reservation
+            const taskDescriptorOutbound = new TaskDescriptor(outboundInstance.task);
+            assert.deepEqual(taskDescriptorOutbound.addOns, JSON.parse(outboundInstance.task.addons));
+            assert.equal(taskDescriptorOutbound.age, outboundInstance.task.age);
+            assert.deepEqual(taskDescriptorOutbound.attributes, JSON.parse(outboundInstance.task.attributes));
+            assert.deepEqual(taskDescriptorOutbound.dateCreated, new Date(outboundInstance.task.date_created * 1000));
+            assert.deepEqual(taskDescriptorOutbound.dateUpdated, new Date(outboundInstance.task.date_updated * 1000));
+            assert.equal(taskDescriptorOutbound.priority, outboundInstance.task.priority);
+            assert.equal(taskDescriptorOutbound.queueName, outboundInstance.task.queue_name);
+            assert.equal(taskDescriptorOutbound.queueSid, outboundInstance.task.queue_sid);
+            assert.equal(taskDescriptorOutbound.reason, outboundInstance.task.reason);
+            assert.equal(taskDescriptorOutbound.sid, outboundInstance.task.sid);
+            assert.equal(taskDescriptorOutbound.status, outboundInstance.task.assignment_status);
+            assert.equal(taskDescriptorOutbound.taskChannelUniqueName, outboundInstance.task.task_channel_unique_name);
+            assert.equal(taskDescriptorOutbound.taskChannelSid, outboundInstance.task.task_channel_sid);
+            assert.equal(taskDescriptorOutbound.timeout, outboundInstance.task.timeout);
+            assert.equal(taskDescriptorOutbound.workflowSid, outboundInstance.task.workflow_sid);
+            assert.equal(taskDescriptorOutbound.workflowName, outboundInstance.task.workflow_name);
+            assert.equal(taskDescriptorOutbound.routingTarget, outboundInstance.task.routing_target);
         });
 
         it('should throw an error if unable to parse addons JSON', () => {

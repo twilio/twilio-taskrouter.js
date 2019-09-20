@@ -82,7 +82,8 @@ const reservationCreated = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
-        age: 13
+        age: 13,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 0,
@@ -112,7 +113,8 @@ const reservationAccepted = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
-        age: 183
+        age: 183,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1521437277,
@@ -143,7 +145,8 @@ const reservationRejected = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
-        age: 122
+        age: 122,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1521437168,
@@ -173,7 +176,8 @@ const reservationCanceled = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
-        age: 2871
+        age: 2871,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -203,7 +207,8 @@ const reservationTimedOut = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
-        age: 2480
+        age: 2480,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1521490611,
@@ -233,7 +238,8 @@ const reservationRescinded = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{}',
-        age: 21
+        age: 21,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1521492208,
@@ -263,7 +269,8 @@ const reservationCompleted = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
-        age: 164
+        age: 164,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491467,
@@ -293,7 +300,8 @@ const reservationWrapping = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{}',
-        age: 11
+        age: 11,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1556049960,
@@ -324,7 +332,8 @@ const reservationCreatedForWorker2ByTransfer = {
 		task_channel_sid: 'TCxxx',
 		queue_sid: 'WQxxx',
 		attributes: '{}',
-		age:11
+		age:11,
+        routing_target: null
 	},
 	workspace_sid: 'WSxxx',
 	date_created:1556049971,
@@ -349,91 +358,95 @@ const reservationCreatedForWorker2ByTransfer = {
 };
 
 const taskUpdated = {
-  account_sid: 'ACxxx',
-  workspace_sid: 'WSxxx',
-  sid: 'WTxx1',
-  date_created: 1518809969,
-  date_updated: 1519161100,
-  attributes: '{"country":"USA"}',
-  assignment_status: 'reserved',
-  workflow_sid: 'WWxxx',
-  workflow_name: 'Default Fifo Workflow',
-  queue_sid: 'WQxxx',
-  queue_name: 'Sample Queue',
-  priority: 0,
-  reason: null,
-  timeout: 86400,
-  task_channel_sid: 'TCxxx',
-  task_channel_unique_name: 'default',
-  counter: 1,
-  age: 65,
-  addons: '{}'
+    account_sid: 'ACxxx',
+    workspace_sid: 'WSxxx',
+    sid: 'WTxx1',
+    date_created: 1518809969,
+    date_updated: 1519161100,
+    attributes: '{"country":"USA"}',
+    assignment_status: 'reserved',
+    workflow_sid: 'WWxxx',
+    workflow_name: 'Default Fifo Workflow',
+    queue_sid: 'WQxxx',
+    queue_name: 'Sample Queue',
+    priority: 0,
+    reason: null,
+    timeout: 86400,
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'default',
+    counter: 1,
+    age: 65,
+    addons: '{}',
+    routing_target: null
 };
 
 const taskCanceled = {
-  account_sid: 'ACxxx',
-  workspace_sid: 'WSxxx',
-  sid: 'WTxx1',
-  date_created: 1518809969,
-  date_updated: 1519161652,
-  attributes: '{}',
-  assignment_status: 'canceled',
-  workflow_sid: 'WWxxx',
-  workflow_name: 'Default Fifo Workflow',
-  queue_sid: 'WQxxx',
-  queue_name: 'Sample Queue',
-  priority: 0,
-  reason: 'No longer needed',
-  timeout: 86400,
-  task_channel_sid: 'TCxxx',
-  task_channel_unique_name: 'default',
-  counter: 1,
-  age: 100,
-  addons: '{}'
+    account_sid: 'ACxxx',
+    workspace_sid: 'WSxxx',
+    sid: 'WTxx1',
+    date_created: 1518809969,
+    date_updated: 1519161652,
+    attributes: '{}',
+    assignment_status: 'canceled',
+    workflow_sid: 'WWxxx',
+    workflow_name: 'Default Fifo Workflow',
+    queue_sid: 'WQxxx',
+    queue_name: 'Sample Queue',
+    priority: 0,
+    reason: 'No longer needed',
+    timeout: 86400,
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'default',
+    counter: 1,
+    age: 100,
+    addons: '{}',
+    routing_target: null
 };
 
 const taskCompleted = {
-  account_sid: 'ACxxx',
-  workspace_sid: 'WSxxx',
-  sid: 'WTxx1',
-  date_created: 1518809969,
-  date_updated: 1519161534,
-  attributes: '{"country":"USA"}',
-  assignment_status: 'completed',
-  workflow_sid: 'WWxxx',
-  workflow_name: 'Default Fifo Workflow',
-  queue_sid: 'WQxxx',
-  queue_name: 'Sample Queue',
-  priority: 0,
-  reason: 'Task is completed',
-  timeout: 86400,
-  task_channel_sid: 'TCxxx',
-  task_channel_unique_name: 'default',
-  counter: 2,
-  age: 499,
-  addons: '{}'
+    account_sid: 'ACxxx',
+    workspace_sid: 'WSxxx',
+    sid: 'WTxx1',
+    date_created: 1518809969,
+    date_updated: 1519161534,
+    attributes: '{"country":"USA"}',
+    assignment_status: 'completed',
+    workflow_sid: 'WWxxx',
+    workflow_name: 'Default Fifo Workflow',
+    queue_sid: 'WQxxx',
+    queue_name: 'Sample Queue',
+    priority: 0,
+    reason: 'Task is completed',
+    timeout: 86400,
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'default',
+    counter: 2,
+    age: 499,
+    addons: '{}',
+    routing_target: null
 };
 
 const taskWrappedUp = {
-  account_sid: 'ACxxx',
-  workspace_sid: 'WSxxx',
-  sid: 'WTxx1',
-  date_created: 1518809969,
-  date_updated: 1519161448,
-  attributes: '{"country":"USA"}',
-  assignment_status: 'wrapping',
-  workflow_sid: 'WWxxx',
-  workflow_name: 'Default Fifo Workflow',
-  queue_sid: 'WQxxx',
-  queue_name: 'Sample Queue',
-  priority: 0,
-  reason: 'Task is wrapping',
-  timeout: 86400,
-  task_channel_sid: 'TCxxx',
-  task_channel_unique_name: 'default',
-  counter: 2,
-  age: 413,
-  addons: '{}'
+    account_sid: 'ACxxx',
+    workspace_sid: 'WSxxx',
+    sid: 'WTxx1',
+    date_created: 1518809969,
+    date_updated: 1519161448,
+    attributes: '{"country":"USA"}',
+    assignment_status: 'wrapping',
+    workflow_sid: 'WWxxx',
+    workflow_name: 'Default Fifo Workflow',
+    queue_sid: 'WQxxx',
+    queue_name: 'Sample Queue',
+    priority: 0,
+    reason: 'Task is wrapping',
+    timeout: 86400,
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'default',
+    counter: 2,
+    age: 413,
+    addons: '{}',
+    routing_target: null
 };
 
 const transferInitiated = {
@@ -543,7 +556,8 @@ const reservationCanceledForIncomingTransfer = {
         task_channel_sid: 'TCxxx',
         queue_sid: 'WQxxx',
         attributes: '{}',
-        age: 17
+        age: 17,
+        routing_target: null
     },
     workspace_sid: 'WSxxx',
     date_created: 1554313056,

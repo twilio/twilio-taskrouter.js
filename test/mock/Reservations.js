@@ -24,6 +24,39 @@ export const pendingReservationInstance = {
     workflow_sid: 'WWxxx',
     queue_sid: 'WQxxx',
     task_channel_sid: 'TCxxx',
+    routing_target: null,
+    sid: 'WTxx1',
+    date_created: 1518809969,
+    date_updated: 1518809969
+  },
+  worker_previous_activity_sid: 'WAxxx'
+};
+
+export const pendingReservationInstanceForOutbound = {
+  account_sid: 'ACxxx',
+  workspace_sid: 'WSxxx',
+  sid: 'WRxx1',
+  date_created: 1518809969,
+  date_updated: 1518809983,
+  worker_sid: 'WKxxx',
+  reservation_status: 'pending',
+  reservation_timeout: 120,
+  task: {
+    workflow_name: 'Default Fifo Workflow',
+    queue_name: 'Sample Queue',
+    attributes: '{}',
+    assignment_status: 'reserved',
+    priority: 0,
+    reason: null,
+    timeout: 86400,
+    counter: 1,
+    age: 88,
+    task_channel_unique_name: 'default',
+    addons: '{}',
+    workflow_sid: 'WWxxx',
+    queue_sid: 'WQxxx',
+    task_channel_sid: 'TCxxx',
+    routing_target: 'WKxxx',
     sid: 'WTxx1',
     date_created: 1518809969,
     date_updated: 1518809969
@@ -51,7 +84,8 @@ export const pendingReservationIncomingTransfer = {
     task_channel_sid:'TCxxx',
     queue_sid:'WQxxx',
     attributes: '{}',
-    age:11
+    age:11,
+    routing_target: null
   },
   workspace_sid:'WSxxx',
   date_created:1554313056,
@@ -100,6 +134,7 @@ export const assignedReservationInstance = {
     queue_sid: 'WQxxx',
     task_channel_sid: 'TCxxx',
     sid: 'WTxx1',
+    routing_target: null,
     date_created: 1518809969,
     date_updated: 1518809969
   },
@@ -132,7 +167,8 @@ export const acceptedReservationWithActiveOutgoingTransfer = {
     reason: null,
     timeout: 86400,
     age: 39,
-    addons: '{}'
+    addons: '{}',
+    routing_target: null
   },
   active_outgoing_task_transfer: {
     sid: 'TTxxx',
@@ -176,7 +212,9 @@ export const acceptedReservationWithIncomingAndActiveOutgoingTransfer = {
     reason: null,
     timeout: 86400,
     age: 271,
-    addons: '{}' },
+    addons: '{}',
+    routing_target: null
+  },
   task_transfer: {
     sid: 'TTxxx',
     transfer_type: 'WORKER',
@@ -226,7 +264,8 @@ export const pendingReservationWithIncomingTransfer = {
 		task_channel_sid: 'TCxxx',
 		queue_sid: 'WQxxx',
 		attributes: '{}',
-		age:11
+		age:11,
+        routing_target: null
 	},
 	workspace_sid: 'WSxxx',
 	date_created:1556049971,
@@ -276,6 +315,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx1',
+      routing_target: null,
       date_created: 1518809969,
       date_updated: 1518809969
     },
@@ -305,6 +345,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx2',
+      routing_target: null,
       date_created: 1518809972,
       date_updated: 1518809972
     },
@@ -334,6 +375,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx3',
+      routing_target: null,
       date_created: 1518809975,
       date_updated: 1518809975
     },
@@ -363,6 +405,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx4',
+      routing_target: null,
       date_created: 1518809980,
       date_updated: 1518809980
     },
@@ -392,6 +435,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx5',
+      routing_target: null,
       date_created: 1518809994,
       date_updated: 1518809994
     },
@@ -421,6 +465,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx6',
+      routing_target: null,
       date_created: 1518809997,
       date_updated: 1518809997
     },
@@ -450,6 +495,7 @@ export const reservations = {
       queue_sid: 'WQxxx',
       task_channel_sid: 'TCxxx',
       sid: 'WTxx7',
+      routing_target: null,
       date_created: 1518810002,
       date_updated: 1518810002
     },

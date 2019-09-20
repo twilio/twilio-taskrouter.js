@@ -14,7 +14,7 @@ const mockEvents = require('../../mock/Events').events;
 import OutgoingTransfer from '../../../lib/core/transfer/OutgoingTransfer';
 import Request from '../../../lib/util/Request';
 import Task from '../../../lib/Task';
-import { taskCompleted, taskWrapping, updatedTaskAttributes, taskHoldUnhold } from '../../mock/Responses';
+import { taskCompleted, taskWrapping, updatedTaskAttributes, updatedTaskAttributesForOutbound, taskHoldUnhold } from '../../mock/Responses';
 import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 import { token } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
@@ -68,6 +68,7 @@ describe('Task', () => {
             assert.equal(task.timeout, assignedTaskData.timeout);
             assert.equal(task.workflowName, assignedTaskData.workflow_name);
             assert.equal(task.workflowSid, assignedTaskData.workflow_sid);
+            assert.isNull(task.routingTarget);
         });
     });
 
@@ -112,6 +113,7 @@ describe('Task', () => {
                 expect(task.timeout).to.equal(taskCompleted.timeout);
                 expect(task.dateCreated).to.equalDate(new Date(taskCompleted.date_created * 1000));
                 expect(task.dateUpdated).to.equalDate(new Date(taskCompleted.date_updated * 1000));
+                expect(task.routingTarget).to.equal(null);
             });
         });
 
@@ -151,6 +153,7 @@ describe('Task', () => {
                 expect(task.workflowName).to.equal(assignedTaskDescriptor.workflowName);
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
+                expect(task.routingTarget).to.equal(null);
             });
         });
     });
@@ -190,6 +193,7 @@ describe('Task', () => {
                 expect(task.timeout).to.equal(taskWrapping.timeout);
                 expect(task.dateCreated).to.equalDate(new Date(taskWrapping.date_created * 1000));
                 expect(task.dateUpdated).to.equalDate(new Date(taskWrapping.date_updated * 1000));
+                expect(task.routingTarget).to.equal(null);
             });
         });
 
@@ -229,6 +233,7 @@ describe('Task', () => {
                 expect(task.workflowName).to.equal(assignedTaskDescriptor.workflowName);
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
+                expect(task.routingTarget).to.equal(null);
             });
         });
     });
@@ -271,6 +276,31 @@ describe('Task', () => {
                 expect(task.timeout).to.equal(updatedTaskAttributes.timeout);
                 expect(task.dateCreated).to.equalDate(new Date(updatedTaskAttributes.date_created * 1000));
                 expect(task.dateUpdated).to.equalDate(new Date(updatedTaskAttributes.date_updated * 1000));
+                expect(task.routingTarget).to.equal(null);
+            });
+        });
+
+        it('should update the Outbound Task attributes upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(updatedTaskAttributesForOutbound));
+
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+
+            return task.setAttributes({ languages: ['en'] }).then(() => {
+                expect(task.reason).to.equal(updatedTaskAttributesForOutbound.reason);
+                expect(task.workflowSid).to.equal(updatedTaskAttributesForOutbound.workflow_sid);
+                expect(task.workflowName).to.equal(updatedTaskAttributesForOutbound.workflow_name);
+                expect(task.queueSid).to.equal(updatedTaskAttributesForOutbound.queue_sid);
+                expect(task.queueName).to.equal(updatedTaskAttributesForOutbound.queue_name);
+                expect(task.taskChannelSid).to.equal(updatedTaskAttributesForOutbound.task_channel_sid);
+                expect(task.taskChannelUniqueName).to.equal(updatedTaskAttributesForOutbound.task_channel_unique_name);
+                expect(task.status).to.equal(updatedTaskAttributesForOutbound.assignment_status);
+                expect(task.attributes).to.deep.equal(JSON.parse(updatedTaskAttributesForOutbound.attributes));
+                expect(task.age).to.equal(updatedTaskAttributesForOutbound.age);
+                expect(task.priority).to.equal(updatedTaskAttributesForOutbound.priority);
+                expect(task.timeout).to.equal(updatedTaskAttributesForOutbound.timeout);
+                expect(task.dateCreated).to.equalDate(new Date(updatedTaskAttributesForOutbound.date_created * 1000));
+                expect(task.dateUpdated).to.equalDate(new Date(updatedTaskAttributesForOutbound.date_updated * 1000));
+                expect(task.routingTarget).to.equal(updatedTaskAttributesForOutbound.routing_target);
             });
         });
 
@@ -326,6 +356,7 @@ describe('Task', () => {
                 expect(task.workflowName).to.equal(assignedTaskDescriptor.workflowName);
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
+                expect(task.routingTarget).to.equal(null);
             });
         });
     });
