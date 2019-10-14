@@ -1,3 +1,14 @@
+0.4.1
+============
+Bug Fixes
+------------
+- `conference instruction` should not override reservation status received from worker leg
+
+Maintenance
+------------
+- Added automated scripts for integration tests
+- Added setup for running unit tests on browsers
+
 0.4.0
 ============
 Breaking Changes
