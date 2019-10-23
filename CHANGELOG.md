@@ -1,3 +1,9 @@
+0.4.2
+============
+New Features
+------------
+Expose `reservation.failed` event, which is fired when `Worker` was unable to receive a `Reservation` for the `Task` it created
+
 0.4.0
 ============
 Breaking Changes
