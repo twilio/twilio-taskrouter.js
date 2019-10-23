@@ -357,6 +357,7 @@ const reservationCreatedForWorker2ByTransfer = {
 	sid: 'WRxx2'
 };
 
+//The payload of this reservationFailed event is a Task like entity, not the usual ReservationTask entity. Special case for Flex.
 const reservationFailed = {
     account_sid: 'ACxxx',
     workspace_sid: 'WSxxx',
@@ -374,6 +375,7 @@ const reservationFailed = {
     timeout: 86400,
     task_channel_sid: 'TCxxx',
     task_channel_unique_name: 'default',
+    routing_target: "WKxxx",
     counter: 1,
     age: 65,
     addons: '{}'
