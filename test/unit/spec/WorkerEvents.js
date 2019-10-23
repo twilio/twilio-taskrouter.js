@@ -117,4 +117,14 @@ describe('WorkerEvents', () => {
             });
         });
     });
+
+    describe('ReservationEvents', () => {
+        it('should emit Event:on(reservationFailed)', () => {
+            const spy = sinon.spy();
+
+            worker.on('reservationFailed', spy);
+            worker.emit('reservationFailed', mockEvents.reservation.failed);
+            assert.isTrue(spy.calledOnce);
+        });
+    });
 });
