@@ -117,4 +117,15 @@ describe('WorkerEvents', () => {
             });
         });
     });
+
+    describe('ReservationEvents', () => {
+        it('should emit Event:on(reservationFailed)', () => {
+            const spy = sinon.spy();
+
+            worker.on('reservationFailed', spy);
+            worker.emit('reservationFailed', mockEvents.reservation.failed);
+            assert.isTrue(spy.calledOnce);
+            expect(spy.getCall(0).args[0]).to.equal(mockEvents.reservation.failed);
+        });
+    });
 });

@@ -357,6 +357,30 @@ const reservationCreatedForWorker2ByTransfer = {
 	sid: 'WRxx2'
 };
 
+//The payload of this reservationFailed event is a Task like entity, not the usual ReservationTask entity. Special case for Flex.
+const reservationFailed = {
+    account_sid: 'ACxxx',
+    workspace_sid: 'WSxxx',
+    sid: 'WTxx1',
+    date_created: 1518809969,
+    date_updated: 1519161100,
+    attributes: '',
+    assignment_status: 'canceled',
+    workflow_sid: 'WWxxx',
+    workflow_name: 'Default Fifo Workflow',
+    queue_sid: 'WQxxx',
+    queue_name: 'Sample Queue',
+    priority: 0,
+    reason: "RoutingTarget SLA for Reservation creation was not met",
+    timeout: 86400,
+    task_channel_sid: 'TCxxx',
+    task_channel_unique_name: 'default',
+    routing_target: "WKxxx",
+    counter: 1,
+    age: 65,
+    addons: '{}'
+};
+
 const taskUpdated = {
     account_sid: 'ACxxx',
     workspace_sid: 'WSxxx',
@@ -601,8 +625,8 @@ module.exports = {
         timedOut: reservationTimedOut,
         completed: reservationCompleted,
         wrapping: reservationWrapping,
-        canceledForIncomingTransfer: reservationCanceledForIncomingTransfer
-
+        canceledForIncomingTransfer: reservationCanceledForIncomingTransfer,
+        failed: reservationFailed
     },
     task: {
         canceled: taskCanceled,
