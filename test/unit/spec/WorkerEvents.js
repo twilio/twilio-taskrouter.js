@@ -125,9 +125,7 @@ describe('WorkerEvents', () => {
             worker.on('reservationFailed', spy);
             worker.emit('reservationFailed', mockEvents.reservation.failed);
             assert.isTrue(spy.calledOnce);
-            worker.on('reservationFailed', eventData => {
-                assert.equal(eventData, mockEvents.reservation.failed);
-            });
+            expect(spy.getCall(0).args[0]).to.equal(mockEvents.reservation.failed);
         });
     });
 });
