@@ -187,6 +187,70 @@ const reservationCanceled = {
     sid: 'WRxx1'
 };
 
+const reservationCanceledWithValidReasonCode = {
+    worker_sid: 'WKxxx',
+    date_updated: 1521491096,
+    reservation_status: 'canceled',
+    task: {
+        reason: null,
+        date_updated: 1521490731,
+        assignment_status: 'canceled',
+        workflow_name: 'Default Fifo Workflow',
+        addons: '{}',
+        workflow_sid: 'WWxxx',
+        date_created: 1521488251,
+        task_channel_unique_name: 'default',
+        priority: 0,
+        timeout: 86400,
+        sid: 'WTxx1',
+        queue_name: 'Sample Queue',
+        task_channel_sid: 'TCxxx',
+        queue_sid: 'WQxxx',
+        attributes: '{"selected_language":"en"}',
+        age: 2871,
+        routing_target: null
+    },
+    workspace_sid: 'WSxxx',
+    date_created: 1521491096,
+    reservation_timeout: 120,
+    canceled_reason_code: 1001,
+    worker_previous_activity_sid: 'WAxxx',
+    account_sid: 'ACxxx',
+    sid: 'WRxx1'
+};
+
+const reservationCanceledWithInValidReasonCode = {
+    worker_sid: 'WKxxx',
+    date_updated: 1521491096,
+    reservation_status: 'canceled',
+    task: {
+        reason: null,
+        date_updated: 1521490731,
+        assignment_status: 'canceled',
+        workflow_name: 'Default Fifo Workflow',
+        addons: '{}',
+        workflow_sid: 'WWxxx',
+        date_created: 1521488251,
+        task_channel_unique_name: 'default',
+        priority: 0,
+        timeout: 86400,
+        sid: 'WTxx1',
+        queue_name: 'Sample Queue',
+        task_channel_sid: 'TCxxx',
+        queue_sid: 'WQxxx',
+        attributes: '{"selected_language":"en"}',
+        age: 2871,
+        routing_target: null
+    },
+    workspace_sid: 'WSxxx',
+    date_created: 1521491096,
+    reservation_timeout: 120,
+    canceled_reason_code: -1,
+    worker_previous_activity_sid: 'WAxxx',
+    account_sid: 'ACxxx',
+    sid: 'WRxx1'
+};
+
 const reservationTimedOut = {
     worker_sid: 'WKxxx',
     date_updated: 1521490731,
@@ -621,6 +685,8 @@ module.exports = {
         accepted: reservationAccepted,
         rejected: reservationRejected,
         canceled: reservationCanceled,
+        canceledWithValidReasonCode: reservationCanceledWithValidReasonCode,
+        canceledWithInvalidReasonCode: reservationCanceledWithInValidReasonCode,
         rescinded: reservationRescinded,
         timedOut: reservationTimedOut,
         completed: reservationCompleted,

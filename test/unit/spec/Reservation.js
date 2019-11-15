@@ -566,6 +566,9 @@ describe('Reservation', () => {
             // check that the transfers are not updated
             assert.isNull(pendingReservation.task.transfers.incoming);
             assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
         });
 
         it('should emit Event:on(completed) and update the Reservation and Task', () => {
@@ -588,6 +591,9 @@ describe('Reservation', () => {
             // check that the transfers are not updated
             assert.isNull(assignedReservation.task.transfers.incoming);
             assert.isNull(assignedReservation.task.transfers.outgoing);
+
+            // check that reservation object did not have property canceledReasonCode
+            assert.isFalse(assignedReservation.hasOwnProperty('canceledReasonCode'));
         });
 
         it('should emit Event:on(rejected) and update the Reservation and Task', () => {
@@ -609,6 +615,9 @@ describe('Reservation', () => {
             // check that the transfers are not updated
             assert.isNull(pendingReservation.task.transfers.incoming);
             assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
         });
 
         it('should emit Event:on(timeout) and update the Reservation and Task', () => {
@@ -630,6 +639,9 @@ describe('Reservation', () => {
             // check that the transfers are not updated
             assert.isNull(pendingReservation.task.transfers.incoming);
             assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
         });
 
 
@@ -638,6 +650,10 @@ describe('Reservation', () => {
 
             const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
             assert.equal(pendingReservation.status, 'pending');
+
+            // check that pending reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
+
             pendingReservation.on('canceled', spy);
             pendingReservation._emitEvent('canceled', mockEvents.reservation.canceled);
 
@@ -652,6 +668,69 @@ describe('Reservation', () => {
             // check that the transfers are not updated
             assert.isNull(pendingReservation.task.transfers.incoming);
             assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object did not have property canceledReasonCode on emitted canceled event
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
+        });
+
+        it('should emit Event:on(canceled) and update the Reservation with valid canceled_reason_code', () => {
+            const spy = sinon.spy();
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+
+            assert.equal(pendingReservation.status, 'pending');
+
+            // check that pending reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
+
+            pendingReservation.on('canceled', spy);
+            pendingReservation._emitEvent('canceled', mockEvents.reservation.canceledWithValidReasonCode);
+
+            assert.isTrue(spy.calledOnce);
+            assert.equal(pendingReservation.status, 'canceled');
+            assert.equal(pendingReservation.sid, mockEvents.reservation.canceledWithValidReasonCode.sid);
+
+            // check that the task's status was also updated
+            assert.equal(pendingReservation.task.status, mockEvents.reservation.canceledWithValidReasonCode.task.assignment_status);
+            assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.canceledWithValidReasonCode.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object has property canceledReasonCode on emitted canceled event
+            assert.isTrue(pendingReservation.hasOwnProperty('canceledReasonCode'));
+            assert.equal(pendingReservation.canceledReasonCode, mockEvents.reservation.canceledWithValidReasonCode.canceled_reason_code);
+        });
+
+        it('should emit Event:on(canceled) and update the Reservation with invalid canceled_reason_code', () => {
+            const spy = sinon.spy();
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+
+            assert.equal(pendingReservation.status, 'pending');
+
+            // check that pending reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
+
+            pendingReservation.on('canceled', spy);
+            pendingReservation._emitEvent('canceled', mockEvents.reservation.canceledWithInvalidReasonCode);
+
+            assert.isTrue(spy.calledOnce);
+            assert.equal(pendingReservation.status, 'canceled');
+            assert.equal(pendingReservation.sid, mockEvents.reservation.canceledWithInvalidReasonCode.sid);
+
+            // check that the task's status was also updated
+            assert.equal(pendingReservation.task.status, mockEvents.reservation.canceledWithInvalidReasonCode.task.assignment_status);
+            assert.deepEqual(pendingReservation.task.dateUpdated, new Date(mockEvents.reservation.canceledWithInvalidReasonCode.task.date_updated * 1000));
+
+            // check that the transfers are not updated
+            assert.isNull(pendingReservation.task.transfers.incoming);
+            assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object has property canceledReasonCode on emitted canceled event
+            assert.isTrue(pendingReservation.hasOwnProperty('canceledReasonCode'));
+            assert.equal(pendingReservation.canceledReasonCode, mockEvents.reservation.canceledWithInvalidReasonCode.canceled_reason_code);
         });
 
         it('should emit Event:on(rescinded) and update the Reservation and Task', () => {
@@ -673,6 +752,9 @@ describe('Reservation', () => {
             // check that the transfers are not updated
             assert.isNull(pendingReservation.task.transfers.incoming);
             assert.isNull(pendingReservation.task.transfers.outgoing);
+
+            // check that reservation object did not have property canceledReasonCode
+            assert.isFalse(pendingReservation.hasOwnProperty('canceledReasonCode'));
         });
     });
 

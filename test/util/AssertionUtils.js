@@ -45,6 +45,9 @@ export default class AssertionUtils {
             assert.exists(actual.task.transfers.outgoing);
             AssertionUtils.assertTransfer(actual.task.transfers.outgoing, responseObj.active_outgoing_task_transfer);
         }
+        if (responseObj.canceled_reason_code) {
+            assert.equal(actual.canceledReasonCode, responseObj.canceled_reason_code);
+        }
     }
 
     static assertTransfer(actual, responseObj) {
