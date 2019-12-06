@@ -44,20 +44,20 @@ const createConfig = libraryTarget => {
             tls: 'empty',
             process: false
         };
-        config.entry = { main: './lib/web.js' }
+        config.entry = { main: './lib/web.js' };
         config.output.library = 'TaskRouter';
         config.output.libraryTarget = 'umd';
-    } else if (libraryTarget == 'test') {
+    } else if (libraryTarget === 'test') {
         config.node = {
             fs: 'empty',
             net: 'empty',
             tls: 'empty',
             process: false
         };
-        config.entry = { main: './test/unit/index.js'},
+        config.entry = { main: './test/unit/index.js' };
         config.output.libraryTarget = 'umd';
     } else {
-        config.entry = { main: './lib/index.js' }
+        config.entry = { main: './lib/index.js' };
         config.target = 'node';
     }
 
@@ -69,11 +69,10 @@ module.exports = function(env, argv) {
     return [
       createConfig('window'),
       createConfig('test')
-    ]
-  } else {
+    ];
+  }
     return [
       createConfig('commonjs2'),
       createConfig('window')
-    ]
-  }
-}
+    ];
+};
