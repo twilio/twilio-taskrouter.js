@@ -23,6 +23,10 @@ class VoiceClientProxy extends EventEmitter {
   unmute() {
     this.map.set('call#unmute', {});
   }
+  // Can be used to call another client directly by identity or to twilio phone number. Do note that on average it takes longer to create a reservation this way
+  async call(to) {
+    await this.map.set('make#call', { to: to });
+  }
   async refreshBrowserClient() {
     await this.map.set('browser#reset', {});
   }
@@ -36,7 +40,6 @@ export const voiceClientProxy = async(syncClient, workerName) => {
 
   // Attach Event proxy to emit on non-local Sync events
   syncMap.on('itemAdded', args => {
-
     // Ensure that we are listening only on Sync events which origin is browser
     if (!args.isLocal) {
       /**

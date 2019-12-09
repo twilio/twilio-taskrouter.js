@@ -271,7 +271,11 @@ Notes:
 - Sync these steps are heavy and take time, you should not wait on the following event: `device#ready` because that will happen way before we attach a listener.
 
 `workerVoiceClient` has following methods:
-- mute(), accept(), reject(), ignore(), disconnect(), unmute(), refreshBrowserClient()
+- mute(), accept(), reject(), ignore(), disconnect(), unmute(), refreshBrowserClient(), call()
+
+- method `call()` takes {string} argument, which can either be a Twilio phone number or a client name in the browser.
+It is useful when you need your `customer` to be an actual voice entity which you can control. But it does take longer for reservation to be made
+therefore for simple tests it is advised that you use a simple REST call with a TwiML attached to it.
 
 `workerVoiceClient` will emit every voice event there is
 

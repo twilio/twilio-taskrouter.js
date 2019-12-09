@@ -109,6 +109,10 @@
           // Ensure that we are listening only on Sync events which originate from node
           if(!args.isLocal) {
 
+            if(args.item.key === 'make#call') {
+              await voiceDevice.connect({ To: `${args.item.value.to}` })
+            }
+
             if(!globalConnection) {
               return;
             }
