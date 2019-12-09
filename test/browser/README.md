@@ -5,6 +5,7 @@
   - [Account requirements](#account-requirements)  
   - [Environment variables](#environment-variables)
   - [Twilio Functions](#twilio-functions)
+  - [TwiML Application](#twiml-application)
 - [Voice integration components](#voice-integration-components)
   - [Server](#server)
   - [Browser](#browser)  
@@ -18,7 +19,9 @@
 
 ## Account requirements
 
-Account must have two valid Twilio phone number
+Account must have two valid Twilio phone number.
+
+For the sake of clarity, rename existing one to 'FROM' and the new one - 'TO'
 
 ## Environment variables
 
@@ -37,6 +40,7 @@ numberFrom
 Following twilio functions are mandatory for the account on which these tests are to be ran
 
 path: `/voice-sync-token`
+purpose: generate tokens for clients in the browser
 
 contents: 
 ```
@@ -50,6 +54,7 @@ exports.handler = function(context, event, callback) {
   const AUTH_TOKEN = context.AUTH_TOKEN;
   const SERVICE_SID = context.SYNC_SERVICE_SID;
   const API_KEY = context.TWILIO_API_KEY;
+  const APP_SID = context.TWIML_APP_SID;
   const API_SECRET = context.TWILIO_API_SECRET;
   
   const identity = (event.identity) ? event.identity : 'sync';
@@ -89,6 +94,10 @@ exports.handler = function(context, event, callback) {
     });
     
     capability.addScope(new ClientCapability.IncomingClientScope(identity));
+    capability.addScope(new ClientCapability.OutgoingClientScope({
+        applicationSid: APP_SID,
+        clientName: identity,
+    }));
     
     const opts = {
       identity: identity,
@@ -103,6 +112,52 @@ exports.handler = function(context, event, callback) {
   }
 }
 ```
+
+path: `/client-voice`
+purpose: redirect calls made from browser to another client or Twilio phone number
+
+```
+exports.handler = function(context, event, callback) {
+    let twiml = new Twilio.twiml.VoiceResponse();
+
+    if(event.To) {
+      // Wrap the phone number or client name in the appropriate TwiML verb
+      // if is a valid phone number
+      const attr = isAValidPhoneNumber(event.To) ? 'number' : 'client';
+
+      const dial = twiml.dial({
+        callerId: context.CALLER_ID,
+      });
+      dial[attr]({}, event.To);
+    } else {
+      twiml.say('Thanks for calling!');
+    }
+
+     callback(null, twiml);
+};
+
+/**
+* Checks if the given value is valid as phone number
+* @param {Number|String} number
+* @return {Boolean}
+*/
+function isAValidPhoneNumber(number) {
+  return /^[\d\+\-\(\) ]+$/.test(number);
+}
+```
+
+## TwiML Application
+
+For you to be able to make calls from browser to Twilio phone numbers or other voice SDK clients, you need
+a TwiML app which will serve as proxy of kind and redirect your calls.
+
+Navigate to: https://www.twilio.com/console/voice/twiml/apps and create a new Application.
+
+In the `Voice request URL` field enter the full url to the second function above `https://{RUNTIME_DOMAIN}.twil.io/client-voice`
+
+For caller ID if prompt, enter your `NUMBER_FROM`. Keep in mind that this is the number to which `enqueueTask` will be tied to on its `voice handler url`.
+
+*Note* Do not forget to expose your `TWIML_APP` sid in the Twilio function config here: https://www.twilio.com/console/functions/configure
 
 ## Voice integration components
 
