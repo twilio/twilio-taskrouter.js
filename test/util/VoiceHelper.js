@@ -52,3 +52,32 @@ export const event = (emitter, eventName, msg, ms) => {
     setTimeout(reject, ms, new Error(msg));
   });
 };
+
+export const poll = (map, key, msg, maxTries) => {
+
+  const loop = async(attempt = 0) => {
+    let hasKey;
+    let err;
+
+    hasKey = await map.get(key).catch(e => {
+      err = e;
+    });
+
+    if (hasKey) {
+      return;
+    }
+
+    // Waste half a second
+    await new Promise(r => setTimeout(r, 500));
+
+    if (err) {
+      if (attempt >= maxTries) {
+        throw err;
+      } else {
+        return await loop(+attempt);
+      }
+    }
+  };
+
+  return loop();
+};

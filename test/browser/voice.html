@@ -15,6 +15,22 @@
       }
     });
 
+    // Event helper
+    const event = (emitter, eventName, ms, msg, value = null) => {
+      return new Promise((resolve, reject) => {
+        emitter.on(eventName, event => {
+          if(value) {
+              if(event === value) {
+                return resolve();
+              }
+          } else {
+            return resolve();
+          }
+        });
+        setTimeout(reject, ms, new Error(msg));
+      });
+    };
+
     // Global voice connection object
     let globalConnection;
 
@@ -57,7 +73,7 @@
 
       response.worker = workerQuery;
 
-      Logger.debug('readQuery():', response);
+      Logger.info('readQuery():', response);
       return response;
     };
 
@@ -88,11 +104,13 @@
 
         // Initiate sync and voice clients
         const syncClient = new Twilio.Sync.Client(syncIdentity.token);
+
+        // wait for sync client to be ready
+        await event(syncClient, 'connectionStateChanged', 5000, 'Sync client - connected', 'connected');
         Logger.info('Sync client initialized', syncClient);
 
         const voiceDevice = new Twilio.Device();
         await voiceDevice.setup(voiceIdentity.token);
-        Logger.info('Voice client initialized', voiceDevice);
 
         // Creates sync map for worker
         const map = await syncClient.map({

@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { poll } from './VoiceHelper';
 
 class VoiceClientProxy extends EventEmitter {
   constructor(syncMap) {
@@ -22,6 +23,10 @@ class VoiceClientProxy extends EventEmitter {
   }
   unmute() {
     this.map.set('call#unmute', {});
+  }
+  // For certain events, such as device#ready, it is safer to poll sync map directly until key is found
+  waitForEvent(eventName, attempts) {
+    return poll(this.map, eventName, `Did not receive: ${eventName}`, attempts);
   }
   // Can be used to call another client directly by identity or to twilio phone number. Do note that on average it takes longer to create a reservation this way
   async call(to) {

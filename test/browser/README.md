@@ -300,6 +300,9 @@ This will illustrate general setup and teardown in context of voice and Sync for
     * *** Launch browser - `const aliceBrowser = await browserLauncher('http:localhost:3555?worker=alice&runtimeBaseUrl=https://cake-lord-101.twil.io)` (starting server with the given url)
 * Before => 
     * *** Initiate voice client proxy -> `const aliceVoiceClient = voiceClientProxy(syncClient, 'alice')` - our main interface for interacting with voice client in the browser. This will open an existing Sync Map by the given name in the second argument
+* Test => 
+    * *** Listen on voice SDK errors via `aliceVoiceClient.on(err => { throw err });`
+    * *** Wait for device ready via polling `aliceVoiceClient.waitForEvent('device#ready', 10);` (Since we can't ensure that voiceClientProxy will be initiated before device#ready is received we need to poll Sync map directly. This is required only if your test is attempting to use some browser functionality right away. E.g., making a call to a number to enqueue a task)
 * After => 
     * *** Reset the browser page - `aliceVoiceClient.refreshBrowserClient()` (this will refresh the browser and re-initialize all clients - sync and voice)
 * AfterAll
@@ -326,11 +329,15 @@ Notes:
 - Sync these steps are heavy and take time, you should not wait on the following event: `device#ready` because that will happen way before we attach a listener.
 
 `workerVoiceClient` has following methods:
-- mute(), accept(), reject(), ignore(), disconnect(), unmute(), refreshBrowserClient(), call()
+- mute(), accept(), reject(), ignore(), disconnect(), unmute(), refreshBrowserClient(), call(), waitForEvent()
 
 - method `call()` takes {string} argument, which can either be a Twilio phone number or a client name in the browser.
 It is useful when you need your `customer` to be an actual voice entity which you can control. But it does take longer for reservation to be made
 therefore for simple tests it is advised that you use a simple REST call with a TwiML attached to it.
+
+*Important:* method `waitForEvent()` is directly polling Sync map for a specific key. Due to the nature of how the setup works we cannot guarantee 
+that `device#ready` will arrive after we have initialised the `voiceClientProxy` therefore at start of the test we should poll map for that specific event
+to make sure `Voice Device` is ready and we can interact with it.
 
 `workerVoiceClient` will emit every voice event there is
 
