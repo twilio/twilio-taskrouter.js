@@ -122,79 +122,6 @@
 
         Logger.info('Fetched client sync map:', query.worker);
 
-        // Instruction transport Node -> Browser
-        const remoteActions = async args => {
-          // Ensure that we are listening only on Sync events which originate from node
-          if(!args.isLocal) {
-
-            if(args.item.key === 'make#call') {
-              await voiceDevice.connect({ To: `${args.item.value.to}` })
-            }
-
-            if(!globalConnection) {
-              return;
-            }
-
-            const status = await globalConnection.status();
-            switch (args.item.key) {
-              case 'call#mute':
-                if(status === 'open') {
-                  await globalConnection.mute(true);
-                } else {
-                  await map.set('connection#mute#error', { msg: `Cannot mute call, call is in state: ${status}` });
-                }
-                break;
-              case 'call#unmute':
-                if(status === 'open') {
-                  await globalConnection.mute(false);
-                } else {
-                  await map.set('connection#unmute#error', { msg: `Cannot unmute call, call is in state: ${status}` });
-                }
-                break;
-              case 'call#accept':
-                if(status === 'pending') {
-                  await globalConnection.accept();
-                } else {
-                  await map.set('connection#accept#error', { msg: `Cannot accept call, call is in state: ${status}` });
-                }
-                break;
-              case 'call#reject':
-                if(status === 'pending') {
-                  await globalConnection.reject();
-                } else {
-                  await map.set('connection#reject#error', { msg: `Cannot reject call, call is in state: ${status}` });
-                }
-                break;
-              case 'call#ignore':
-                if(status === 'pending') {
-                  await globalConnection.mute(true);
-                } else {
-                  await map.set('connection#ignore#error', { msg: `Cannot ignore call, call is in state: ${status}` });
-                }
-                break;
-              case 'call#disconnect':
-                if(status === 'open') {
-                  await globalConnection.disconnect();
-                } else {
-                  await map.set('connection#disconnect#error', { msg: `Cannot disconnect call, call is in state: ${status}` });
-                }
-                break;
-              case 'browser#reset':
-                Logger.info('Resetting page..');
-                voiceDevice.destroy();
-                map.removeAllListeners();
-                await map.removeMap();
-                await syncClient.map(query.worker);
-                location.reload();
-                break;
-              default:
-                break;
-            }
-          }
-        };
-
-        map.on('itemAdded', remoteActions);
-
         // Connection event handlers
         const connectionOnAccept = connection => {
           globalConnection = connection;
@@ -266,6 +193,80 @@
           connection.on('warning', connectionOnWarning);
           connection.on('warning-cleared', connectionOnWarningCleared);
         };
+
+        // Instruction transport Node -> Browser
+        const remoteActions = async args => {
+          // Ensure that we are listening only on Sync events which originate from node
+          if(!args.isLocal) {
+
+            if(args.item.key === 'make#call') {
+              const connection = await voiceDevice.connect({ To: `${args.item.value.to}` });
+              deviceOnIncoming(connection);
+            }
+
+            if(!globalConnection) {
+              return;
+            }
+
+            const status = await globalConnection.status();
+            switch (args.item.key) {
+              case 'call#mute':
+                if(status === 'open') {
+                  await globalConnection.mute(true);
+                } else {
+                  await map.set('connection#mute#error', { msg: `Cannot mute call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#unmute':
+                if(status === 'open') {
+                  await globalConnection.mute(false);
+                } else {
+                  await map.set('connection#unmute#error', { msg: `Cannot unmute call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#accept':
+                if(status === 'pending') {
+                  await globalConnection.accept();
+                } else {
+                  await map.set('connection#accept#error', { msg: `Cannot accept call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#reject':
+                if(status === 'pending') {
+                  await globalConnection.reject();
+                } else {
+                  await map.set('connection#reject#error', { msg: `Cannot reject call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#ignore':
+                if(status === 'pending') {
+                  await globalConnection.mute(true);
+                } else {
+                  await map.set('connection#ignore#error', { msg: `Cannot ignore call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#disconnect':
+                if(status === 'open') {
+                  await globalConnection.disconnect();
+                } else {
+                  await map.set('connection#disconnect#error', { msg: `Cannot disconnect call, call is in state: ${status}` });
+                }
+                break;
+              case 'browser#reset':
+                Logger.info('Resetting page..');
+                voiceDevice.destroy();
+                map.removeAllListeners();
+                await map.removeMap();
+                await syncClient.map(query.worker);
+                location.reload();
+                break;
+              default:
+                break;
+            }
+          }
+        };
+
+        map.on('itemAdded', remoteActions);
 
         // Device event listeners
         voiceDevice.on('ready', deviceOnReady);
