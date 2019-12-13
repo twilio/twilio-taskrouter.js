@@ -68,16 +68,18 @@ export const poll = (map, key, msg, maxTries) => {
     }
 
     // Waste half a second
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 1000));
 
     if (err) {
       if (attempt >= maxTries) {
-        throw err;
+        throw new Error(msg);
       } else {
-        return await loop(+attempt);
+        return loop(++attempt);
       }
     }
   };
 
   return loop();
 };
+
+export const twiMl = 'http://twimlets.com/echo?Twiml=%3CResponse%3E%0A%20%20%20%20%20%3CSay%20loop%3D%2250%22%3EA%20little%20less%20conversation%2C%20a%20little%20more%20action%20please.%3C%2FSay%3E%0A%3C%2FResponse%3E%0A&';

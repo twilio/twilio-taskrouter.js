@@ -42,6 +42,7 @@
      *
      * Query key: runtimeBaseUrl
      * Multiple: false
+     * Default: none
      * Example: potato-lover-666.twil.io ; cat-72.stage.twil.io ; meow-64.dev.twil.io
      */
     const readQuery = () => {
@@ -254,10 +255,14 @@
                 break;
               case 'browser#reset':
                 Logger.info('Resetting page..');
-                voiceDevice.destroy();
                 map.removeAllListeners();
+                await new Promise(r => setTimeout(r, 200));
+                voiceDevice.destroy();
+                await new Promise(r => setTimeout(r, 200));
                 await map.removeMap();
+                await new Promise(r => setTimeout(r, 200));
                 await syncClient.map(query.worker);
+                await new Promise(r => setTimeout(r, 200));
                 location.reload();
                 break;
               default:

@@ -5,11 +5,9 @@ import { getAccessToken, getSyncToken } from '../../../util/MakeAccessToken';
 const credentials = require('../../../env');
 import { assert } from 'chai';
 import { describe, it, beforeEach, afterEach, before, after,  } from 'mocha';
-import { serveVoiceHtml, browserLauncher, event } from '../../../util/VoiceHelper';
+import { serveVoiceHtml, browserLauncher, event, twiMl } from '../../../util/VoiceHelper';
 import { voiceClientProxy } from '../../../util/VoiceClientProxy';
 import SyncHelper from '../../../util/SyncHelper';
-
-const twiMl = 'http://twimlets.com/echo?Twiml=%3CResponse%3E%0A%20%20%20%20%20%3CSay%20loop%3D%2250%22%3EA%20little%20less%20conversation%2C%20a%20little%20more%20action%20please.%3C%2FSay%3E%0A%3C%2FResponse%3E%0A&';
 
 describe('Supervisor Inbound', function() {
 
@@ -140,32 +138,39 @@ describe('Supervisor Inbound', function() {
       throw err;
     });
 
+    await aliceVoiceClient.waitForEvent('device#ready', 10);
+    await supervisorVoiceClient.waitForEvent('device#ready', 10);
+
     await envTwilio.enqueueTask(credentials.numberTo, credentials.numberFrom, twiMl);
 
-    const reservationCreated = await event(aliceWorker, 'reservationCreated', 'Did not receive: reservation#created', 5000);
-    await reservationCreated.conference();
+    const reservation = await event(aliceWorker, 'reservationCreated', 'Did not receive: reservation#created', 10000);
+    await reservation.conference();
     await event(aliceVoiceClient, 'device#incoming', 'Did not receive: device#incoming', 10000);
     aliceVoiceClient.accept();
-    await event(reservationCreated, 'accepted', 'Did not receive: reservation#accepted', 10000);
+    await event(reservation, 'accepted', 'Did not receive: reservation#accepted', 10000);
 
-    await supervisorWorker.monitor(reservationCreated.task.sid, reservationCreated.sid);
+    await supervisorWorker.monitor(reservation.task.sid, reservation.sid);
     await event(supervisorVoiceClient, 'device#incoming',  'Did not receive: device#incoming', 10000);
     supervisorVoiceClient.accept();
 
-    const participants = await envTwilio.fetchConferenceParticipants(reservationCreated.task.attributes.conference.sid);
+    const participants = await envTwilio.fetchConferenceParticipants(reservation.task.attributes.conference.sid);
 
     assert.strictEqual(participants.length, 3, 'Participant count in conference');
 
-    const customerConferenceSid = reservationCreated.task.attributes.conference.participants.customer;
-    const workerConferenceSid = reservationCreated.task.attributes.conference.participants.worker;
+    const customerConferenceSid = reservation.task.attributes.conference.participants.customer;
+    const workerConferenceSid = reservation.task.attributes.conference.participants.worker;
 
     const supervisorParticipant = participants.find(participant => participant.sid !== customerConferenceSid, workerConferenceSid);
     assert.strictEqual(supervisorParticipant.muted, true, 'Supervisor participant muted on join');
 
     supervisorVoiceClient.disconnect();
     await event(supervisorVoiceClient, 'connection#disconnect', 'Supervisor did not receive: connection#disconnect', 10000);
-    const conference = await envTwilio.fetchConference(reservationCreated.task.attributes.conference.sid);
+    const conference = await envTwilio.fetchConference(reservation.task.attributes.conference.sid);
 
     assert.strictEqual(conference.status, 'in-progress', 'Conference status');
+
+    aliceVoiceClient.disconnect();
+    await event(reservation, 'wrapup', 'Alice: Did not receive: reservation#wrapup', 10000);
+    assert.strictEqual(reservation.status, 'wrapping', 'Reservation status');
   });
 });

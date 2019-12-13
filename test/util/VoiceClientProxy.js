@@ -2,9 +2,10 @@ import { EventEmitter } from 'events';
 import { poll } from './VoiceHelper';
 
 class VoiceClientProxy extends EventEmitter {
-  constructor(syncMap) {
+  constructor(syncMap, workerName) {
     super();
     this.map = syncMap;
+    this.name = workerName;
   }
   accept() {
     this.map.set('call#accept', {});
@@ -25,8 +26,8 @@ class VoiceClientProxy extends EventEmitter {
     this.map.set('call#unmute', {});
   }
   // For certain events, such as device#ready, it is safer to poll sync map directly until key is found
-  waitForEvent(eventName, attempts) {
-    return poll(this.map, eventName, `Did not receive: ${eventName}`, attempts);
+  async waitForEvent(eventName, attempts) {
+    await poll(this.map, eventName, `Did not find event: ${eventName} for worker: ${this.name}`, attempts);
   }
   // Can be used to call another client directly by identity or to twilio phone number. Do note that on average it takes longer to create a reservation this way
   async call(to) {
@@ -41,7 +42,7 @@ export const voiceClientProxy = async(syncClient, workerName) => {
   // Create new worker voice event map
   const syncMap = await syncClient.openMap(workerName);
 
-  const eventProxy = new VoiceClientProxy(syncMap);
+  const eventProxy = new VoiceClientProxy(syncMap, workerName);
 
   // Attach Event proxy to emit on non-local Sync events
   syncMap.on('itemAdded', args => {
