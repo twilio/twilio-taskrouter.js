@@ -153,6 +153,7 @@ describe('Supervisor Inbound', function() {
     await event(supervisorVoiceClient, 'device#incoming',  'Did not receive: device#incoming', 10000);
     supervisorVoiceClient.accept();
 
+    await supervisorVoiceClient.waitForEvent('connection#accept', 10);
     const participants = await envTwilio.fetchConferenceParticipants(reservation.task.attributes.conference.sid);
 
     assert.strictEqual(participants.length, 3, 'Participant count in conference');
