@@ -70,7 +70,7 @@ describe('Worker', () => {
       sinon.stub(worker, 'getRoutes').returns(routes);
 
       setAttributesSpy = sinon.spy(worker, 'setAttributes');
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
@@ -218,7 +218,7 @@ describe('Worker', () => {
       sinon.stub(worker, 'activities').get(() => activities);
 
       _updateWorkerActivitySpy = sinon.spy(worker, '_updateWorkerActivity');
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {

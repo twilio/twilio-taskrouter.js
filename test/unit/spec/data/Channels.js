@@ -46,7 +46,7 @@ describe('Channels', () => {
         const requestURL = path.join('Workspaces', 'WSxxx', 'Workers', 'WKxxx', 'WorkerChannels');
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => {

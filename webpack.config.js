@@ -1,6 +1,7 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const WebpackAutoInject = require('webpack-auto-inject-version');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 const createConfig = libraryTarget => {
     const config = {
@@ -19,14 +20,16 @@ const createConfig = libraryTarget => {
                 },
             }),
             new webpack.DefinePlugin({
+                // eslint-disable-next-line no-process-env
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
             })
         ],
+        externals: [nodeExternals()],
         module: {},
         optimization: {
             minimizer: [
-                new UglifyJsPlugin({
-                    uglifyOptions: {
+                new TerserPlugin({
+                    terserOptions: {
                         parallel: true,
                         output: {
                             comments: /^\**!|@preserve|@license|@cc_on/
@@ -64,7 +67,7 @@ const createConfig = libraryTarget => {
     return config;
 };
 
-module.exports = function(env, argv) {
+module.exports = function(env) {
   if (env && env.NODE_ENV === 'test') {
     return [
       createConfig('window'),
