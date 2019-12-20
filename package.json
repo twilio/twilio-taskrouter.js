@@ -87,7 +87,7 @@
     "webpack-cli": "^3.3.10"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=10.18.0"
   },
   "types": "./types.d.ts"
 }

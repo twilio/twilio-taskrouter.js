@@ -27,16 +27,18 @@ Account must have two valid Twilio phone number.
 
 For the sake of clarity, rename existing phone number to 'FROM' and the newly bought one to - 'TO'
 
+*IMPORTANT* Each worker should have an attribute `"contact_uri":"client:{WORKER_NAME}` actual worker name must match what is after `client:`
+
 ## Environment variables
 
 Following environment variables must be exported within node: (add them to `test.json`)
 
 ```
-numberToSid   = "PNXXXXXXXXXXXX"
-numberFromSid = "PNXXXXXXXXXXXX"
-numberTo      = "+XXXXXXXXXXXXX"
-numberFrom    = "+XXXXXXXXXXXXX"
-runtimeDomain = "sad-cat-101"
+"numberToSid": "PNXXXXXXXXXXXX",
+"numberFromSid": "PNXXXXXXXXXXXX",
+"numberTo": "+XXXXXXXXXXXXX",
+"numberFrom": "+XXXXXXXXXXXXX",
+"runtimeDomain": "sad-cat-101"
 ```
 
 Numbers and number sids can be found by going [here](https://www.twilio.com/console/phone-numbers/incoming) and clicking on the number
@@ -64,6 +66,28 @@ For you to be able to make calls from browser to Twilio phone numbers or other v
 a TwiML app which will serve as proxy of kind and redirect your calls.
 
 Navigate to [here](https://www.twilio.com/console/voice/twiml/apps) and create a new Application with default template.
+
+## TwiML
+
+Navigate to [here](https://www.twilio.com/console/twiml-bins) and add a new TwiML with the following content:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+<Say loop="100">
+A little less conversation, a little more action please.
+</Say>
+</Response>
+```
+
+You can name it anything you want. Then navigate to your `NUMBER_FROM` in console and set the `A call comes in` hook to trigger that TwiML.
+
+![image](./screenshots/number_from_twiml_on_call.png)
+
+*NOTE* Reason we are doing this is to reduce expensiveness of test suites. If your suite requires very minor `client/customer` interaction, for them to only
+accept a call, it is a lot easier to use a TwiML. 
+
+E.g. For `worker.createTask()` you could pass `number_from` as a first argument which would simply call that TwiML and you would have conference.
 
 ## Twilio functions
 

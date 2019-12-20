@@ -122,7 +122,7 @@ describe('Supervisor Inbound', function() {
       }
 
       if (supervisorBrowser) {
-        await aliceBrowser.kill();
+        await supervisorBrowser.kill();
       }
 
       // Close HTTP server
