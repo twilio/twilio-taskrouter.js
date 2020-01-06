@@ -61,7 +61,7 @@ describe('Activity', () => {
 
         let sandbox;
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => sandbox.restore());
@@ -146,7 +146,7 @@ describe('Activity', () => {
         });
 
         it('should return an error when updating to Idle with rejectPendingReservations as true', () => {
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Error));
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Error);
 
             const activities = new Map();
             mockList.contents.forEach(activityPayload => {

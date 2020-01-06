@@ -81,7 +81,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => sandbox.restore());
@@ -165,7 +165,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => sandbox.restore());
@@ -244,7 +244,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => {
@@ -340,7 +340,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => {
@@ -387,7 +387,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => {
@@ -437,7 +437,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => {
@@ -470,7 +470,7 @@ describe('Task', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.sandbox.create();
+            sandbox = sinon.createSandbox();
         });
 
         afterEach(() => {
