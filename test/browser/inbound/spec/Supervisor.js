@@ -122,14 +122,14 @@ describe('Supervisor Inbound', function() {
       }
 
       if (supervisorBrowser) {
-        await aliceBrowser.kill();
+        await supervisorBrowser.kill();
       }
 
       // Close HTTP server
       await server.close();
     });
 
-  it('should monitor conference', async() => {
+  it('ORCH-558 | should monitor conference', async() => {
     aliceVoiceClient.on('error', err => {
       throw err;
     });
