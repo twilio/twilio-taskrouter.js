@@ -33,7 +33,7 @@ export const browserLauncher = (startingUrl, chromeArgs = []) => {
   return launch({
     startingUrl: startingUrl,
     chromeFlags: [
-        '--headless',
+        // '--headless',
         '--disable-gpu',
         '--allow-file-access-from-files',
         '--use-fake-device-for-media-stream',
@@ -74,6 +74,7 @@ export const poll = (map, key, msg, maxTries) => {
       if (attempt >= maxTries) {
         throw err;
       } else {
+        // eslint-disable-next-line consistent-return
         return await loop(+attempt);
       }
     }

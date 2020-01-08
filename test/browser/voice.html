@@ -54,23 +54,18 @@
       const queryParams = new URLSearchParams(window.location.search);
 
       const runtimeBaseUrl = queryParams.get('runtimeBaseUrl');
-
       if(!runtimeBaseUrl) {
         Logger.error('Query param: runtimeBaseUrl is required. Example: https://mydomain.twil.io ; https://mydomain.stage.twil.io');
       }
-
       Logger.info('Runtime base URL:', runtimeBaseUrl);
 
-      response.runtimeBaseUrl = runtimeBaseUrl;
-
       const workerQuery = queryParams.get('worker');
-
       Logger.info('Worker name:', workerQuery);
-
       if(!workerQuery) {
         throw 'query param: worker is required. Example: worker=alice'
       }
 
+      response.runtimeBaseUrl = runtimeBaseUrl;
       response.worker = workerQuery;
 
       Logger.info('readQuery():', response);
@@ -79,7 +74,7 @@
 
     const getToken = async (runtimeBaseUrl, identity = '') => {
       Logger.info('Getting token for identity:', identity);
-      const url = `${runtimeBaseUrl + '/voice-sync-token'}${(identity) ? '?identity=' + identity : ''}`;
+      const url = `${runtimeBaseUrl + '/access-token'}${(identity) ? '?identity=' + identity : ''}`;
       const resp = await fetch(url, {
         method: 'GET'
       });
@@ -99,18 +94,25 @@
         }
 
         // Fetch tokens for voice and sync
-        const syncIdentity = await getToken(query.runtimeBaseUrl);
-        const voiceIdentity = await getToken(query.runtimeBaseUrl, query.worker);
+        const browserIdentity = await getToken(query.runtimeBaseUrl, query.worker);
 
         // Initiate sync and voice clients
-        const syncClient = new Twilio.Sync.Client(syncIdentity.token);
+        const syncClient = new Twilio.Sync.Client(browserIdentity.token, { region: 'stage-us1' });
 
         // wait for sync client to be ready
         await event(syncClient, 'connectionStateChanged', 5000, 'Sync client - connected', 'connected');
         Logger.info('Sync client initialized', syncClient);
 
         const voiceDevice = new Twilio.Device();
-        await voiceDevice.setup(voiceIdentity.token);
+        // await voiceDevice.setup(browserIdentity.token, {
+        //   eventgw: query.eventgwOpt,
+        //   chunderw: query.chunderwOpt
+        // });
+        await voiceDevice.setup(browserIdentity.token, {
+          "eventgw": "eventgw.stage.twilio.com",
+          "chunderw": "chunderw-vpc-gll.stage.twilio.com"
+        });
+
 
         // Creates sync map for worker
         const map = await syncClient.map({

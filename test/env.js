@@ -1,7 +1,7 @@
 // Pre-populate with test.json if it exists.
 let credentials = {};
 try {
-  credentials = require('./test.json');
+  credentials = require('../test.stage.outbound.json');
 } catch (error) {
   // Do nothing.
 }
@@ -25,6 +25,7 @@ try {
   'numberToSid',
   'numberFromSid',
   'runtimeDomain',
+  'prodRuntimeDomain',
   'numberTo',
   'numberFrom',
   'multiTaskAliceSid',
@@ -34,7 +35,9 @@ try {
   'multiTaskNumActivities',
   'multiTaskNumChannels',
   'ebServer',
-  'wsServer'
+  'wsServer',
+  'eventgw',
+  'chunderw'
 ].forEach(key => {
   if (!(key in credentials)) {
     throw new Error('Missing ' + key);
@@ -44,11 +47,14 @@ try {
 if (credentials.hasOwnProperty('env')) {
   if (credentials.env.includes('dev')) {
     credentials.runtimeBaseUrl = 'https://' + credentials.runtimeDomain + '.dev.twil.io';
+    credentials.syncClientRegion = 'dev-us1';
   } else if (credentials.env.includes('stage')) {
     credentials.runtimeBaseUrl = 'https://' + credentials.runtimeDomain + '.stage.twil.io';
+    credentials.syncClientRegion = 'stage-us1';
   } else {
     credentials.env = credentials.env.concat('.us1');
     credentials.runtimeBaseUrl = 'https://' + credentials.runtimeDomain + '.twil.io';
+    credentials.syncClientRegion = 'us1';
   }
 } else {
   credentials.runtimeBaseUrl = 'https://' + credentials.runtimeDomain + '.twil.io';

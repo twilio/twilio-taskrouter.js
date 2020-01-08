@@ -34,11 +34,11 @@ describe('Supervisor Inbound', function() {
     // Update enqueue handler to customize enqueue TwiML
     const taskAttributes = { to: 'Alice' };
     const functionPath = 'enqueueTask?taskAttributes=' + encodeURI(JSON.stringify(taskAttributes)) + '&workflowSid=' + credentials.multiTaskWorkflowSid;
-    await envTwilio.updateVoiceHandlerUrl(credentials.numberToSid, credentials.runtimeBaseUrl, functionPath);
+    await envTwilio.updateVoiceHandlerUrl(credentials.numberToSid, credentials.prodRuntimeDomain, functionPath);
 
     // Initiate Sync client
     const syncToken = await getSyncToken();
-    syncClient = new SyncHelper(syncToken);
+    syncClient = new SyncHelper(syncToken, { region: 'stage-us1' });
 
     // Clean up + prepare participant voice event maps
     await syncClient.removeMap('alice');
@@ -152,6 +152,7 @@ describe('Supervisor Inbound', function() {
     await event(supervisorVoiceClient, 'device#incoming',  'Did not receive: device#incoming', 10000);
     supervisorVoiceClient.accept();
 
+    await supervisorVoiceClient.waitForEvent('connection#accept', 10);
     const participants = await envTwilio.fetchConferenceParticipants(reservationCreated.task.attributes.conference.sid);
 
     assert.strictEqual(participants.length, 3, 'Participant count in conference');

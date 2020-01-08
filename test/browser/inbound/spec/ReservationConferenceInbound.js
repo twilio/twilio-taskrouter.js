@@ -12,7 +12,6 @@ import SyncHelper from '../../../util/SyncHelper';
 const twiMl = 'http://twimlets.com/echo?Twiml=%3CResponse%3E%0A%20%20%20%20%20%3CSay%20loop%3D%2250%22%3EA%20little%20less%20conversation%2C%20a%20little%20more%20action%20please.%3C%2FSay%3E%0A%3C%2FResponse%3E%0A&';
 
 describe('Reservation Conference Inbound', async() => {
-
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
 
     let server;
@@ -29,19 +28,25 @@ describe('Reservation Conference Inbound', async() => {
       // Update enqueue handler to customize enqueue TwiML
       const taskAttributes = { to: 'Alice' };
       const functionPath = 'enqueueTask?taskAttributes=' + encodeURI(JSON.stringify(taskAttributes)) + '&workflowSid=' + credentials.multiTaskWorkflowSid;
-      await envTwilio.updateVoiceHandlerUrl(credentials.numberToSid, credentials.runtimeBaseUrl, functionPath);
+      await envTwilio.updateVoiceHandlerUrl(credentials.numberToSid, credentials.prodRuntimeDomain, functionPath);
+
 
       // Initiate Sync client
       const syncToken = await getSyncToken();
-      syncClient = new SyncHelper(syncToken);
+      syncClient = new SyncHelper(syncToken, { region: 'stage-us1' });
 
       // Clean up + prepare Alice voice event map
       await syncClient.removeMap('alice');
       await syncClient.createMap('alice');
 
+      console.log(credentials.syncClientRegion);
+      console.log(credentials.eventgw);
+      console.log(credentials.chunderw);
+
       // Launch chrome and initialize Alice's client voice and sync clients in browser
       aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}`);
 
+      // aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
       // Ensure that Bob is offline
       await envTwilio.updateWorkerActivity(
           credentials.multiTaskWorkspaceSid,

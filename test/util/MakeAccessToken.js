@@ -21,7 +21,8 @@ module.exports = {
     return accessToken.toJwt();
   },
   getSyncToken: async() => {
-    const response = await get(credentials.runtimeBaseUrl + '/voice-sync-token');
+    const response = await get(credentials.runtimeBaseUrl + '/access-token');
+
     const token = _.get(response, 'data.token');
     if (!token) {
       throw new Error('Could not retrieve sync token');

@@ -2,7 +2,12 @@ import { SyncClient } from 'twilio-sync';
 
 export default class SyncHelper {
   constructor(token, options = {}) {
-    this.client = new SyncClient(token, options);
+    console.log(options);
+    try {
+      this.client = new SyncClient(token, options);
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
   }
   createMap(name) {
    return this.client.map({
@@ -16,6 +21,7 @@ export default class SyncHelper {
       mode: 'open_existing'
     });
   }
+
   getConferenceStateMap(taskSid) {
     console.log(taskSid + '.CS');
     return this.client.map({
