@@ -48,7 +48,10 @@
       Logger.info('Starting to read query..');
       const response = {
         runtimeBaseUrl: '',
-        worker: ''
+        worker: '',
+        regionOpt: '',
+        eventgwOpt: '',
+        chunderwOpt: ''
       };
 
       const queryParams = new URLSearchParams(window.location.search);
@@ -67,6 +70,11 @@
 
       response.runtimeBaseUrl = runtimeBaseUrl;
       response.worker = workerQuery;
+
+      // fetch optional params for realm-based testing
+      response.regionOpt = queryParams.get("regionOpt");
+      response.eventgwOpt = queryParams.get("eventgwOpt");
+      response.chunderwOpt = queryParams.get("chunderwOpt");
 
       Logger.info('readQuery():', response);
       return response;
@@ -97,22 +105,17 @@
         const browserIdentity = await getToken(query.runtimeBaseUrl, query.worker);
 
         // Initiate sync and voice clients
-        const syncClient = new Twilio.Sync.Client(browserIdentity.token, { region: 'stage-us1' });
+        const syncClient = new Twilio.Sync.Client(browserIdentity.token, { region: query.regionOpt });
 
         // wait for sync client to be ready
         await event(syncClient, 'connectionStateChanged', 5000, 'Sync client - connected', 'connected');
         Logger.info('Sync client initialized', syncClient);
 
         const voiceDevice = new Twilio.Device();
-        // await voiceDevice.setup(browserIdentity.token, {
-        //   eventgw: query.eventgwOpt,
-        //   chunderw: query.chunderwOpt
-        // });
         await voiceDevice.setup(browserIdentity.token, {
-          "eventgw": "eventgw.stage.twilio.com",
-          "chunderw": "chunderw-vpc-gll.stage.twilio.com"
+          eventgw: query.eventgwOpt,
+          chunderw: query.chunderwOpt
         });
-
 
         // Creates sync map for worker
         const map = await syncClient.map({

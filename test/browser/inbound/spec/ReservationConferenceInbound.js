@@ -44,9 +44,9 @@ describe('Reservation Conference Inbound', async() => {
       console.log(credentials.chunderw);
 
       // Launch chrome and initialize Alice's client voice and sync clients in browser
-      aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}`);
+      // aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}`);
 
-      // aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
+      aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
       // Ensure that Bob is offline
       await envTwilio.updateWorkerActivity(
           credentials.multiTaskWorkspaceSid,

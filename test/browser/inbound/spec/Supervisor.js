@@ -47,8 +47,8 @@ describe('Supervisor Inbound', function() {
     await syncClient.createMap('bob');
 
     // Launch chrome and initialize voice and sync clients for call participants
-    aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}`);
-    supervisorBrowser = await browserLauncher(`http://localhost:${PORT}?worker=bob&runtimeBaseUrl=${credentials.runtimeBaseUrl}`);
+    aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
+    supervisorBrowser = await browserLauncher(`http://localhost:${PORT}?worker=bob&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
 
     // Ensure that Bob is offline
     await envTwilio.updateWorkerActivity(
