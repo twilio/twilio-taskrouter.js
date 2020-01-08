@@ -38,7 +38,7 @@ describe('Supervisor Inbound', function() {
 
     // Initiate Sync client
     const syncToken = await getSyncToken();
-    syncClient = new SyncHelper(syncToken, { region: 'stage-us1' });
+    syncClient = new SyncHelper(syncToken, { region: credentials.syncClientRegion });
 
     // Clean up + prepare participant voice event maps
     await syncClient.removeMap('alice');

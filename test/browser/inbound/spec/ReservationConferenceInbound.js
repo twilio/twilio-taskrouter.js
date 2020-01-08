@@ -33,7 +33,7 @@ describe('Reservation Conference Inbound', async() => {
 
       // Initiate Sync client
       const syncToken = await getSyncToken();
-      syncClient = new SyncHelper(syncToken, { region: 'stage-us1' });
+      syncClient = new SyncHelper(syncToken, { region: credentials.syncClientRegion });
 
       // Clean up + prepare Alice voice event map
       await syncClient.removeMap('alice');
