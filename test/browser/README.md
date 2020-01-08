@@ -40,6 +40,9 @@ Following environment variables must be exported within node: (add them to `test
 "numberFrom": "+XXXXXXXXXXXXX",
 "runtimeDomain": "sad-cat-101"
 "prodRuntimeDomain": "a-sad-cat-running-in-prod" // Must be pointed to a Twilio function running in Production (Dev/Stage can't has blocked  internally). Will be used to enqueue the Task.
+
+"eventgw": "eventgw.{dev || stage}.twilio.com",  // Use "" if in prod
+"chunderw": "chunderw-vpc-gll.{dev || stage}.twilio.com", // Use "" if in prod
 ```
 
 Numbers and number sids can be found by going [here](https://www.twilio.com/console/phone-numbers/incoming) and clicking on the number
