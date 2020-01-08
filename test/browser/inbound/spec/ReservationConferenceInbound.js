@@ -4,12 +4,10 @@ import { assert } from 'chai';
 import EnvTwilio from '../../../util/EnvTwilio';
 import Worker from '../../../../lib/Worker';
 import { describe, it, beforeEach, afterEach, before, after,  } from 'mocha';
-import { serveVoiceHtml, browserLauncher, event } from '../../../util/VoiceHelper';
+import { serveVoiceHtml, browserLauncher, event, twiMl } from '../../../util/VoiceHelper';
 import { voiceClientProxy } from '../../../util/VoiceClientProxy';
 import AssertionUtils from '../../../util/AssertionUtils';
 import SyncHelper from '../../../util/SyncHelper';
-
-const twiMl = 'http://twimlets.com/echo?Twiml=%3CResponse%3E%0A%20%20%20%20%20%3CSay%20loop%3D%2250%22%3EA%20little%20less%20conversation%2C%20a%20little%20more%20action%20please.%3C%2FSay%3E%0A%3C%2FResponse%3E%0A&';
 
 describe('Reservation Conference Inbound', async() => {
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
@@ -39,14 +37,9 @@ describe('Reservation Conference Inbound', async() => {
       await syncClient.removeMap('alice');
       await syncClient.createMap('alice');
 
-      console.log(credentials.syncClientRegion);
-      console.log(credentials.eventgw);
-      console.log(credentials.chunderw);
-
       // Launch chrome and initialize Alice's client voice and sync clients in browser
-      // aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}`);
-
       aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
+
       // Ensure that Bob is offline
       await envTwilio.updateWorkerActivity(
           credentials.multiTaskWorkspaceSid,
@@ -109,27 +102,35 @@ describe('Reservation Conference Inbound', async() => {
       await server.close();
     });
 
-    it('should enqueue task and redirect customers call to worker', async() => {
+    it('ORCH-557 | should enqueue task and redirect customers call to worker', async() => {
       // Listen on voice errors
       aliceVoiceClient.on('error', err => {
         throw err;
       });
 
+      await aliceVoiceClient.waitForEvent('device#ready', 10);
+
       await envTwilio.enqueueTask(credentials.numberTo, credentials.numberFrom, twiMl);
 
-      const reservationCreated = await event(aliceWorker, 'reservationCreated', 'Did not receive: reservation#created', 5000);
+      const reservationCreated = await event(aliceWorker, 'reservationCreated', 'Did not receive: reservation#created', 10000);
 
       assert.strictEqual(reservationCreated.status, 'pending', 'Reservation status');
 
       await reservationCreated.conference();
-      const voiceConnectionPending = await event(aliceVoiceClient, 'device#incoming', 'Did not receive: device#incoming', 5000);
+      const voiceConnectionPending = await event(aliceVoiceClient, 'device#incoming', 'Did not receive: device#incoming', 10000);
       assert.strictEqual(voiceConnectionPending._status, 'pending', 'Call status');
       aliceVoiceClient.accept();
 
-      const reservationAccepted = await event(reservationCreated, 'accepted', 'Did not receive: reservation#accepted', 5000);
+      const reservationAccepted = await event(reservationCreated, 'accepted', 'Did not receive: reservation#accepted', 10000);
+
+      assert.strictEqual(reservationAccepted.status, 'accepted', 'Reservation status');
 
       AssertionUtils.assertSid(reservationAccepted.task.attributes.conference.sid, 'CF', 'Expected conference sid to be: CF{32}');
       AssertionUtils.assertSid(reservationAccepted.task.attributes.conference.participants.worker, 'CA', 'Expected conference worker sid to be: CA{32}');
       AssertionUtils.assertSid(reservationAccepted.task.attributes.conference.participants.customer, 'CA', 'Expected conference customer to be: CA{32}');
-    }).timeout(10000);
+
+      aliceVoiceClient.disconnect();
+      await event(reservationAccepted, 'wrapup', 'Did not receive: reservation#wrapup', 10000);
+      assert.strictEqual(reservationAccepted.status, 'wrapping', 'Reservation status');
+    });
 });

@@ -25,12 +25,12 @@
   "browser": "./dist/index.window.js",
   "scripts": {
     "webpack": "webpack --config ./webpack.config.js --progress --mode",
-    "mocha": "mocha --require babel-core/register --exit $1",
+    "mocha": "mocha --require @babel/register --exit $1",
     "clean": "rm -rf ./coverage ./dist ./node_modules",
     "lint": "eslint ./lib ./test/integration",
-    "test:unit": "mocha --full-trace --check-leaks --require babel-core/register ./test/unit/index.js --exit",
-    "test:integration": "mocha --full-trace --check-leaks --require babel-core/register ./test/integration/index.js --exit",
-    "test:integration:voice:inbound": "mocha --full-trace --check-leaks --require babel-core/register ./test/browser/inbound/index.js --exit --timeout 30000",
+    "test:unit": "mocha --full-trace --check-leaks --require @babel/register ./test/unit/index.js --exit",
+    "test:integration": "mocha --full-trace --check-leaks --require @babel/register ./test/integration/index.js --exit --timeout 5000",
+    "test:integration:voice:inbound": "mocha --full-trace --check-leaks --require @babel/register ./test/browser/inbound/index.js --exit --timeout 30000",
     "test": "run-s test:unit test:integration",
     "build:dev": "npm run webpack development",
     "build:prod": "npm run webpack production",
@@ -38,7 +38,7 @@
     "build": "npm-run-all lint build:prod",
     "postbuild": "npm-run-all docs coverage",
     "docs": "node ./scripts/docs.js ./dist/docs",
-    "coverage": "istanbul cover _mocha --dir coverage -- -R progress -r babel-register ./test/unit/index.js --exit"
+    "coverage": "nyc --report-dir coverage --reporter html --reporter text-summary yarn test:unit"
   },
   "repository": {
     "type": "git",
@@ -51,43 +51,42 @@
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/plugin-transform-object-assign": "^7.7.4",
+    "@babel/plugin-transform-runtime": "^7.7.6",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/register": "^7.7.4",
+    "@babel/runtime": "^7.7.6",
     "axios": "^0.18.0",
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.2",
-    "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-plugin-transform-runtime": "^6.22.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-stage-3": "^6.24.1",
-    "babel-runtime": "^6.22.0",
     "chai": "^4.1.2",
     "chai-datetime": "^1.4.1",
     "cheerio": "^1.0.0-rc.2",
     "chrome-launcher": "^0.12.0",
     "depcheck": "^0.9.1",
-    "eslint": "^4.19.1",
+    "eslint": "^6.7.2",
     "ink-docstrap": "^1.3.2",
-    "istanbul": "^1.0.0-alpha.2",
     "jsdoc": "^3.5.5",
-    "jsdoc-webpack-plugin-v2": "^2.0.2",
     "license-info-webpack-plugin": "^1.0.0",
     "mocha": "^5.0.4",
     "mock-socket": "^7.1.0",
     "npm": "^6.13.2",
     "npm-run-all": "^4.0.1",
+    "nyc": "^15.0.0-beta.3",
     "release-tool": "MartinAmps/release-tool",
-    "sinon": "^4.5.0",
+    "sinon": "^7.5.0",
     "sinon-chai": "^3.0.0",
+    "terser-webpack-plugin": "^2.3.1",
     "twilio": "^3.6.1",
     "twilio-sync": "^0.11.5",
-    "uglifyjs-webpack-plugin": "^1.2.5",
-    "utf-8-validate": "^4.0.1",
     "vinyl-fs": "^3.0.2",
     "webpack": "^4.1.1",
     "webpack-auto-inject-version": "^1.0.0",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=10.18.0"
   },
   "types": "./types.d.ts"
 }

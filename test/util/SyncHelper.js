@@ -2,12 +2,7 @@ import { SyncClient } from 'twilio-sync';
 
 export default class SyncHelper {
   constructor(token, options = {}) {
-    console.log(options);
-    try {
-      this.client = new SyncClient(token, options);
-    } catch (err) {
-      console.log('Error: ' + err);
-    }
+    this.client = new SyncClient(token, options);
   }
   createMap(name) {
    return this.client.map({

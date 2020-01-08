@@ -1,11 +1,13 @@
 # Voice integration
 
 ## Table of contents
-- [Setup](#Setup)
+- [Account Setup](#account-setup)
   - [Account requirements](#account-requirements)  
   - [Environment variables](#environment-variables)
-  - [Twilio Functions](#twilio-functions)
+  - [Sync instance](#sync-instance)
   - [TwiML Application](#twiml-application)
+  - [TwiML](#twiml)
+  - [Twilio Functions](#twilio-functions)
 - [Voice integration components](#voice-integration-components)
   - [Server](#server)
   - [Browser](#browser)  
@@ -15,29 +17,94 @@
   - [Voice event proxy](#voice-event-proxy)  
 - [General test flow](#general-test-flow)
 
-### Setup
+### Account Setup
 
 ## Account requirements
 
+Make sure to do the following general setup actions listed [here](https://wiki.hq.twilio.com/pages/viewpage.action?spaceKey=CCIS&title=Taskrouter.js+SDK+e2e+testing+setup+instruction): 
+
 Account must have two valid Twilio phone number.
 
-For the sake of clarity, rename existing one to 'FROM' and the new one - 'TO'
+For the sake of clarity, rename existing phone number to 'FROM' and the newly bought one to - 'TO'
+
+*IMPORTANT* Each worker should have an attribute `"contact_uri":"client:{WORKER_NAME}` actual worker name must match what is after `client:`
 
 ## Environment variables
 
-Following environment variables must be exported:
+Following environment variables must be exported within node: (add them to `test.json`)
 
 ```
-numberToSid,
-numberFromSid,
-runtimeDomain
-numberTo
-numberFrom
+"numberToSid": "PNXXXXXXXXXXXX",
+"numberFromSid": "PNXXXXXXXXXXXX",
+"numberTo": "+XXXXXXXXXXXXX",
+"numberFrom": "+XXXXXXXXXXXXX",
+"runtimeDomain": "sad-cat-101"
 ```
+
+Numbers and number sids can be found by going [here](https://www.twilio.com/console/phone-numbers/incoming) and clicking on the number
+![image](./screenshots/number_example.png)
+
+*Note:* Remove any whitespaces from the number
+
+Runtime domain can be found by navigating to any Twilio function [here](https://www.twilio.com/console/functions/manage), opening it and it will be visible on the top.
+![image](./screenshots/runtime_domain_example.png)
+
+*Note:* You should only export the runtime domain, as per example: `cerise-puffin-2651`
+
+## Sync Instance
+
+Make sure that the account has a Sync instance by going to [here](https://www.twilio.com/console/sync/services) and seeing if
+there is an `Default Service` instance. Normally, every account should have one.
+
+If you do have to make one, go with the default settings. No additional configurations are required.
+
+We only need this Sync instance to exist for Twilio functions in the console. You are not required to have instance SID in the `test.json`
+
+## TwiML Application
+
+For you to be able to make calls from browser to Twilio phone numbers or other voice SDK clients, you need
+a TwiML app which will serve as proxy of kind and redirect your calls.
+
+Navigate to [here](https://www.twilio.com/console/voice/twiml/apps) and create a new Application with default template.
+
+## TwiML
+
+Navigate to [here](https://www.twilio.com/console/twiml-bins) and add a new TwiML with the following content:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+<Say loop="100">
+A little less conversation, a little more action please.
+</Say>
+</Response>
+```
+
+You can name it anything you want. Then navigate to your `NUMBER_FROM` in console and set the `A call comes in` hook to trigger that TwiML.
+
+![image](./screenshots/number_from_twiml_on_call.png)
+
+*NOTE* Reason we are doing this is to reduce expensiveness of test suites. If your suite requires very minor `client/customer` interaction, for them to only
+accept a call, it is a lot easier to use a TwiML. 
+
+E.g. For `worker.createTask()` you could pass `number_from` as a first argument which would simply call that TwiML and you would have conference.
 
 ## Twilio functions
 
-Following twilio functions are mandatory for the account on which these tests are to be ran
+Following twilio functions are mandatory for the account on which these tests are to be ran.
+
+*Important:* For each function uncheck `Check for valid Twilio signature`
+
+Make sure that the general Twilio function configuration [here](https://www.twilio.com/console/functions/configure) is as seen bellow:
+![image](./screenshots/twi_function_config.png)
+
+The variables which are set in the general function configuration are accessible via `context` object of each function.
+
+`event` argument in each function is used to access `query` parameters passed to the function call
+
+Example: `https://runtime-domain.twil.io/some-function?cat=love&sky=blue`
+
+In the function you would access them as `event.cat` and `event.sky`
 
 path: `/voice-sync-token`
 purpose: generate tokens for clients in the browser
@@ -116,6 +183,9 @@ exports.handler = function(context, event, callback) {
 path: `/client-voice`
 purpose: redirect calls made from browser to another client or Twilio phone number
 
+*Important:* Navigate to your TwiML application created in the previous step and set `Voice request URL` to this function
+![image](./screenshots/voice_request_url.png)
+
 ```
 exports.handler = function(context, event, callback) {
     let twiml = new Twilio.twiml.VoiceResponse();
@@ -146,36 +216,46 @@ function isAValidPhoneNumber(number) {
 }
 ```
 
-## TwiML Application
+path: `/enqueueTask`
+purpose: Returns a dynamically generated TwiML for enqueueing task
 
-For you to be able to make calls from browser to Twilio phone numbers or other voice SDK clients, you need
-a TwiML app which will serve as proxy of kind and redirect your calls.
-
-Navigate to: https://www.twilio.com/console/voice/twiml/apps and create a new Application.
-
-In the `Voice request URL` field enter the full url to the second function above `https://{RUNTIME_DOMAIN}.twil.io/client-voice`
-
-For caller ID if prompt, enter your `NUMBER_FROM`. Keep in mind that this is the number to which `enqueueTask` will be tied to on its `voice handler url`.
-
-*Note* Do not forget to expose your `TWIML_APP` sid in the Twilio function config here: https://www.twilio.com/console/functions/configure
+```
+exports.handler = function(context, event, callback) {
+    const workflowSid = event.workflowSid;
+    const taskAttributes = event.taskAttributes;
+	const twiml = new Twilio.twiml.VoiceResponse();
+    twiml.enqueue({ workflowSid: workflowSid }).task({}, taskAttributes);
+	callback(null, twiml);
+};
+```
 
 ## Voice integration components
 
-This section describes each component which makes up all of this integration
+In this section you are not required to do anything. 
+
+It serves as informative material about what each component of the integration is responsible for and how to use it.
 
 ### Server
 
-A simple HTTP server which writes pre-existing `voice.html` and hosts it on a given port at root level (`/`)
-When you open the hosted page on `http://localhost:{port}` there will be no UI and any action will be visible only in the console of the browser.
+`voice.html` - an HTML page which when opened will fetch Sync/Voice tokens, initialize clients and attach voice and sync listeners.
+
+Voice SDK can only be used `client-side` so we have to host this web page locally to interact with Voice SDK.
+
+The hosting of the `voice.html` page is done via a simple node HTTP server. 
+
+When you open the hosted page on `http://localhost:{port}` there will be no UI elements and any action will be visible only in the console of the browser.
+![image](./screenshots/voice_html_example.png)
 
 To successfully initiate the page, you must pass the following query parameters (both are mandatory):
 
 `worker` - name of the worker you are initializing
 `runtimeBaseUrl` - full url of the runtime, available via `env.runtimeBaseUrl`
 
-Runtime domain is required to fetch Sync and Voice tokens from Twilio
+Runtime domain is required to fetch Sync and Voice tokens from Twilio.
 
-*Note*: If you want voice client in the browser to be tied to a TaskRouter worker, then parameter `worker` must match second part of the `contact_uri` of the worker.
+*Note:* You don't have to export `runtimeBaseUrl`, based on the exported `env` and `runtimeDomain` it will generate a `runtimeBaseUrl` and append it to `test.json`
+
+*Note:* If you want voice client in the browser to be tied to a TaskRouter worker, then parameter `worker` must match second part of the `contact_uri` of the worker.
 
 Example - Starting server:
 
@@ -294,7 +374,7 @@ This will illustrate general setup and teardown in context of voice and Sync for
 
 * BeforeAll =>
     * Start server - `await serveVoiceHtml(3555)` (page available at http://localhost:3555)
-    * Initiate Sync client in Node `const syncClinet = new SyncHelper(token)`
+    * Initiate Sync client in Node `const syncClient = new SyncHelper(token)`
     * *** Cleanup - Remove worker sync map - `await syncClinet.removeMap('alice')` (making sure we are starting from a clean slate)
     * *** Create map - `await syncClinet.createMap('alice')` (making the map initially for the first test)
     * *** Launch browser - `const aliceBrowser = await browserLauncher('http:localhost:3555?worker=alice&runtimeBaseUrl=https://cake-lord-101.twil.io)` (starting server with the given url)
@@ -303,6 +383,7 @@ This will illustrate general setup and teardown in context of voice and Sync for
 * Test => 
     * *** Listen on voice SDK errors via `aliceVoiceClient.on(err => { throw err });`
     * *** Wait for device ready via polling `aliceVoiceClient.waitForEvent('device#ready', 10);` (Since we can't ensure that voiceClientProxy will be initiated before device#ready is received we need to poll Sync map directly. This is required only if your test is attempting to use some browser functionality right away. E.g., making a call to a number to enqueue a task)
+    * If test logic does not complete conference, it is mandatory that you complete the conference at the end of the step, either by deleting it via REST or via Voice Client Proxy
 * After => 
     * *** Reset the browser page - `aliceVoiceClient.refreshBrowserClient()` (this will refresh the browser and re-initialize all clients - sync and voice)
 * AfterAll
