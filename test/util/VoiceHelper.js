@@ -33,7 +33,7 @@ export const browserLauncher = (startingUrl, chromeArgs = []) => {
   return launch({
     startingUrl: startingUrl,
     chromeFlags: [
-        // '--headless',
+        '--headless',
         '--disable-gpu',
         '--allow-file-access-from-files',
         '--use-fake-device-for-media-stream',

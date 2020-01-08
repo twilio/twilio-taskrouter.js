@@ -1,7 +1,7 @@
 // Pre-populate with test.json if it exists.
 let credentials = {};
 try {
-  credentials = require('../test.ccis.stage.json');
+  credentials = require('../test.json');
 } catch (error) {
   // Do nothing.
 }
