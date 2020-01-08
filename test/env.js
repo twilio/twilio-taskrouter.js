@@ -58,14 +58,14 @@ requiredKeys.forEach(key => {
       // check for single tasking
       singleTaskingKeys.forEach(singleTaskingKey => {
         if (!(singleTaskingKey in credentials)) {
-          throw new Error('Missing Single Tasking Key ' + key);
+          throw new Error('Missing Single Tasking Key: ' + singleTaskingKey);
         }
       });
     } else {
       // check for voice
       voiceE2EKeys.forEach(voiceKey => {
         if (!(voiceKey in credentials)) {
-          throw new Error('Missing Voice Integrtion Key ' + key);
+          throw new Error('Missing Voice Integrtion Key: ' + voiceKey);
         }
       });
     }

@@ -31,9 +31,10 @@ For the sake of clarity, rename existing phone number to 'FROM' and the newly bo
 
 ## Environment variables
 
-Following environment variables must be exported within node: (add them to `test.json`)
+Following environment variables must be exported within node: (add them to your `test.json`)
 
 ```
+"hasSingleTasking": false,
 "numberToSid": "PNXXXXXXXXXXXX",
 "numberFromSid": "PNXXXXXXXXXXXX",
 "numberTo": "+XXXXXXXXXXXXX",
