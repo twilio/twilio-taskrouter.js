@@ -31,14 +31,15 @@ describe('Reservation Conference Inbound', async() => {
 
       // Initiate Sync client
       const syncToken = await getSyncToken();
-      syncClient = new SyncHelper(syncToken, { region: credentials.syncClientRegion });
+      const syncOptions = credentials.syncClientRegion ? { region: credentials.syncClientRegion } : {};
+      syncClient = new SyncHelper(syncToken, syncOptions);
 
       // Clean up + prepare Alice voice event map
       await syncClient.removeMap('alice');
       await syncClient.createMap('alice');
 
       // Launch chrome and initialize Alice's client voice and sync clients in browser
-      aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
+      aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${syncOptions.region}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
 
       // Ensure that Bob is offline
       await envTwilio.updateWorkerActivity(

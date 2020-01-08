@@ -83,7 +83,7 @@
 
     const getToken = async (runtimeBaseUrl, identity = '') => {
       Logger.info('Getting token for identity:', identity);
-      const url = `${runtimeBaseUrl + '/access-token'}${(identity) ? '?identity=' + identity : ''}`;
+      const url = `${runtimeBaseUrl + '/accessToken'}${(identity) ? '?identity=' + identity : ''}`;
       const resp = await fetch(url, {
         method: 'GET'
       });
@@ -106,17 +106,16 @@
         const browserIdentity = await getToken(query.runtimeBaseUrl, query.worker);
 
         // Initiate sync and voice clients
-        const syncClient = new Twilio.Sync.Client(browserIdentity.token, { region: query.regionOpt });
+        const syncClientOpts = query.regionOpt !== 'undefined' ? { region: query.regionOpt } : {};
+        const syncClient = new Twilio.Sync.Client(browserIdentity.token, syncClientOpts);
 
         // wait for sync client to be ready
         await event(syncClient, 'connectionStateChanged', 5000, 'Sync client - connected', 'connected');
         Logger.info('Sync client initialized', syncClient);
 
+        const voiceClientOpts = query.eventgwOpt && query.chunderwOpt ? { eventgw: query.eventgwOpt, chunderw: query.chunderwOpt } : {};
         const voiceDevice = new Twilio.Device();
-        await voiceDevice.setup(browserIdentity.token, {
-          eventgw: query.eventgwOpt,
-          chunderw: query.chunderwOpt
-        });
+        await voiceDevice.setup(browserIdentity.token, voiceClientOpts);
 
         // Creates sync map for worker
         const map = await syncClient.map({

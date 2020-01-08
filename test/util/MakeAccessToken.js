@@ -21,7 +21,7 @@ module.exports = {
     return accessToken.toJwt();
   },
   getSyncToken: async() => {
-    const response = await get(credentials.runtimeBaseUrl + '/access-token');
+    const response = await get(credentials.runtimeBaseUrl + '/accessToken');
 
     const token = _.get(response, 'data.token');
     if (!token) {

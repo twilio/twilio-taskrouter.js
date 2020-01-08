@@ -36,7 +36,8 @@ describe('Supervisor Inbound', function() {
 
     // Initiate Sync client
     const syncToken = await getSyncToken();
-    syncClient = new SyncHelper(syncToken, { region: credentials.syncClientRegion });
+    const syncOptions = credentials.syncClientRegion ? { region: credentials.syncClientRegion } : {};
+    syncClient = new SyncHelper(syncToken, syncOptions);
 
     // Clean up + prepare participant voice event maps
     await syncClient.removeMap('alice');
@@ -45,8 +46,8 @@ describe('Supervisor Inbound', function() {
     await syncClient.createMap('bob');
 
     // Launch chrome and initialize voice and sync clients for call participants
-    aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
-    supervisorBrowser = await browserLauncher(`http://localhost:${PORT}?worker=bob&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${credentials.syncClientRegion}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
+    aliceBrowser = await browserLauncher(`http://localhost:${PORT}?worker=alice&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${syncOptions.region}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
+    supervisorBrowser = await browserLauncher(`http://localhost:${PORT}?worker=bob&runtimeBaseUrl=${credentials.runtimeBaseUrl}&regionOpt=${syncOptions.region}&eventgwOpt=${credentials.eventgw}&chunderwOpt=${credentials.chunderw}`);
 
     // Ensure that Bob is offline
     await envTwilio.updateWorkerActivity(
