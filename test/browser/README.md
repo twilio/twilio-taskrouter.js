@@ -106,7 +106,7 @@ Example: `https://runtime-domain.twil.io/some-function?cat=love&sky=blue`
 
 In the function you would access them as `event.cat` and `event.sky`
 
-path: `/voice-sync-token`
+path: `/accessToken`
 purpose: generate tokens for clients in the browser
 
 contents: 
@@ -180,7 +180,7 @@ exports.handler = function(context, event, callback) {
 }
 ```
 
-path: `/client-voice`
+path: `/redirectVoice`
 purpose: redirect calls made from browser to another client or Twilio phone number
 
 *Important:* Navigate to your TwiML application created in the previous step and set `Voice request URL` to this function
