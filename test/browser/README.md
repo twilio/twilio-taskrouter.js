@@ -113,71 +113,51 @@ purpose: generate tokens for clients in the browser
 contents: 
 ```
 exports.handler = function(context, event, callback) {
+    
   const response = new Twilio.Response();
   const header = { 'Access-Control-Allow-Origin':'*' };
-  
   response.setHeaders(header);
-
-  const ACCOUNT_SID = context.ACCOUNT_SID;
-  const AUTH_TOKEN = context.AUTH_TOKEN;
-  const SERVICE_SID = context.SYNC_SERVICE_SID;
-  const API_KEY = context.TWILIO_API_KEY;
-  const APP_SID = context.TWIML_APP_SID;
-  const API_SECRET = context.TWILIO_API_SECRET;
-  
-  const identity = (event.identity) ? event.identity : 'sync';
   
   const AccessToken = Twilio.jwt.AccessToken;
   const SyncGrant = AccessToken.SyncGrant;
-  const ClientCapability = Twilio.jwt.ClientCapability;
+  const VoiceGrant = AccessToken.VoiceGrant;
+
+  const ACCOUNT_SID = context.ACCOUNT_SID;
+  const SERVICE_SID = context.SYNC_SERVICE_SID;
+  const API_KEY = context.TWILIO_API_KEY;
+  const API_SECRET = context.TWILIO_API_SECRET;
+  const IDENTITY = (event.identity) ? event.identity : 'sync';
   
-  if(identity === 'sync') {
-    const syncGrant = new SyncGrant({
-        serviceSid: SERVICE_SID
-    });
+  const voiceGrant = new VoiceGrant({
+      incomingAllow: true,
+      outgoingApplicationSid: context.TWIML_APP_SID
+  });
 
-    const accessToken = new AccessToken(
-        ACCOUNT_SID,
-        API_KEY,
-        API_SECRET
-    );
-    
-    accessToken.addGrant(syncGrant);
-    accessToken.identity = identity;
+  const syncGrant = new SyncGrant({
+    serviceSid: SERVICE_SID
+  });
 
-    const opts = { 
-        identity: identity,
-        token: accessToken.toJwt() 
-     };
+  const accessToken = new AccessToken(
+    ACCOUNT_SID,
+    API_KEY,
+    API_SECRET
+  );
+
+  accessToken.addGrant(syncGrant);
+  accessToken.addGrant(voiceGrant);
+  accessToken.identity = IDENTITY;
+
+  console.log(accessToken.toJwt());
+  
+  const opts = { 
+      identity: IDENTITY,
+      token: accessToken.toJwt() 
+  };
+
+  const body = JSON.stringify(opts);
      
-    const body = JSON.stringify(opts);
-     
-    response.setBody(body);
-    callback(null, response);
-  } else {
-      
-    const capability = new ClientCapability({
-     accountSid: ACCOUNT_SID,
-     authToken: AUTH_TOKEN
-    });
-    
-    capability.addScope(new ClientCapability.IncomingClientScope(identity));
-    capability.addScope(new ClientCapability.OutgoingClientScope({
-        applicationSid: APP_SID,
-        clientName: identity,
-    }));
-    
-    const opts = {
-      identity: identity,
-      token: capability.toJwt()
-    };
-    
-    const body = JSON.stringify(opts);
-    
-    
-    response.setBody(body);
-    callback(null, response);
-  }
+  response.setBody(body);
+  callback(null, response);
 }
 ```
 
