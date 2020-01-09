@@ -1,3 +1,10 @@
+0.4.2
+===========
+Maintenance
+------------
+- Add Twilio Client integration for e2e intergration testing
+- Bump dev dependency versions
+
 0.4.1
 ============
 Bug Fixes
