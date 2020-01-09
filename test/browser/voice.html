@@ -1,0 +1,296 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Voice Tests</title>
+    <script type="text/javascript" src="https://media.twiliocdn.com/sdk/js/client/v1.7/twilio.min.js"></script>
+    <script type="text/javascript" src="https://media.twiliocdn.com/sdk/js/sync/v0.11/twilio-sync.min.js"></script>
+    <script src="https://unpkg.com/js-logger/src/logger.min.js"></script>
+</head>
+<body>
+<script>
+    // Initiate logger and customize message
+    Logger.useDefaults({
+      formatter: function (messages, context) {
+        messages.unshift(new Date().toUTCString(), '|', context.level.name, '|');
+      }
+    });
+
+    // Event helper
+    const event = (emitter, eventName, ms, msg, value = null) => {
+      return new Promise((resolve, reject) => {
+        emitter.on(eventName, event => {
+          if(value) {
+              if(event === value) {
+                return resolve();
+              }
+          } else {
+            return resolve();
+          }
+        });
+        setTimeout(reject, ms, new Error(msg));
+      });
+    };
+
+    // Global voice connection object
+    let globalConnection;
+
+    /**
+     * Query key: worker
+     * Multiple: false
+     * Default: none
+     * Example: workers=bob
+     *
+     * Query key: runtimeBaseUrl
+     * Multiple: false
+     * Default: none
+     * Example: potato-lover-666.twil.io ; cat-72.stage.twil.io ; meow-64.dev.twil.io
+     */
+    const readQuery = () => {
+      Logger.info('Starting to read query..');
+      const response = {
+        runtimeBaseUrl: '',
+        worker: '',
+        regionOpt: '',
+        eventgwOpt: '',
+        chunderwOpt: ''
+      };
+
+      const queryParams = new URLSearchParams(window.location.search);
+
+      const runtimeBaseUrl = queryParams.get('runtimeBaseUrl');
+      if(!runtimeBaseUrl) {
+        Logger.error('Query param: runtimeBaseUrl is required. Example: https://mydomain.twil.io ; https://mydomain.stage.twil.io');
+      }
+      Logger.info('Runtime base URL:', runtimeBaseUrl);
+
+      const workerQuery = queryParams.get('worker');
+      Logger.info('Worker name:', workerQuery);
+      if(!workerQuery) {
+        throw 'query param: worker is required. Example: worker=alice'
+      }
+
+      response.runtimeBaseUrl = runtimeBaseUrl;
+      response.worker = workerQuery;
+
+      // fetch optional params for realm-based testing
+      response.regionOpt = queryParams.get("regionOpt");
+      response.eventgwOpt = queryParams.get("eventgwOpt");
+      response.chunderwOpt = queryParams.get("chunderwOpt");
+
+      Logger.info('readQuery():', response);
+      return response;
+    };
+
+    const getToken = async (runtimeBaseUrl, identity = '') => {
+      Logger.info('Getting token for identity:', identity);
+      const url = `${runtimeBaseUrl + '/accessToken'}${(identity) ? '?identity=' + identity : ''}`;
+      const resp = await fetch(url, {
+        method: 'GET'
+      });
+
+      const response = await resp.json();
+      Logger.info(response);
+      return response;
+    };
+
+    const initiateClients = async () => {
+      try {
+        const query = readQuery();
+
+        if(!query) {
+          Logger.error(`Query is undefined, did you forget to pass params?`);
+          return;
+        }
+
+        // Fetch tokens for voice and sync
+        const browserIdentity = await getToken(query.runtimeBaseUrl, query.worker);
+
+        // Initiate sync and voice clients
+        const syncClientOpts = query.regionOpt !== 'undefined' ? { region: query.regionOpt } : {};
+        const syncClient = new Twilio.Sync.Client(browserIdentity.token, syncClientOpts);
+
+        // wait for sync client to be ready
+        await event(syncClient, 'connectionStateChanged', 5000, 'Sync client - connected', 'connected');
+        Logger.info('Sync client initialized', syncClient);
+
+        const voiceClientOpts = query.eventgwOpt && query.chunderwOpt ? { eventgw: query.eventgwOpt, chunderw: query.chunderwOpt } : {};
+        const voiceDevice = new Twilio.Device();
+        await voiceDevice.setup(browserIdentity.token, voiceClientOpts);
+
+        // Creates sync map for worker
+        const map = await syncClient.map({
+          id: query.worker,
+          mode: 'open_existing'
+        }).catch(() => {
+          throw `Map: ${query.worker} does not exist`;
+        });
+
+        Logger.info('Fetched client sync map:', query.worker);
+
+        // Connection event handlers
+        const connectionOnAccept = connection => {
+          globalConnection = connection;
+          Logger.info('Voice connection accepted:', connection);
+          map.set('connection#accept', connection);
+        };
+        const connectionOnDisconnect = connection => {
+          globalConnection = connection;
+          Logger.info('Voice connection disconnected:', connection);
+          map.set('connection#disconnect', connection);
+        };
+        const connectionOnError = error => {
+          Logger.error('Voice connection errored:', error);
+          map.set('connection#error', error);
+        };
+        const connectionOnMute = (muted, connection) => {
+          globalConnection = connection;
+          Logger.info('Voice connection muted:', connection, `| Call is muted: `, muted);
+          map.set('connection#mute', { muted: muted });
+        };
+        const connectionOnReconnecting = error => {
+          Logger.warn('Voice connection is reconnection:', error);
+          map.set('connection#reconnecting', error);
+        };
+        const connectionOnReconnected = () => {
+          Logger.info('Voice connection reconnected');
+          map.set('connection#reconnected', { reconnected: true });
+        };
+        const connectionOnRinging = hasEarlyMedia => {
+          Logger.info('Voice connection is ringing:', hasEarlyMedia);
+          map.set('connection#ringing', { hasEarlyMedia: hasEarlyMedia });
+        }; // Disabled by default. Enable by passing options object to Device.setup(token, { enableRingingState: true });
+        const connectionOnWarning = warningName => {
+          Logger.warn('Voice connection threw a warning:', warningName);
+          map.set('connection#warning', { warning: warningName });
+        };
+        const connectionOnWarningCleared = warningName => {
+          Logger.info('Voice connection warning cleared:', warningName);
+          map.set('connection#warning-cleared', { warning: warningName });
+        };
+
+        // Device event handlers
+        const deviceOnReady = device => {
+          Logger.info('Device is ready:', device);
+          map.set('device#ready', device);
+        };
+        const deviceOnError = error => {
+          Logger.error('Device errored', error);
+          map.set('device#error', error);
+        };
+        const deviceOnOffline = device => {
+          Logger.info('Device is offline:', device);
+          map.set('device#offline', device);
+        };
+        const deviceOnIncoming = connection => {
+          // Binds connection to a global context so we can invoke methods on it via Sync from Node
+          globalConnection = connection;
+          Logger.info('Incoming connection to device:', connection);
+          map.set('device#incoming', connection);
+
+          // Connection event listeners
+          connection.on('accept', connectionOnAccept);
+          connection.on('disconnect', connectionOnDisconnect);
+          connection.on('error', connectionOnError);
+          connection.on('mute', connectionOnMute);
+          connection.on('reconnecting', connectionOnReconnecting);
+          connection.on('reconnected', connectionOnReconnected);
+          connection.on('ringing', connectionOnRinging);
+          connection.on('warning', connectionOnWarning);
+          connection.on('warning-cleared', connectionOnWarningCleared);
+        };
+
+        // Instruction transport Node -> Browser
+        const remoteActions = async args => {
+          // Ensure that we are listening only on Sync events which originate from node
+          if(!args.isLocal) {
+
+            if(args.item.key === 'make#call') {
+              const connection = await voiceDevice.connect({ To: `${args.item.value.to}` });
+              deviceOnIncoming(connection);
+            }
+
+            if(!globalConnection) {
+              return;
+            }
+
+            const status = await globalConnection.status();
+            switch (args.item.key) {
+              case 'call#mute':
+                if(status === 'open') {
+                  await globalConnection.mute(true);
+                } else {
+                  await map.set('connection#mute#error', { msg: `Cannot mute call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#unmute':
+                if(status === 'open') {
+                  await globalConnection.mute(false);
+                } else {
+                  await map.set('connection#unmute#error', { msg: `Cannot unmute call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#accept':
+                if(status === 'pending') {
+                  await globalConnection.accept();
+                } else {
+                  await map.set('connection#accept#error', { msg: `Cannot accept call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#reject':
+                if(status === 'pending') {
+                  await globalConnection.reject();
+                } else {
+                  await map.set('connection#reject#error', { msg: `Cannot reject call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#ignore':
+                if(status === 'pending') {
+                  await globalConnection.mute(true);
+                } else {
+                  await map.set('connection#ignore#error', { msg: `Cannot ignore call, call is in state: ${status}` });
+                }
+                break;
+              case 'call#disconnect':
+                if(status === 'open') {
+                  await globalConnection.disconnect();
+                } else {
+                  await map.set('connection#disconnect#error', { msg: `Cannot disconnect call, call is in state: ${status}` });
+                }
+                break;
+              case 'browser#reset':
+                Logger.info('Resetting page..');
+                map.removeAllListeners();
+                await new Promise(r => setTimeout(r, 200));
+                voiceDevice.destroy();
+                await new Promise(r => setTimeout(r, 200));
+                await map.removeMap();
+                await new Promise(r => setTimeout(r, 200));
+                await syncClient.map(query.worker);
+                await new Promise(r => setTimeout(r, 200));
+                location.reload();
+                break;
+              default:
+                break;
+            }
+          }
+        };
+
+        map.on('itemAdded', remoteActions);
+
+        // Device event listeners
+        voiceDevice.on('ready', deviceOnReady);
+        voiceDevice.on('error', deviceOnError);
+        voiceDevice.on('offline', deviceOnOffline);
+        voiceDevice.on('incoming', deviceOnIncoming);
+      } catch (e) {
+        Logger.error('Error in voice browser. Error: ' + e);
+      }
+    };
+
+
+  void initiateClients().catch(e => Logger.error(e));
+
+
+</script>
+</body>
+</html>

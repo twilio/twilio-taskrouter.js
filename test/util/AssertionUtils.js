@@ -46,6 +46,11 @@ export default class AssertionUtils {
         }
     }
 
+    static assertSid(sid, prefix, msg) {
+        const re = new RegExp(`^${prefix}\\w{32}$`);
+        assert.match(sid, re, msg);
+    }
+
     static assertTransfer(actual, responseObj) {
         assert.exists(actual, 'actual reservation is either null or undefined');
         assert.exists(actual, 'expected reservation is either null or undefined');
