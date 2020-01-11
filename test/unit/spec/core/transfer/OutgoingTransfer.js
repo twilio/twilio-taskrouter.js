@@ -27,7 +27,7 @@ describe('OutgoingTransfer', () => {
     const outgoingTransferDescriptor = new TransferDescriptor(outgoingTransferInstance);
 
     beforeEach(() => {
-        sandbox = sinon.createSandbox().usingPromise(Promise);
+        sandbox = sinon.sandbox.create().usingPromise(Promise);
         sandbox.stub(worker, 'getRoutes').returns(routes);
     });
 

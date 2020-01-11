@@ -78,7 +78,7 @@ async function createWorkspaces() {
     const multiTaskAlice = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
                                      .workers
                                      .create({ attributes: JSON.stringify({
-                                         'contact_uri': 'client:alice'
+                                         'contact_uri': 'client:charlie'
                                      }), friendlyName: 'Alice'
                                      });
 

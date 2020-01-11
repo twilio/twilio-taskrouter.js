@@ -84,7 +84,7 @@ describe('Reservation', () => {
 
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => {
@@ -119,7 +119,7 @@ describe('Reservation', () => {
 
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => {
@@ -154,7 +154,7 @@ describe('Reservation', () => {
 
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => {
@@ -192,7 +192,7 @@ describe('Reservation', () => {
         const optionalParams = { WorkerActivitySid: 'WAxxx' };
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => {
@@ -257,7 +257,7 @@ describe('Reservation', () => {
         const optionalParmsWithCallPrefix = _.mapKeys(optionalParams, (v, k) => 'Call' + _.upperFirst(k));
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => sandbox.restore());
@@ -337,7 +337,7 @@ describe('Reservation', () => {
 
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => sandbox.restore());
@@ -392,7 +392,7 @@ describe('Reservation', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => sandbox.restore());
@@ -460,7 +460,7 @@ describe('Reservation', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => sandbox.restore());
@@ -524,7 +524,7 @@ describe('Reservation', () => {
         };
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => sandbox.restore());

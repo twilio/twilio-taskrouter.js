@@ -84,32 +84,4 @@ export default class EnvTwilio {
                 capacity: newCapacity
             });
     }
-
-    async updateVoiceHandlerUrl(numberToSid, runtimeBaseUrl, twilioFuncPath) {
-      try {
-            await this.twilioClient
-          .incomingPhoneNumbers(numberToSid)
-          .update({
-            voiceUrl: runtimeBaseUrl + '/' + twilioFuncPath
-          });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    enqueueTask(numberTo, numberFrom, responseTwiMl) {
-        return this.twilioClient.calls.create({
-          from: numberFrom,
-          to: numberTo,
-          url: responseTwiMl
-        });
-    }
-
-    fetchConference(conferenceSid) {
-      return this.twilioClient.conferences(conferenceSid).fetch();
-    }
-
-    fetchConferenceParticipants(conferenceSid) {
-      return this.twilioClient.conferences(conferenceSid).participants.list();
-    }
 }

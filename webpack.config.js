@@ -1,7 +1,6 @@
-const TerserPlugin = require('terser-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const WebpackAutoInject = require('webpack-auto-inject-version');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 
 const createConfig = libraryTarget => {
     const config = {
@@ -20,16 +19,14 @@ const createConfig = libraryTarget => {
                 },
             }),
             new webpack.DefinePlugin({
-                // eslint-disable-next-line no-process-env
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
             })
         ],
-        externals: [nodeExternals()],
         module: {},
         optimization: {
             minimizer: [
-                new TerserPlugin({
-                    terserOptions: {
+                new UglifyJsPlugin({
+                    uglifyOptions: {
                         parallel: true,
                         output: {
                             comments: /^\**!|@preserve|@license|@cc_on/
@@ -47,35 +44,36 @@ const createConfig = libraryTarget => {
             tls: 'empty',
             process: false
         };
-        config.entry = { main: './lib/web.js' };
+        config.entry = { main: './lib/web.js' }
         config.output.library = 'TaskRouter';
         config.output.libraryTarget = 'umd';
-    } else if (libraryTarget === 'test') {
+    } else if (libraryTarget == 'test') {
         config.node = {
             fs: 'empty',
             net: 'empty',
             tls: 'empty',
             process: false
         };
-        config.entry = { main: './test/unit/index.js' };
+        config.entry = { main: './test/unit/index.js'},
         config.output.libraryTarget = 'umd';
     } else {
-        config.entry = { main: './lib/index.js' };
+        config.entry = { main: './lib/index.js' }
         config.target = 'node';
     }
 
     return config;
 };
 
-module.exports = function(env) {
+module.exports = function(env, argv) {
   if (env && env.NODE_ENV === 'test') {
     return [
       createConfig('window'),
       createConfig('test')
-    ];
-  }
+    ]
+  } else {
     return [
       createConfig('commonjs2'),
       createConfig('window')
-    ];
-};
+    ]
+  }
+}
