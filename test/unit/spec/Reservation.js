@@ -502,6 +502,16 @@ describe('Reservation', () => {
                 expect(pendingReservation.status).to.equal('pending');
             });
         });
+
+        it('should not override reservation status received from Taskrouter', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(reservationAccepted));
+
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            return pendingReservation.conference().then(updatedReservation => {
+                expect(updatedReservation).to.equal(pendingReservation);
+                expect(pendingReservation.status).to.equal('pending');
+            });
+        });
     });
 
     describe('#updateParticipant(options)', () => {

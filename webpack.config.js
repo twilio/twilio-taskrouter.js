@@ -47,6 +47,15 @@ const createConfig = libraryTarget => {
         config.entry = { main: './lib/web.js' }
         config.output.library = 'TaskRouter';
         config.output.libraryTarget = 'umd';
+    } else if (libraryTarget == 'test') {
+        config.node = {
+            fs: 'empty',
+            net: 'empty',
+            tls: 'empty',
+            process: false
+        };
+        config.entry = { main: './test/unit/index.js'},
+        config.output.libraryTarget = 'umd';
     } else {
         config.entry = { main: './lib/index.js' }
         config.target = 'node';
@@ -55,7 +64,16 @@ const createConfig = libraryTarget => {
     return config;
 };
 
-module.exports = [
-    createConfig('commonjs2'),
-    createConfig('window')
-];
+module.exports = function(env, argv) {
+  if (env && env.NODE_ENV === 'test') {
+    return [
+      createConfig('window'),
+      createConfig('test')
+    ]
+  } else {
+    return [
+      createConfig('commonjs2'),
+      createConfig('window')
+    ]
+  }
+}

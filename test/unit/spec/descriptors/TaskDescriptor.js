@@ -66,7 +66,7 @@ describe('TaskDescriptor', () => {
             taskInstanceData.addons = '{ bad }';
             (() => {
                 new TaskDescriptor(taskInstanceData);
-            }).should.throw(/Unexpected token/);
+            }).should.throw();
         });
 
         it('should throw an error if unable to parse attributes JSON', () => {
@@ -74,7 +74,7 @@ describe('TaskDescriptor', () => {
             taskInstanceData.attributes = '{ bad }';
             (() => {
                 new TaskDescriptor(taskInstanceData);
-            }).should.throw(/Unexpected token/);
+            }).should.throw();
         });
     });
 });

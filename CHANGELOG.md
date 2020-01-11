@@ -1,8 +1,18 @@
 0.4.2
-============
 New Features
 ------------
 Expose `reservation.failed` event, which is fired when `Worker` was unable to receive a `Reservation` for the `Task` it created
+=======
+0.4.1
+============
+Bug Fixes
+------------
+- `conference instruction` should not override reservation status received from worker leg
+
+Maintenance
+------------
+- Added automated scripts for integration tests
+- Added setup for running unit tests on browsers
 
 0.4.0
 ============
