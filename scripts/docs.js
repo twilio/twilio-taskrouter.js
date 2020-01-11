@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 const cheerio = require('cheerio');
 const path = require('path');
@@ -75,7 +76,7 @@ function transform(file) {
     $('table.params', div).remove();
   }
 
-  file.contents = Buffer.from($.html());
+  file.contents = new Buffer($.html());
   return file;
 }
 

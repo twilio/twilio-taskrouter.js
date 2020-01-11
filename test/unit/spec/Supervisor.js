@@ -43,7 +43,6 @@ describe('Supervisor', () => {
 
   beforeEach(() => {
     supervisor = new Supervisor(token, WorkerConfig, { EventBridgeSignaling, Request });
-    supervisor.on('error', er => console.log(er));
   });
 
   it('should extend Worker', () => {
@@ -101,7 +100,6 @@ describe('Supervisor', () => {
 
       it('should reject on failure', () => {
         supervisor = new Supervisor(token, WorkerConfig, { EventBridgeSignaling, Request: FailRequest });
-        supervisor.on('error', er => console.log(er));
         signaling.emit('init', fakeInitEvent);
         return supervisor.monitor('WA123', 'WA321').then(
           () => { throw new Error('Expected to reject'); },

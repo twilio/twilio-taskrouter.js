@@ -45,7 +45,7 @@ describe('Activities', () => {
         const requestURL = 'Workspaces/WSxxx/Activities';
 
         beforeEach(() => {
-            sandbox = sinon.createSandbox();
+            sandbox = sinon.sandbox.create();
         });
 
         afterEach(() => {
