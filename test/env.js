@@ -6,19 +6,30 @@ try {
   // Do nothing.
 }
 
-// Ensure required variables are present
-[
-  'accountSid',
-  'authToken',
-  'signingKeySid',
-  'signingKeySecret',
+const singleTaskingKeys = [
   'nonMultiTaskWorkspaceSid',
   'nonMultiTaskWorkflowSid',
   'nonMultiTaskAliceSid',
   'nonMultiTaskBobSid',
   'nonMultiTaskConnectActivitySid',
   'nonMultiTaskUpdateActivitySid',
-  'nonMultiTaskNumActivities',
+  'nonMultiTaskNumActivities'
+];
+
+const voiceE2EKeys = [
+  'supervisorNumber',
+  'customerNumber',
+  'flexCCNumber',
+  'workerNumber'
+];
+
+// Ensure required variables are present
+const requiredKeys = [
+  'accountSid',
+  'authToken',
+  'signingKeySid',
+  'signingKeySecret',
+  'hasSingleTasking',
   'multiTaskWorkspaceSid',
   'multiTaskWorkflowSid',
   'multiTaskQueueSid',
@@ -30,9 +41,30 @@ try {
   'multiTaskNumChannels',
   'ebServer',
   'wsServer'
-].forEach(key => {
+];
+
+requiredKeys.forEach(key => {
   if (!(key in env)) {
     throw new Error('Missing ' + key);
+  }
+
+  // e2e tester -- no voice
+  if (key === 'hasSingleTasking') {
+    if (env[key]) {
+      // check for single tasking
+      singleTaskingKeys.forEach(singleTaskingKey => {
+        if (!(singleTaskingKey in env)) {
+          throw new Error('Missing Single Tasking Key: ' + singleTaskingKey);
+        }
+      });
+    } else {
+      // check for voice
+      voiceE2EKeys.forEach(voiceKey => {
+        if (!(voiceKey in env)) {
+          throw new Error('Missing Voice Integrtion Key: ' + voiceKey);
+        }
+      });
+    }
   }
 });
 

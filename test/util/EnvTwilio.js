@@ -84,4 +84,46 @@ export default class EnvTwilio {
                 capacity: newCapacity
             });
     }
+
+    /**
+     * Helper function to make a call from one number to another and plays the specified twimlet
+     * @param {string} toNumber - The number to dial
+     * @param {string} fromNumber - The number to dial from
+     * @param {string} twimletUrl - The URL to play when the toNumber picks up
+     */
+    async createCall(toNumber, fromNumber, twimletUrl) {
+        return this.twilioClient.calls.create({
+            url: twimletUrl,
+            to: toNumber,
+            from: fromNumber
+        });
+    }
+
+    /**
+     * Fetch the Conference by Sid
+     * @param {string} conferenceSid - The Sid of the Conference
+     */
+    async fetchConference(conferenceSid) {
+        return this.twilioClient.conferences(conferenceSid).fetch();
+      }
+
+    /**
+     * Fetch the list of Participants for a particular Conference
+     * @param {string} conferenceSid - The Sid of the Conference
+     */
+    async fetchConferenceParticipants(conferenceSid) {
+        return this.twilioClient.conferences(conferenceSid).participants.list();
+    }
+
+    /**
+     * Fetch the Conference by friendly name
+     * @param {string} conferenceName  The friendly name of the Conference
+     */
+    async fetchConferenceByName(conferenceName) {
+        return this.twilioClient.conferences.list({
+            friendlyName: conferenceName, limit: 1
+        }).then(conferences => {
+             return conferences[0];
+        });
+    }
 }

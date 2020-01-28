@@ -61,4 +61,9 @@ export default class AssertionUtils {
         assert.equal(actual.queueSid, responseObj.initiating_queue_sid);
         assert.equal(actual.workflowSid, responseObj.initiating_workflow_sid);
     }
+
+    static assertSid(sid, prefix, msg) {
+        const re = new RegExp(`^${prefix}\\w{32}$`);
+        assert.match(sid, re, msg);
+    }
 }

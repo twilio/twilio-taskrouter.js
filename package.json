@@ -30,6 +30,7 @@
     "lint": "eslint ./lib ./test/integration",
     "test:unit": "mocha --full-trace --check-leaks --require babel-core/register ./test/unit/index.js --exit",
     "test:integration": "mocha --full-trace --check-leaks --require babel-core/register ./test/integration/index.js --exit",
+    "test:integration:voice": "mocha --full-trace --check-leaks --require babel-core/register ./test/voice/inbound/index.js  --timeout 40000 --exit",
     "test": "run-s test:unit test:integration",
     "build:dev": "npm run webpack development",
     "build:prod": "npm run webpack production",
