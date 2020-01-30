@@ -78,10 +78,14 @@ describe('Supervisor with Inbound Voice Task', () => {
                         conferenceSid = acceptedReservation.task.attributes.conference.sid;
                         // check that there are 2 participants in the conference
                         const conference = await envTwilio.fetchConference(conferenceSid);
-                        assert.strictEqual(conference.status, 'in-progress', 'Conference status');
+                        if (conference.status !== 'in-progress') {
+                            reject(`Conference status invalid. Expected in-progress. Got ${conference.status}.`);
+                        }
 
                         const participants = await envTwilio.fetchConferenceParticipants(conferenceSid);
-                        assert.strictEqual(participants.length, 2, 'Participant count in conference');
+                        if (participants.length !== 2) {
+                            reject(`Conference participant size invalid. Expected 2. Got ${participants.length}.`);
+                        }
 
                         // turn the supervisor online
                         envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid).then(async() => {
@@ -101,10 +105,13 @@ describe('Supervisor with Inbound Voice Task', () => {
                     createdReservation.on('wrapup', async() => {
                         // check that the participants have left the conference
                         const conference = await envTwilio.fetchConference(conferenceSid);
-                        assert.strictEqual(conference.status, 'completed', 'Conference status');
-
+                        if (conference.status !== 'completed') {
+                            reject(`Conference status invalid. Expected completed. Got ${conference.status}.`);
+                        }
                         const participants = await envTwilio.fetchConferenceParticipants(conferenceSid);
-                        assert.strictEqual(participants.length, 0, 'Participant count in conference');
+                        if (participants.length !== 0) {
+                            reject(`Conference participant size invalid. Expected 0. Got ${participants.length}.`);
+                        }
 
                         resolve('Inbound Reservation Conference test finished.');
                     });
