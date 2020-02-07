@@ -7,6 +7,8 @@ import { pendingReservationInstance as instance } from '../../../mock/Reservatio
 import { token } from '../../../mock/Token';
 import { WorkerConfig } from '../../../mock/WorkerConfig';
 
+const mockEvents = require('../../../mock/Events').events;
+
 describe('ReservationDescriptor', () => {
     const worker = new Worker(token, WorkerConfig);
 
@@ -39,6 +41,7 @@ describe('ReservationDescriptor', () => {
             assert.equal(reservationDescriptor.timeout, instance.reservation_timeout);
             assert.deepEqual(reservationDescriptor.dateCreated, new Date(instance.date_created * 1000));
             assert.deepEqual(reservationDescriptor.dateUpdated, new Date(instance.date_updated * 1000));
+            assert.isFalse(reservationDescriptor.hasOwnProperty('canceledReasonCode'));
 
             // task data on the reservation
             const taskDescriptor = new TaskDescriptor(instance.task, worker);
@@ -58,9 +61,27 @@ describe('ReservationDescriptor', () => {
             assert.equal(taskDescriptor.timeout, instance.task.timeout);
             assert.equal(taskDescriptor.workflowSid, instance.task.workflow_sid);
             assert.equal(taskDescriptor.workflowName, instance.task.workflow_name);
+            assert.isNull(taskDescriptor.routingTarget);
 
             // check that the reservation's taskDescriptor matches
             assert.deepEqual(reservationDescriptor.taskDescriptor, taskDescriptor);
+        });
+
+        it('should set canceledReasonCode field on reservation canceled with valid reason code', () => {
+            const canceledReservationDescriptor = new ReservationDescriptor(mockEvents.reservation.canceledWithValidReasonCode, worker);
+            assert.equal(canceledReservationDescriptor.canceledReasonCode, mockEvents.reservation.canceledWithValidReasonCode.canceled_reason_code);
+            assert.isTrue(canceledReservationDescriptor.hasOwnProperty('canceledReasonCode'));
+        });
+
+        it('should set canceledReasonCode field on reservation canceled with invalid reason code', () => {
+            const canceledReservationDescriptor = new ReservationDescriptor(mockEvents.reservation.canceledWithValidReasonCode, worker);
+            assert.isTrue(canceledReservationDescriptor.hasOwnProperty('canceledReasonCode'));
+            assert.equal(canceledReservationDescriptor.canceledReasonCode, mockEvents.reservation.canceledWithValidReasonCode.canceled_reason_code);
+        });
+
+        it('should not have canceledReasonCode field on reservation canceled with no reason code', () => {
+            const pendingReservationDescriptor = new ReservationDescriptor(instance, worker);
+            assert.isFalse(pendingReservationDescriptor.hasOwnProperty('canceledReasonCode'));
         });
 
         it('should throw an error if the task property is malformed or missing a required property', () => {

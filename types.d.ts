@@ -69,6 +69,7 @@ export interface Task extends NodeJS.EventEmitter {
     readonly timeout: number;
     readonly workflowName: string;
     readonly workflowSid: string;
+    readonly routingTarget: string;
 
     complete(reason: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;

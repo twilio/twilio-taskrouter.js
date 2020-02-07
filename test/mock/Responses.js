@@ -61,7 +61,8 @@ export const taskCompleted = {
   task_channel_unique_name: "default",
   counter: 2,
   age: 291,
-  addons: "{}"
+  addons: "{}",
+  routing_target: null
 };
 
 export const taskWrapping = {
@@ -83,7 +84,8 @@ export const taskWrapping = {
   task_channel_unique_name: "default",
   counter: 2,
   age: 211,
-  addons: "{}"
+  addons: "{}",
+  routing_target: null
 };
 
 export const taskHoldUnhold = {
@@ -105,7 +107,8 @@ export const taskHoldUnhold = {
     task_channel_unique_name: "default",
     counter: 2,
     age: 291,
-    addons: "{}"
+    addons: "{}",
+    routing_target: null
 };
 
 export const updatedTaskAttributes = {
@@ -127,7 +130,31 @@ export const updatedTaskAttributes = {
     task_channel_unique_name: "default",
     counter: 2,
     age: 291,
-    addons: "{}"
+    addons: "{}",
+    routing_target: null
+};
+
+export const updatedTaskAttributesForOutbound = {
+    account_sid: "ACxxx",
+    workspace_sid: "WSxxx",
+    sid: "WTxx1",
+    date_created: 1518809969,
+    date_updated: 1519408987,
+    attributes: "{\"languages\":[\"es\"]}",
+    assignment_status: "completed",
+    workflow_sid: "WWxxx",
+    workflow_name: "Default Fifo Workflow",
+    queue_sid: "WQxxx",
+    queue_name: "Sample Queue",
+    priority: 0,
+    reason: "Task is completed.",
+    timeout: 86400,
+    task_channel_sid: "TCxxx",
+    task_channel_unique_name: "default",
+    counter: 2,
+    age: 291,
+    addons: "{}",
+    routing_target: 'WKxxx'
 };
 
 export const reservationAccepted = {
@@ -240,4 +267,27 @@ export const reservationWrapping = {
   reservation_status: "wrapping",
   task_channel_sid: "TCxxx",
   worker_previous_activity_sid: "WAxxx"
+};
+
+export const createTask = {
+  account_sid: 'ACxxx',
+  workspace_sid: 'WSxxx',
+  sid: 'WTxxx',
+  date_created: 1564181321,
+  date_updated: 1564181321,
+  attributes: '{"from":"worker","outbound_to":"customer"}',
+  assignment_status: 'pending',
+  workflow_sid: 'WWxxx',
+  workflow_name: 'IncomingCalls',
+  queue_sid: 'WQxxx',
+  queue_name: 'English TaskQ',
+  priority: 0,
+  age: 0,
+  reason: null,
+  timeout: 86400,
+  task_channel_sid: 'TCxxx',
+  task_channel_unique_name: 'default',
+  routing_target: 'WKxxx',
+  counter: 0,
+  addons: '{}'
 };

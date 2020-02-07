@@ -32,6 +32,7 @@ export default class AssertionUtils {
         assert.equal(actual.task.timeout, responseObj.task.timeout);
         assert.equal(actual.task.workflowSid, responseObj.task.workflow_sid);
         assert.equal(actual.task.workflowName, responseObj.task.workflow_name);
+        assert.equal(actual.task.routingTarget, responseObj.task.routing_target);
         if (responseObj.task_transfer) {
             assert.exists(actual.transfer);
             AssertionUtils.assertTransfer(actual.transfer, responseObj.task_transfer);
@@ -43,6 +44,9 @@ export default class AssertionUtils {
             assert.exists(actual.task.transfers);
             assert.exists(actual.task.transfers.outgoing);
             AssertionUtils.assertTransfer(actual.task.transfers.outgoing, responseObj.active_outgoing_task_transfer);
+        }
+        if (responseObj.canceled_reason_code) {
+            assert.equal(actual.canceledReasonCode, responseObj.canceled_reason_code);
         }
     }
 

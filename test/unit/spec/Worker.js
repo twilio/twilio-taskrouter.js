@@ -1,6 +1,7 @@
 /* eslint no-unused-expressions: 0 */
 const chai = require('chai');
 chai.use(require('sinon-chai'));
+chai.use(require('chai-as-promised'));
 
 const assert = chai.assert;
 const expect = chai.expect;
@@ -13,7 +14,7 @@ import Configuration from '../../../lib/util/Configuration';
 const Errors = require('../../../lib/util/Constants').twilioErrors;
 import Logger from '../../../lib/util/Logger';
 import { list as mockList } from '../../mock/Activities';
-import { updateWorkerAttributes, updateWorkerActivityToIdle } from '../../mock/Responses';
+import { updateWorkerAttributes, updateWorkerActivityToIdle, createTask } from '../../mock/Responses';
 import Request from '../../../lib/util/Request';
 import EventBridgeSignaling from '../../../lib/signaling/EventBridgeSignaling';
 import { token as initialToken, updatedToken } from '../../mock/Token';
@@ -152,6 +153,108 @@ describe('Worker', () => {
         expect(setAttributesSpy.withArgs({ 'languages': ['en'] }).calledOnce).to.be.true;
         expect(s).to.have.been.calledOnce;
         expect(s.withArgs(requestURL, requestParams).calledOnce).to.be.true;
+      });
+    });
+  });
+
+  describe('#createTask(to, from, workflowSid, taskQueueSid, options={})', () => {
+    let worker;
+    let sandbox;
+
+    const requestURL = 'Workspaces/WSxxx/Tasks';
+    const requestParams = {
+      WorkflowSid: 'WWxxx',
+      TaskQueueSid: 'WQxxx',
+      RoutingTarget: 'WKxxx',
+      Attributes: {
+        // eslint-disable-next-line camelcase
+        outbound_to: 'customer',
+        from: 'worker'
+      }
+    };
+
+    beforeEach(() => {
+      worker = new Worker(initialToken, WorkerConfig);
+      worker.sid = 'WKxxx';
+      sinon.stub(worker, 'getRoutes').returns(routes);
+      sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should throw an error required parameters are missing', () => {
+      (() => {
+        worker.createTask();
+      }).should.throw(/<string>to is a required parameter/);
+
+      (() => {
+        worker.createTask('abc');
+      }).should.throw(/<string>from is a required parameter/);
+
+      (() => {
+        worker.createTask('abc', 'def');
+      }).should.throw(/<string>workflowSid is a required parameter/);
+
+      (() => {
+        worker.createTask('abc', 'def', 'ghi');
+      }).should.throw(/<string>taskQueueSid is a required parameter/);
+    });
+
+    it('should create a task request with a routing target of workersid', () => {
+      sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(createTask));
+
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx').then(taskSid => {
+        expect(taskSid).to.equal(createTask.sid);
+      });
+    });
+
+    it('should return an Error if the create task failed', () => {
+      const error = Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.');
+      sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(error));
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx').should.be.rejectedWith(error);
+    });
+
+    it('should overwrite custom attributes if they conflict with required attributes', () => {
+      const stub = sandbox.stub(Request.prototype, 'post');
+      stub.withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(createTask));
+
+      // eslint-disable-next-line camelcase
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx', { attributes: { from: 'abc', outbound_to: '+123' } }).then(taskSid => {
+        expect(taskSid).to.equal(createTask.sid);
+        sinon.assert.calledWith(stub, requestURL, requestParams, API_V1);
+      });
+    });
+
+    it('should set attributes in addition to the required attributes', () => {
+      const stub = sandbox.stub(Request.prototype, 'post');
+      const customRequestParams = Object.assign({}, requestParams, {
+        Attributes: {
+          // eslint-disable-next-line camelcase
+          outbound_to: 'customer',
+          from: 'worker',
+          language: 'en',
+          nested: {
+            nested2: 'answer'
+          }
+        }
+      });
+
+      stub.withArgs(requestURL, customRequestParams, API_V1).returns(Promise.resolve(createTask));
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx', { attributes: { from: 'abc', language: 'en', nested: { nested2: 'answer' } } }).then(taskSid => {
+        expect(taskSid).to.equal(createTask.sid);
+        sinon.assert.calledWith(stub, requestURL, customRequestParams, API_V1);
+      });
+    });
+
+    it('should set required attributes even when custom attributes not passed', () => {
+      const stub = sandbox.stub(Request.prototype, 'post');
+      stub.withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(createTask));
+
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx').then(taskSid => {
+        expect(taskSid).to.equal(createTask.sid);
+        sinon.assert.calledWith(stub, requestURL, requestParams, API_V1);
       });
     });
   });

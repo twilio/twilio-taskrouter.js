@@ -1,3 +1,14 @@
+0.4.2
+============
+New Features
+------------
+- Expose `reservation.failed` event, which is fired when `Worker` was unable to receive a `Reservation` for the `Task` it created
+- A Worker can now create an `Outbound` Task for themselves
+
+Maintenance
+------------
+- Add Twilio Client integration for e2e integration testing
+
 0.4.1
 ============
 Bug Fixes
