@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import AssertionUtils from '../../util/AssertionUtils';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -87,16 +88,10 @@ describe('Task Transfer', function() {
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
 
-                                        verifyReservationHasTransfer(alice.sid, bob.sid, transferReservation);
-                                        verifyTaskTransfersIncoming(alice.sid, bob.sid, transferReservation);
-
-                                        // Verify that transfer object type
-                                        expect(transferReservation.transfer.mode).equals('WARM');
-                                        expect(transferReservation.transfer.type).equals('WORKER');
-
-                                        // also verify task.transfers.incoming object transfer type
-                                        expect(transferReservation.task.transfers.incoming.mode).equals('WARM');
-                                        expect(transferReservation.task.transfers.incoming.type).equals('WORKER');
+                                        AssertionUtils.verifyTransferProperties(transferReservation.transfer,
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Transfer');
+                                        AssertionUtils.verifyTransferProperties(transferReservation.task.transfers.incoming,
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Incoming Transfer');
 
                                         transferReservation.once('canceled', () => {
                                             expect(transferReservation.status).equals('canceled');
@@ -141,16 +136,10 @@ describe('Task Transfer', function() {
                                 }),
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
-                                        verifyReservationHasTransfer(alice.sid, bob.sid, transferReservation);
-                                        verifyTaskTransfersIncoming(alice.sid, bob.sid, transferReservation);
-
-                                        // Verify transfer object type
-                                        expect(transferReservation.transfer.mode).equals('WARM');
-                                        expect(transferReservation.transfer.type).equals('WORKER');
-
-                                        // also verify task.transfers.incoming object transfer type
-                                        expect(transferReservation.task.transfers.incoming.mode).equals('WARM');
-                                        expect(transferReservation.task.transfers.incoming.type).equals('WORKER');
+                                        AssertionUtils.verifyTransferProperties(transferReservation.transfer,
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Transfer');
+                                        AssertionUtils.verifyTransferProperties(transferReservation.task.transfers.incoming,
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Incoming Transfer');
 
                                         // expect task assignment is reserved before reject
                                         expect(transferReservation.task.status).equals('reserved');
@@ -159,13 +148,8 @@ describe('Task Transfer', function() {
                                             // verify that on rejecting the transfer reservation, the transfer object
                                             // is updated as well with the failed status
                                             transferReservation.once('rejected', rejectedReservation => {
-                                                expect(rejectedReservation.transfer.mode).equals('WARM');
-                                                expect(rejectedReservation.transfer.to).equals(bob.sid);
-                                                expect(rejectedReservation.transfer.workerSid).equals(alice.sid);
-                                                expect(rejectedReservation.transfer.type).equals('WORKER');
-                                                expect(rejectedReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
-                                                expect(rejectedReservation.transfer.sid.substring(0, 2)).equals('TT');
-                                                expect(rejectedReservation.transfer.status).equals('failed');
+                                                AssertionUtils.verifyTransferProperties(rejectedReservation.transfer,
+                                                    alice.sid, bob.sid, 'WARM', 'WORKER', 'failed', 'Transfer');
                                             });
                                         }).then(() => {
                                             acceptedReservation.task.once('updated', updatedTask => {
@@ -207,16 +191,10 @@ describe('Task Transfer', function() {
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
 
-                                        verifyReservationHasTransfer(alice.sid, credentials.multiTaskQueueSid, transferReservation);
-                                        verifyTaskTransfersIncoming(alice.sid, credentials.multiTaskQueueSid, transferReservation);
-
-                                        // Verify transfer object type
-                                        expect(transferReservation.transfer.mode).equals('WARM');
-                                        expect(transferReservation.transfer.type).equals('QUEUE');
-
-                                        // also verify task.transfers.incoming object transfer type
-                                        expect(transferReservation.task.transfers.incoming.mode).equals('WARM');
-                                        expect(transferReservation.task.transfers.incoming.type).equals('QUEUE');
+                                        AssertionUtils.verifyTransferProperties(transferReservation.transfer,
+                                            alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated', 'Transfer');
+                                        AssertionUtils.verifyTransferProperties(transferReservation.task.transfers.incoming,
+                                            alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated', 'Incoming Transfer');
 
                                          // expect task assignment is reserved before reject
                                          expect(transferReservation.task.status).equals('reserved');
@@ -224,13 +202,8 @@ describe('Task Transfer', function() {
                                         transferReservation.reject().then(() => {
                                             // verify that on rejecting the transfer reservation, the transfer object has a status of initiated
                                             transferReservation.once('rejected', rejectedReservation => {
-                                                expect(rejectedReservation.transfer.mode).equals('WARM');
-                                                expect(rejectedReservation.transfer.to).equals(credentials.multiTaskQueueSid);
-                                                expect(rejectedReservation.transfer.workerSid).equals(alice.sid);
-                                                expect(rejectedReservation.transfer.type).equals('QUEUE');
-                                                expect(rejectedReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
-                                                expect(rejectedReservation.transfer.sid.substring(0, 2)).equals('TT');
-                                                expect(rejectedReservation.transfer.status).equals('initiated');
+                                                AssertionUtils.verifyTransferProperties(rejectedReservation.transfer,
+                                                    alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated', 'Transfer');
                                             });
                                         }).then(() => {
                                             acceptedReservation.task.once('updated', updatedTask => {
@@ -247,18 +220,3 @@ describe('Task Transfer', function() {
     });
 });
 
-function verifyReservationHasTransfer(fromWorkerSid, toSid, transferReservation) {
-    expect(transferReservation.transfer.reservationSid.substring(0, 2)).equals('WR');
-    expect(transferReservation.transfer.sid.substring(0, 2)).equals('TT');
-    expect(transferReservation.transfer.workerSid).equals(fromWorkerSid);
-    expect(transferReservation.transfer.to).equals(toSid);
-    expect(transferReservation.transfer.status).equals('initiated');
-}
-
-function verifyTaskTransfersIncoming(fromWorkerSid, toSid, transferReservation) {
-    expect(transferReservation.task.transfers.incoming.reservationSid.substring(0, 2)).equals('WR');
-    expect(transferReservation.task.transfers.incoming.sid.substring(0, 2)).equals('TT');
-    expect(transferReservation.task.transfers.incoming.workerSid).equals(fromWorkerSid);
-    expect(transferReservation.task.transfers.incoming.to).equals(toSid);
-    expect(transferReservation.task.transfers.incoming.status).equals('initiated');
-}

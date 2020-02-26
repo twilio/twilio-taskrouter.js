@@ -1,4 +1,5 @@
 const Twilio = require('twilio');
+const credentials = require('../../test/env');
 
 export default class EnvTwilio {
     constructor(accountSid, authToken, environment) {
@@ -85,6 +86,14 @@ export default class EnvTwilio {
             });
     }
 
+    updateWorkflowTaskReservationTimeout(workspaceSid, workflowSid, newTimeout) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .workflows(workflowSid)
+            .update({
+                taskReservationTimeout: newTimeout
+            });
+    }
+
     /**
      * Helper function to make a call from one number to another and plays the specified twimlet
      * @param {string} toNumber - The number to dial
@@ -125,5 +134,29 @@ export default class EnvTwilio {
         }).then(conferences => {
              return conferences[0];
         });
+    }
+
+    /**
+     * Fetch the Map of phone numbers to Participant properties in a particular Conference
+     * @param {string} conferenceSid - The Sid of the Conference
+     */
+    async fetchParticipantProperties(conferenceSid) {
+        const participantProperties = new Map();
+        const phoneNumbers = [credentials.workerNumber, credentials.supervisorNumber, credentials.customerNumber];
+
+        // Fetch list of all participants in a conference
+        const participants = await this.fetchConferenceParticipants(conferenceSid);
+
+        // Create PhoneNumber to Participant Map
+        for (const phoneNumber of phoneNumbers) {
+            for (const participant of participants) {
+                const callInstance = await this.twilioClient.calls(participant.callSid).fetch();
+                if (callInstance.to === phoneNumber) {
+                    participantProperties.set(phoneNumber, participant);
+                }
+            }
+        }
+
+        return participantProperties;
     }
 }

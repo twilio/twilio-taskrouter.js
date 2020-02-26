@@ -1,4 +1,5 @@
 import { assert } from 'chai';
+
 /**
  * Utility class for common assertions.
  */
@@ -69,5 +70,25 @@ export default class AssertionUtils {
     static assertSid(sid, prefix, msg) {
         const re = new RegExp(`^${prefix}\\w{32}$`);
         assert.match(sid, re, msg);
+    }
+
+    /**
+     * Verify Transfer properties
+     * @param {IncomingTransfer} transfer  The Transfer object on Reservation
+     * @param {string} expectedFrom The worker sid of transferor
+     * @param {string} expectedTo The worker sid of transferee
+     * @param {string} expectedMode expected Transfer Mode (COLD or WARM)
+     * @param {string} expectedType expected Transfer Type (WORKER or QUEUE)
+     * @param {string} expectedStatus expected Transfer Status
+     * @param {string} prefixMessage Prefix for assertion failure message
+     */
+    static verifyTransferProperties(transfer, expectedFrom, expectedTo, expectedMode, expectedType, expectedStatus, prefixMessage) {
+        assert.strictEqual(transfer.reservationSid.substring(0, 2), 'WR', `${prefixMessage} Reservation Sid Prefix`);
+        assert.strictEqual(transfer.sid.substring(0, 2), 'TT', `${prefixMessage} Sid Prefix`);
+        assert.strictEqual(transfer.workerSid, expectedFrom, `${prefixMessage} Initiating Worker Sid`);
+        assert.strictEqual(transfer.to, expectedTo, `${prefixMessage} to Worker Sid`);
+        assert.strictEqual(transfer.mode, expectedMode, `${prefixMessage} Mode`);
+        assert.strictEqual(transfer.type, expectedType, `${prefixMessage} Type`);
+        assert.strictEqual(transfer.status, expectedStatus, `${prefixMessage} Status`);
     }
 }
