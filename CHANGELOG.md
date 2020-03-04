@@ -1,3 +1,13 @@
+0.4.3
+==========
+Bug Fixes
+----------
+- Fixing Logger to not persist loglevel in LocalStorage
+
+Maintenance
+----------
+- Add additional voice transfer testse
+
 0.4.2
 ============
 New Features

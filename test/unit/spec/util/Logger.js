@@ -18,6 +18,18 @@ describe('Logger', () => {
         new Logger('logger-test', 'foo');
       }).should.throw(/level must be one of/);
     });
+
+    describe('#logLevel(persistance)', () => {
+      it('should never persist the logger configuration', () =>{
+        let log = new Logger('foobar', 'info');
+        let setLevelSpy = sinon.spy(log._log, 'setLevel');
+        let setDefaultLevelSpy = sinon.spy(log._log, 'setDefaultLevel');
+        log.setLevel('error');
+        assert.isTrue(setDefaultLevelSpy.withArgs('error').calledOnce);
+        // setDefaultLevel also invokes setLevel
+        assert.isTrue(setLevelSpy.withArgs('error', false).calledTwice);
+      });
+    });
   });
 
   describe('#logLevel(msg)', () => {
