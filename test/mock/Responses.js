@@ -291,3 +291,18 @@ export const createTask = {
   counter: 0,
   addons: '{}'
 };
+
+
+export const initWorkerAttributes = {
+    account_sid: "ACxxx",
+    workspace_sid: "WSxxx",
+    sid: "WKxxx",
+    date_created: 1510257438,
+    date_updated: 1519537599,
+    attributes: "{\"selected_language\":\"es\"}",
+    friendly_name: "Alice",
+    available: true,
+    activity_sid: "WAxx2",
+    activity_name: "Idle",
+    date_status_changed: 1519414077
+};

@@ -1,3 +1,9 @@
+0.4.4
+==========
+Bug Fixes
+----------
+- Fixing duplicate listeners for TR events on websocket reconnect.
+
 0.4.3
 ==========
 Bug Fixes
