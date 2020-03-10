@@ -1,19 +1,32 @@
 import EnvTwilio from '../../../util/EnvTwilio';
 import Worker from '../../../../lib/Worker';
 import { getAccessToken } from '../../../util/MakeAccessToken';
-
-const chai = require('chai');
-const assert = chai.assert;
+import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
+import {
+    RESERVATION_CANCELED_REASON,
+    INVALID_NUMBER,
+    TASK_CANCELED_REASON,
+} from '../../../util/Constants';
 
 const credentials = require('../../../env');
 
 describe('Reservation with Outbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let worker;
 
     beforeEach(() => {
-        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+            // make worker available
+            worker = new Worker(workerToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
+            });
+
+            return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(worker);
+        });
     });
 
     afterEach(() => {
@@ -29,70 +42,157 @@ describe('Reservation with Outbound Voice Task', () => {
 
     describe('#conference reservation', () => {
         it('should issue a conference instruction on the Reservation', () => {
-            worker = new Worker(workerToken, {
-                connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+            return new Promise(async(resolve, reject) => {
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
+
+                workerReservation.on('accepted', async() => {
+                    try {
+                        await outboundCommonHelpers.verifyConferenceProperties(workerReservation.task.sid, 'in-progress', 2);
+                    } catch (err) {
+                        reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
+                    }
+                });
+
+                outboundCommonHelpers.assertOnResWrapUpAndCompleteEventOutbound(workerReservation).then(() => {
+                    resolve('Outbound Reservation Conference test finished.');
+                }).catch(err => {
+                    reject(err);
+                });
+
+                workerReservation.conference({
+                    endConferenceOnExit: true
+                }).catch(err => {
+                    reject(`Error in establishing conference. Error: ${err}`);
+                });
             });
+        });
+
+        it('should issue a conference instruction on the Reservation even worker is offline', () => {
+            // If a “RoutableTarget” is given, a Worker’s capacity and availability are ignored.
+            envTwilio.updateWorkerActivity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                credentials.multiTaskUpdateActivitySid
+            );
 
             return new Promise(async(resolve, reject) => {
-                let taskSid;
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
 
-                worker.on('error', (err) => {
-                    reject(`Error detected for Worker ${worker.sid}. Error: ${err}.`);
-                });
-
-                worker.on('ready', async() => {
-                    // create task with routing target
-                    taskSid = await worker.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
-                });
-
-                worker.on('reservationCreated', async(createdReservation) => {
-                    let conferenceSid;
-                    // check that the reservation's task is for the task we created for ourselves
-                    if (taskSid !== createdReservation.task.sid) {
-                        reject(`Did not receive a Reservation for the created Outbound Task ${taskSid}. Got a Reservation for ${createdReservation.task.sid} instead`);
+                workerReservation.on('accepted', async() => {
+                    try {
+                       await outboundCommonHelpers.verifyConferenceProperties(workerReservation.task.sid, 'in-progress', 2);
+                    } catch (err) {
+                        reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
                     }
+                });
 
-                    createdReservation.on('accepted', async() => {
-                        try {
-                            // check that there are 2 participants in the conference
-                            const conference = await envTwilio.fetchConferenceByName(taskSid);
-                            conferenceSid = conference.sid;
-                            assert.strictEqual(conference.status, 'in-progress', 'Conference status');
+                outboundCommonHelpers.assertOnResWrapUpAndCompleteEventOutbound(workerReservation).then(() => {
+                    resolve('Outbound Reservation Conference when worker is offline test finished.');
+                }).catch(err => {
+                    reject(err);
+                });
 
-                            const participants = await envTwilio.fetchConferenceParticipants(conferenceSid);
-                            assert.strictEqual(participants.length, 2, 'Participant count in conference');
-                        } catch (err) {
-                            reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
-                        }
+                workerReservation.conference({
+                    endConferenceOnExit: true
+                }).catch(err => {
+                    reject(`Error in establishing conference. Error: ${err}`);
+                });
+            });
+        });
+
+        it('should issue a conference instruction on the Reservation even worker has no capacity', () => {
+            // If a “RoutableTarget” is given, a Worker’s capacity and availability are ignored.
+            envTwilio.updateWorkerCapacity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                'default',
+                0
+            );
+
+            return new Promise(async(resolve, reject) => {
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
+
+                workerReservation.on('accepted', async() => {
+                    try {
+                        await outboundCommonHelpers.verifyConferenceProperties(workerReservation.task.sid, 'in-progress', 2);
+                    } catch (err) {
+                        reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
+                    }
+                });
+
+                outboundCommonHelpers.assertOnResWrapUpAndCompleteEventOutbound(workerReservation).then(() => {
+                    resolve('Outbound Reservation Conference when worker has no capacity test finished.');
+                }).catch(err => {
+                    reject(err);
+                });
+
+                workerReservation.conference({
+                    endConferenceOnExit: true
+                }).catch(err => {
+                    reject(`Error in establishing conference. Error: ${err}`);
+                });
+            });
+        });
+    });
+
+    describe('#failed conference reservation', () => {
+        before(() => {
+            return envTwilio.updateWorkerCapacity(
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                'default',
+                1
+            );
+        });
+
+        it('should cancel reservation after cancel the task', () => {
+            const options = {
+                reason: 'RoutingTarget not available',
+            };
+
+            return new Promise(async(resolve, reject) => {
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
+
+                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'in-progress', options).then(() => {
+                    resolve('Outbound cancel reservation after cancel task test finished ');
+                }).catch(err => {
+                    reject(err);
+                });
+
+                workerReservation.conference({
+                    endConferenceOnExit: true
+                }).then(() => {
+                    envTwilio.cancelTask(credentials.multiTaskWorkspaceSid, workerReservation.task.sid, options.reason).catch(err => {
+                        reject(`Failed to cancel the Outbound Task. Error: ${err}`);
                     });
+                }).catch(err => {
+                    reject(`Error in establishing conference. Error: ${err}`);
+                });
+            });
+        });
 
-                    // ORCH-678: Uncomment this section after ORCH-678
-                    createdReservation.on('wrapup', async() => {
-                        // Uncomment after ORCH-678
-                        // try {
-                        //     // check that the participants have left the conference
-                        //     const conference = await envTwilio.fetchConference(conferenceSid);
-                        //     assert.strictEqual(conference.status, 'completed', 'Conference status');
+        it('should cancel reservation if customer number is invalid', () => {
+            const options = {
+                customerNumber: INVALID_NUMBER,
+                reasonCode: RESERVATION_CANCELED_REASON,
+                reason: TASK_CANCELED_REASON + credentials.multiTaskAliceSid,
+            };
 
-                        //     const participants = await envTwilio.fetchConferenceParticipants(conferenceSid);
-                        //     assert.strictEqual(participants.length, 0, 'Participant count in conference');
+            return new Promise(async(resolve, reject) => {
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
 
-                        // } catch (err) {
-                        //     reject(`Failed to validate Conference properties when Agent leaves call. Error: ${err}`);
-                        // }
-                        resolve('Outbound Reservation Conference test finished.');
-                    });
+                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'completed', options, 0).then(() => {
+                    resolve('Outbound cancel reservation for invalid customer number test finished ');
+                }).catch(err => {
+                    reject(err);
+                });
 
-                    createdReservation.conference({
-                        endConferenceOnExit: true
-                    }).catch(err => {
-                        reject(`Error in establishing conference. Error: ${err}`);
-                    });
+                workerReservation.conference({
+                    endConferenceOnExit: true
+                }).catch(err => {
+                    reject(`Error in establishing conference. Error: ${err}`);
                 });
             });
         });
     });
 });
-

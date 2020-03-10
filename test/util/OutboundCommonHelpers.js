@@ -15,6 +15,7 @@ export default class OutboundCommonHelpers {
 
         this.envTwilio = envTwilio;
     }
+
     /**
      * Listener for worker.ready or worker.error events
      * @param {Worker} worker  The Worker object which initiates outbound call
@@ -36,15 +37,20 @@ export default class OutboundCommonHelpers {
     /**
      * Assert Reservation and Task properties
      * @param {Worker} worker The Worker object which initiates outbound call
+     * @param {Task.TaskOptions} [options]
      * @return {Promise<Reservation>} Created reservation for Worker
+     *//**
+     * @typedef {Object} Task.TaskOptions
+     * @property {String} [customerNumber] - Updated customerNumber for the task
      */
-    assertOnReservationCreated(worker) {
+    assertOnReservationCreated(worker, options = {}) {
+        const customerNumber = options.customerNumber || credentials.customerNumber;
         return new Promise((resolve) => {
             worker.on('reservationCreated', createdRes => {
                 assert.strictEqual(createdRes.task.status, 'reserved', 'Task status');
                 assert.strictEqual(createdRes.task.routingTarget, worker.sid, 'Routing target');
                 assert.deepStrictEqual(createdRes.task.attributes.from, credentials.flexCCNumber, 'Conference From number');
-                assert.deepStrictEqual(createdRes.task.attributes.outbound_to, credentials.customerNumber, 'Conference To number');
+                assert.deepStrictEqual(createdRes.task.attributes.outbound_to, customerNumber, 'Conference To number');
                 assert.strictEqual(createdRes.status, 'pending', 'Reservation Status');
                 assert.strictEqual(createdRes.workerSid, worker.sid, 'Worker Sid in conference');
                 resolve(createdRes);
@@ -57,11 +63,16 @@ export default class OutboundCommonHelpers {
      * 1) Create Task
      * 2) Listen on reservationCreated event and assert reservation/task properties
      * @param {Worker} worker The Worker object which initiates outbound call
+     * @param {Task.TaskOptions} [options]
      * @return {Promise<Reservation>} Created reservation for Worker
+     * //**
+     * @typedef {Object} Task.TaskOptions
+     * @property {String} [customerNumber] - Updated customerNumber for the task
      */
-    async createTaskAndAssertOnResCreated(worker) {
-        const [taskSid, createdReservation] = await Promise.all([worker.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid),
-            this.assertOnReservationCreated(worker)]);
+    async createTaskAndAssertOnResCreated(worker, options = {}) {
+        const customerNumber = options.customerNumber || credentials.customerNumber;
+        const [taskSid, createdReservation] = await Promise.all([worker.createTask(customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid),
+            this.assertOnReservationCreated(worker, options)]);
 
         // check that the reservation's task is the task we created for ourselves
         if (taskSid !== createdReservation.task.sid) {
@@ -220,6 +231,84 @@ export default class OutboundCommonHelpers {
             });
         }).catch(err => {
             throw err;
+        });
+    }
+
+    /**
+     * Helper function to :
+     * 1) Assert conference properties and task status on reservation wrapup and complete event
+     * 2) Make request to complete reservation
+     * @param reservation
+     * @returns {Promise<Reservation>}
+     */
+    assertOnResWrapUpAndCompleteEventOutbound(reservation) {
+        return new Promise(async(resolve, reject) => {
+            reservation.on('wrapup', async() => {
+                try {
+                    // TODO : ORCH-678: Fix endConferenceOnExit
+                    //  Uncomment below lines
+                    // await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
+                    assert.strictEqual(reservation.task.status, 'wrapping', 'Task status on reservation wrapup');
+                    await reservation.complete();
+                    resolve(reservation);
+                } catch (err) {
+                    reject(`Failed to validate Conference properties on reservation wrapup event. Error: ${err}`);
+                }
+            });
+        }).then(() => {
+            return new Promise(async(resolve, reject) => {
+                reservation.on('completed', async() => {
+                    try {
+                        // TODO : ORCH-678: Fix endConferenceOnExit
+                        // Uncomment below lines
+                        // await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
+                        assert.strictEqual(reservation.task.status, 'completed', 'Task status on reservation completed');
+                        resolve(reservation);
+                    } catch (err) {
+                        reject(`Failed to validate Conference properties on reservation completed event. Error: ${err}`);
+                    }
+                });
+            });
+        }).catch(err => {
+            throw err;
+        });
+    }
+
+    /**
+     * Helper function to assert conference properties after reservation canceled
+     * @param reservation
+     * @param expectedConfStatus
+     * @param participantExpSize
+     * @param {Reservation.CancelOptions} [options]
+     * @returns {Promise<Reservation>}
+     * //**
+     * @typedef {Object} Reservation.CancelOptions
+     * @property {Integer} [reasonCode] - Updated reasonCode for cancelling the reservation
+     * @property {String} [reason] - Updated reason for cancelling the task
+     */
+    assertOnResCancelEvent(reservation, expectedConfStatus, options = {}, participantExpSize) {
+        const reasonCode = options.reasonCode;
+        const reason = options.reason;
+
+        return new Promise(async(resolve, reject) => {
+            reservation.on('canceled', async() => {
+                try {
+                    await this.verifyConferenceProperties(reservation.task.sid, expectedConfStatus, participantExpSize);
+                    assert.strictEqual(reservation.status, 'canceled', 'Reservation status canceled for worker');
+                    assert.strictEqual(reservation.canceledReasonCode, reasonCode, 'Reservation canceled reason code');
+                    reservation.task.on('canceled', async() => {
+                        try {
+                            assert.strictEqual(reservation.task.status, 'canceled', 'Task status on reservation canceled for worker');
+                            assert.strictEqual(reservation.task.reason, reason, 'Task canceled reason');
+                        } catch (err) {
+                            reject(`Failed to validate task properties on reservation canceled event. Error: ${err}`);
+                        }
+                    });
+                    resolve(reservation);
+                } catch (err) {
+                    reject(`Failed to validate Conference properties on reservation canceled event. Error: ${err}`);
+                }
+            });
         });
     }
 
