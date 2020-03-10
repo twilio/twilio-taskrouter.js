@@ -16,16 +16,11 @@ export default class OutboundCommonHelpers {
         this.envTwilio = envTwilio;
     }
     /**
-     * Initial setup for Outbound Conference Test which will :
-     * 1) Create Task
-     * 2) Listen on reservationCreated event and assert reservation/task properties
-     * 3) Issue conference instruction on worker reservation
+     * Listener for worker.ready or worker.error events
      * @param {Worker} worker  The Worker object which initiates outbound call
-     * @return {Promise<Reservation>} Reservation Created for Worker
+     * @return {Promise<Worker>} Worker object if promise resolves
      */
-    setUpOutboundConference(worker) {
-        let taskSid;
-
+    listenToWorkerReadyOrErrorEvent(worker) {
         return new Promise((resolve, reject) => {
             worker.on('ready', (readyWorker) => {
                 assert.strictEqual(worker.reservations.size, 0, 'Worker should initialize with 0 pending Reservations');
@@ -35,28 +30,45 @@ export default class OutboundCommonHelpers {
             worker.on('error', err => {
                 reject(`Error detected for Worker ${worker.sid}. Error: ${err}.`);
             });
-        }).then(async() => {
-            taskSid = await worker.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+        });
+    }
 
-            return new Promise((resolve, reject) => {
-                worker.on('reservationCreated', createdRes => {
-                    // check that the reservation's task is for the task we created for ourselves
-                    assert.strictEqual(createdRes.task.sid, taskSid, 'Created Task Sid for the Worker');
-                    assert.strictEqual(createdRes.task.status, 'reserved', 'Task status');
-                    assert.strictEqual(createdRes.task.routingTarget, worker.sid, 'Routing target');
-                    assert.deepStrictEqual(createdRes.task.attributes.from, credentials.flexCCNumber, 'Conference From number');
-                    assert.deepStrictEqual(createdRes.task.attributes.outbound_to, credentials.customerNumber, 'Conference To number');
-                    assert.strictEqual(createdRes.status, 'pending', 'Reservation Status');
-                    assert.strictEqual(createdRes.workerSid, worker.sid, 'Worker Sid in conference');
-
-                    createdRes.conference()
-                        .then(() => resolve(createdRes))
-                        .catch(err => {
-                            reject(`Error while establishing conference. Error: ${err}`);
-                        });
-                });
+    /**
+     * Assert Reservation and Task properties
+     * @param {Worker} worker The Worker object which initiates outbound call
+     * @return {Promise<Reservation>} Created reservation for Worker
+     */
+    assertOnReservationCreated(worker) {
+        return new Promise((resolve) => {
+            worker.on('reservationCreated', createdRes => {
+                assert.strictEqual(createdRes.task.status, 'reserved', 'Task status');
+                assert.strictEqual(createdRes.task.routingTarget, worker.sid, 'Routing target');
+                assert.deepStrictEqual(createdRes.task.attributes.from, credentials.flexCCNumber, 'Conference From number');
+                assert.deepStrictEqual(createdRes.task.attributes.outbound_to, credentials.customerNumber, 'Conference To number');
+                assert.strictEqual(createdRes.status, 'pending', 'Reservation Status');
+                assert.strictEqual(createdRes.workerSid, worker.sid, 'Worker Sid in conference');
+                resolve(createdRes);
             });
         });
+    }
+
+    /**
+     * Helper function to :
+     * 1) Create Task
+     * 2) Listen on reservationCreated event and assert reservation/task properties
+     * @param {Worker} worker The Worker object which initiates outbound call
+     * @return {Promise<Reservation>} Created reservation for Worker
+     */
+    async createTaskAndAssertOnResCreated(worker) {
+        const [taskSid, createdReservation] = await Promise.all([worker.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid),
+            this.assertOnReservationCreated(worker)]);
+
+        // check that the reservation's task is the task we created for ourselves
+        if (taskSid !== createdReservation.task.sid) {
+            throw new Error(`Did not receive a Reservation for the created Outbound Task ${taskSid}. Got a Reservation for ${createdReservation.task.sid} instead`);
+        } else {
+            return createdReservation;
+        }
     }
 
     /**

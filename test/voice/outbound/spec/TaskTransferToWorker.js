@@ -34,6 +34,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`
             });
+
+            return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);
         });
     });
 
@@ -56,7 +58,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
     describe('#Cold Transfer to a Worker', () => {
         it('should complete transfer to worker B successfully', () => {
             return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.setUpOutboundConference(alice);
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
                 aliceReservation.on('accepted', async() => {
                     try {
@@ -100,12 +102,16 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error in establishing conference for transferred worker. Error: ${err}`);
                     });
                 });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                });
             });
         }).timeout(50000);
 
         it('should not fail even if Worker A tries to wrap up task before Worker B accepts', () => {
             return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.setUpOutboundConference(alice);
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
                 aliceReservation.on('accepted', async() => {
                     try {
@@ -159,6 +165,10 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error in establishing conference. Error: ${err}`);
                     });
                 });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                });
             });
         }).timeout(50000);
     });
@@ -166,7 +176,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
     describe('#Failed Cold Transfer to a Worker', () => {
         it('should fail if transferee rejects', () => {
             return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.setUpOutboundConference(alice);
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
                 aliceReservation.on('accepted', async() => {
                     try {
@@ -215,12 +225,16 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error in rejecting Bob's reservation. Error: ${err}`);
                     });
                 });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                });
             });
         }).timeout(50000);
 
         it('should not initiate transfer when transferee is unavailable', () => {
             return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.setUpOutboundConference(alice);
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
                 aliceReservation.on('accepted', async() => {
                     try {
@@ -238,12 +252,16 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Failed to validate Conference properties on Alice's reservation accepted event. Error: ${err}`);
                     }
                 });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                });
             });
         }).timeout(50000);
 
         it('should fail if transferee issues a overriding conference(options) with invalid number', () => {
             return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.setUpOutboundConference(alice);
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
                 aliceReservation.on('accepted', async() => {
                     try {
@@ -290,6 +308,10 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error in establishing conference for transferred worker. Error: ${err}`);
                     });
                 });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                });
             });
         }).timeout(50000);
     });
@@ -301,7 +323,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
         it('should fail if transferee does not accept reservation within time limit', () => {
             return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.setUpOutboundConference(alice);
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
                 aliceReservation.on('accepted', async() => {
                     try {
@@ -339,6 +361,10 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         }
                     });
                     // Do not issue the conference instruction for Worker B's reservation as we don't want it to accept
+                });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
                 });
             });
         }).timeout(50000);
