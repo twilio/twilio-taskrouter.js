@@ -667,15 +667,7 @@ const reservationCanceledForIncomingTransfer = {
         sid: 'TTxxx'
     },
     sid: 'WRxx2'
- };
-
-const initWorkerEvent = {
-    channel_id: 'channel',
-    account_sid: 'account',
-    workspace_sid: 'workspace',
-    token_lifetime: 1000000
-};
-
+ }
 
 module.exports = {
   events: {
@@ -712,9 +704,6 @@ module.exports = {
         transferFailed: transferFailed,
         transferCompleted: transferCompleted,
         transferCanceled: transferCanceled
-    },
-    signaling : {
-        initWorkerEvent : initWorkerEvent
     }
   }
 };
