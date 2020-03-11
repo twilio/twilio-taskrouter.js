@@ -62,7 +62,7 @@ describe('WorkerEvents', () => {
 
             // trigger a task update for task WTxx1
             // it should send 2 update events to the two related reservations WRxx1 and WRxx2, not WRxx3
-            worker._signaling.emit('task.updated', mockEvents.task.updated, 'task.updated');
+            worker._signaling.emit('task.updated', mockEvents.task.updated);
 
             expect(spy.callCount).to.equal(2);
             expect(spy.getCall(0).args[0].reservationSid).to.equal(r1);
@@ -110,7 +110,7 @@ describe('WorkerEvents', () => {
                 transferredTask.transfers.outgoing.on('completed', spy);
 
                 // eslint-disable-next-line camelcase
-                worker._signaling.emit('task.transfer-completed', Object.assign({}, mockEvents.task.transferCompleted, { initiating_reservation_sid: r1, task_sid: t1 }), 'task.transfer-completed');
+                worker._signaling.emit('task.transfer-completed', Object.assign({}, mockEvents.task.transferCompleted, { initiating_reservation_sid: r1, task_sid: t1 }));
                 assert.equal(spy.callCount, 1);
                 // check that the first wrapping reservation does not have a transfer object
                 assert.isNull(taskReservationsList[1].transfers.outgoing);
@@ -123,7 +123,7 @@ describe('WorkerEvents', () => {
             const spy = sinon.spy();
 
             worker.on('reservationFailed', spy);
-            worker.emit('reservationFailed', mockEvents.reservation.failed, 'reservationFailed');
+            worker.emit('reservationFailed', mockEvents.reservation.failed);
             assert.isTrue(spy.calledOnce);
             expect(spy.getCall(0).args[0]).to.equal(mockEvents.reservation.failed);
         });
