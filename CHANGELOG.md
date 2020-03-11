@@ -1,14 +1,9 @@
 0.4.5
 ==========
-Bug Fixes
-----------
-- Reverts Fixes for 0.4.4
-
-0.4.5
-==========
 Maintenance
 ----------
 - Add additional voice reservation tests
+- Reverts Fixes for 0.4.4
 
 0.4.4
 ==========
