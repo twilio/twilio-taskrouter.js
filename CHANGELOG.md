@@ -1,3 +1,9 @@
+0.4.5
+==========
+Maintenance
+----------
+- Add additional voice reservation tests
+
 0.4.4
 ==========
 Bug Fixes
@@ -12,7 +18,7 @@ Bug Fixes
 
 Maintenance
 ----------
-- Add additional voice transfer testse
+- Add additional voice transfer tests
 
 0.4.2
 ============
