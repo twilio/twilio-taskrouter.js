@@ -4,9 +4,6 @@ import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
 import { twimletUrl } from '../../VoiceBase';
 
-const chai = require('chai');
-const assert = chai.assert;
-
 const credentials = require('../../../env');
 
 describe('Reservation with Inbound Voice Task', () => {
