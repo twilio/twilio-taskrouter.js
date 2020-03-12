@@ -159,4 +159,12 @@ export default class EnvTwilio {
 
         return participantProperties;
     }
+
+    /** Fetch the Map of phone numbers to Participant properties by friendly name
+     * @param {string} conferenceName  The friendly name of the Conference
+     */
+    async fetchParticipantPropertiesByName(conferenceName) {
+        const conference = await this.fetchConferenceByName(conferenceName);
+        return await this.fetchParticipantProperties(conference.sid);
+    }
 }
