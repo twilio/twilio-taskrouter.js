@@ -9,18 +9,21 @@ const sinon = require('sinon');
 
 import Activity from '../../../lib/Activity';
 import ActivityDescriptor from '../../../lib/descriptors/ActivityDescriptor';
-import { API_V1 } from '../../../lib/util/Constants';
+import { API_V1, API_V2 } from '../../../lib/util/Constants';
 import Configuration from '../../../lib/util/Configuration';
 const Errors = require('../../../lib/util/Constants').twilioErrors;
 import Logger from '../../../lib/util/Logger';
 import { list as mockList } from '../../mock/Activities';
-import { updateWorkerAttributes, updateWorkerActivityToIdle, createTask } from '../../mock/Responses';
+import { pageSize1000 } from '../../mock/Channels';
+import { reservations } from '../../mock/Reservations';
+import { updateWorkerAttributes, updateWorkerActivityToIdle, createTask, initWorkerAttributes } from '../../mock/Responses';
 import Request from '../../../lib/util/Request';
 import EventBridgeSignaling from '../../../lib/signaling/EventBridgeSignaling';
 import { token as initialToken, updatedToken } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
 import { WorkerConfig } from '../../mock/WorkerConfig';
 import Routes from '../../../lib/util/Routes';
+import { events as mockEvents } from '../../mock/Events';
 
 describe('Worker', () => {
   const routes = new Routes('WSxxx', 'WKxxx');
@@ -376,4 +379,114 @@ describe('Worker', () => {
       });
     });
   });
+
+  describe('#TaskrouterListenerSubscriptions', () => {
+
+    let sandbox;
+    let requestStub;
+    const requestURL = 'Workspaces/WSxxx/Workers/WKxxx';
+    const activitiesURL = 'Workspaces/WSxxx/Activities';
+    const channelsURL = 'Workspaces/WSxxx/Workers/WKxxx/WorkerChannels';
+    const reservationsURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations';
+    const requestParams = {
+      PageSize: 1000
+    };
+    const reservationParam = {
+      Active: 'true',
+      PageSize: 1000
+    };
+
+    // 5 listeners for signaling layer additional 22 for taskrouter events
+    const expectedTRListenerCount = 22;
+    const expectedSignalingListenerCnt = 5;
+    const expectedMaxListenerForEvent = 1;
+
+    beforeEach(done => {
+      sandbox = sinon.sandbox.create();
+      requestStub = sandbox.stub(Request.prototype, 'get');
+      requestStub
+          .withArgs(requestURL, API_V1).returns(Promise.resolve(initWorkerAttributes))
+          .withArgs(activitiesURL, API_V1, requestParams).returns(Promise.resolve(mockList))
+          .withArgs(channelsURL, API_V1, requestParams).returns(Promise.resolve(pageSize1000))
+          .withArgs(reservationsURL, API_V2, reservationParam).returns(Promise.resolve(reservations));
+      done();
+    });
+
+    afterEach(done => {
+      sandbox.restore();
+      done();
+    });
+
+    it('should subscribe to taskrouter events once on websocket connect', done => {
+      let worker = new Worker(initialToken, WorkerConfig);
+      sinon.stub(worker, 'getRoutes').returns(routes);
+
+      let workerSubscribeSpy = sinon.spy(worker, '_subscribeToTaskRouterEvents');
+
+      worker.on('ready', () => {
+        expect(workerSubscribeSpy.calledOnce).to.be.true;
+        expect(worker._signaling.eventNames().length).to.equal(
+            expectedTRListenerCount + expectedSignalingListenerCnt
+        );
+        worker._signaling.eventNames().forEach(eventName => {
+          expect(worker._signaling.listenerCount(eventName), expectedMaxListenerForEvent);
+        });
+        done();
+      });
+
+      // emit the init event which triggers worker.ready after successful initialization
+      worker._signaling.emit('init', mockEvents.signaling.initWorkerEvent);
+    }).timeout(5000);
+
+    it('should unsubscribe from taskrouter events once on disconnect', done => {
+      let worker = new Worker(initialToken, WorkerConfig);
+      sinon.stub(worker, 'getRoutes').returns(routes);
+
+      let workerUnsubscribeSpy = sinon.spy(worker, '_unSubscribeFromTaskRouterEvents');
+
+      worker.on('disconnected', () => {
+        expect(workerUnsubscribeSpy.calledOnce).to.be.true;
+        // Worker should have unsubed from all taskrouter events events except the signaling events
+        expect(worker._signaling.eventNames().length).to.equal(expectedSignalingListenerCnt);
+        done();
+      });
+
+      // emit disconnected event
+      worker._signaling.emit('disconnected');
+    }).timeout(5000);
+
+    it('should have no duplicate taskrouter listeners', done => {
+      let worker = new Worker(initialToken, WorkerConfig);
+      sinon.stub(worker, 'getRoutes').returns(routes);
+
+      worker.on('ready', () => {
+        expect(worker._signaling.eventNames().length).to.equal(
+            expectedTRListenerCount + expectedSignalingListenerCnt
+        );
+        // validate we don't end up with duplicate listeners
+        worker._signaling.eventNames().forEach(eventName => {
+          expect(worker._signaling.listenerCount(eventName)).to.equal(expectedMaxListenerForEvent);
+        });
+        done();
+      });
+
+      worker.on('disconnected', () => {
+        worker._signaling.emit('connected');
+        worker._signaling.emit('init', mockEvents.signaling.initWorkerEvent);
+      });
+
+      // subscribe to taskrouter events without initialize (worker should not end up with duplicate listeners after
+      // disconnect)
+      worker._subscribeToTaskRouterEvents();
+      // validate the method subscribes to all taskrouter listeners
+      expect(worker._signaling.eventNames().length).to.equal(
+          expectedTRListenerCount + expectedSignalingListenerCnt
+      );
+      // simulate disconnected--> connected-->init
+      worker._signaling.emit('disconnected');
+    }).timeout(5000);
+
+
+  });
+
 });
