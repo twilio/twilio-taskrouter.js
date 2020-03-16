@@ -61,8 +61,8 @@ describe('Outbound Voice Task', () => {
 
                 aliceReservation.on('accepted', async() => {
                     try {
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
@@ -197,8 +197,8 @@ describe('Outbound Voice Task', () => {
 
                 aliceReservation.on('accepted', async() => {
                     try {
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }

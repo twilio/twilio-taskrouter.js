@@ -120,6 +120,7 @@ export default class OutboundCommonHelpers {
      * 3) Initiate Transfer
      * 4) Call helper function to assert properties after transfer is initiated
      * @param {Reservation} transferorReservation  The Transferor's reservation
+     * @param {sid} transferToSid The Sid to which Task should be transferred. (Worker Sid or Queue Sid)
      * @param {boolean} makeTransfereeAvailable  To specify if Transferee needs to be made available (true or false)
      * @param {string} transfereeSid The Sid of transferee
      * @param {string} transferMode The mode of Transfer (COLD or WARM)
@@ -127,7 +128,7 @@ export default class OutboundCommonHelpers {
      * @param {number} expectedConfParticipantsSize Expected number of Participants in the Conference
      * @return {Promise<void>}
      */
-    async assertOnTransferorAcceptedAndInitiateTransfer(transferorReservation, makeTransfereeAvailable, transfereeSid,
+    async assertOnTransferorAcceptedAndInitiateTransfer(transferorReservation, transferToSid, makeTransfereeAvailable, transfereeSid,
                                                         transferMode, expectedConfStatus, expectedConfParticipantsSize) {
         try {
             await this.verifyConferenceProperties(transferorReservation.task.sid, expectedConfStatus, expectedConfParticipantsSize);
@@ -136,7 +137,7 @@ export default class OutboundCommonHelpers {
                 await this.envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, transfereeSid, credentials.multiTaskConnectActivitySid);
             }
 
-            await transferorReservation.task.transfer(credentials.multiTaskBobSid, { mode: transferMode });
+            await transferorReservation.task.transfer(transferToSid, { mode: transferMode });
 
             await this.validateTransferInitiated(transferorReservation);
         } catch (err) {

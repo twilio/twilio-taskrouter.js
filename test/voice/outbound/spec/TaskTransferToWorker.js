@@ -62,8 +62,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
                 aliceReservation.on('accepted', async() => {
                     try {
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
@@ -125,8 +125,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                             }
                         });
 
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
@@ -180,8 +180,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
                 aliceReservation.on('accepted', async() => {
                     try {
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
@@ -265,8 +265,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
                 aliceReservation.on('accepted', async() => {
                     try {
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
@@ -328,8 +328,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 aliceReservation.on('accepted', async() => {
                     try {
                         envTwilio.updateWorkflowTaskReservationTimeout(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, 10);
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, true,
-                            credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
