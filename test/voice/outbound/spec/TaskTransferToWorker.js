@@ -369,5 +369,67 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             });
         }).timeout(50000);
     });
+
+    describe('#Cold Transfer to a Worker when customer hangs up before worker accept', () => {
+
+        it('should fail if customer hangs up before the transferee accepts', () => {
+            return new Promise(async(resolve, reject) => {
+                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
+
+                aliceReservation.on('accepted', async() => {
+                    try {
+                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
+                            true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
+                    } catch (err) {
+                        reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                    }
+                });
+
+                bob.on('reservationCreated', async(bobReservation) => {
+                    try {
+                        AssertionUtils.verifyTransferProperties(bobReservation.transfer,
+                            credentials.multiTaskAliceSid, credentials.multiTaskBobSid, 'COLD', 'WORKER', 'initiated', 'Transfer');
+                        AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
+                            credentials.multiTaskAliceSid, credentials.multiTaskBobSid, 'COLD', 'WORKER', 'initiated', 'Incoming Transfer');
+                    } catch (err) {
+                        reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
+                    }
+
+                    try {
+                        // end the customer leg
+                        let participantPropertiesMap = await envTwilio.fetchParticipantPropertiesByName(aliceReservation.task.sid);
+                        const customerCallSid = participantPropertiesMap.get(credentials.customerNumber).callSid;
+                        await envTwilio.endCall(customerCallSid);
+
+                    } catch (err) {
+                        reject(`Something went wrong when terminating customer leg. Error: ${err}`);
+                    }
+
+                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0)
+                        .catch(err => reject(`Error caught while wrapping and completing transferor's reservation. Error: ${err}`));
+
+                    bobReservation.on('canceled', async() => {
+                        try {
+                            // check that the conference status is now completed because both alice and customer have left
+                            await outboundCommonHelpers.verifyConferenceProperties(bobReservation.task.sid, 'completed', 0);
+
+                            //TODO: the transfer status should have been failed (TR-704)
+                            assert.strictEqual(bobReservation.transfer.status, 'initiated', 'Transfer status');
+
+                            resolve('Test to verify customer hanging up before transfer success has finished.');
+                        } catch (err) {
+                            reject(`Failed to validate Conference properties on Bob's reservation canceled event. Error: ${err}`);
+                        }
+                    });
+                    // Do not issue the conference instruction for Worker B's reservation as we don't want it to accept
+                });
+
+                aliceReservation.conference().catch(err => {
+                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                });
+            });
+        }).timeout(50000);
+    });
+
 });
 

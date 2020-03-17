@@ -165,6 +165,15 @@ export default class EnvTwilio {
      */
     async fetchParticipantPropertiesByName(conferenceName) {
         const conference = await this.fetchConferenceByName(conferenceName);
-        return await this.fetchParticipantProperties(conference.sid);
+        return this.fetchParticipantProperties(conference.sid);
+    }
+
+    /**
+     * Helper to end a Twilio call
+     * @param callSid the call leg to end
+     */
+    endCall(callSid) {
+        return this.twilioClient.calls(callSid)
+            .update({ status: 'completed' });
     }
 }
