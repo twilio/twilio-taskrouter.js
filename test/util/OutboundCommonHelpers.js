@@ -218,10 +218,7 @@ export default class OutboundCommonHelpers {
                             await this.verifyConferenceProperties(reservation.task.sid, 'in-progress', transferorExpConfPSize);
                             assert.notStrictEqual(reservation.task.status, 'completed', 'Task status on Reservation Completed for Transferor');
                         } else {
-                            // TODO : ORCH-678: Fix endConferenceOnExit
-                            //  Uncomment below lines
-                            // Verify that conference is completed
-                            // await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
+                            await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
                             assert.strictEqual(reservation.task.status, 'completed', 'Task status on Reservation Completed for Transferee');
                         }
                         resolve(reservation);
@@ -246,9 +243,7 @@ export default class OutboundCommonHelpers {
         return new Promise(async(resolve, reject) => {
             reservation.on('wrapup', async() => {
                 try {
-                    // TODO : ORCH-678: Fix endConferenceOnExit
-                    //  Uncomment below lines
-                    // await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
+                    await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
                     assert.strictEqual(reservation.task.status, 'wrapping', 'Task status on reservation wrapup');
                     await reservation.complete();
                     resolve(reservation);
@@ -260,9 +255,7 @@ export default class OutboundCommonHelpers {
             return new Promise(async(resolve, reject) => {
                 reservation.on('completed', async() => {
                     try {
-                        // TODO : ORCH-678: Fix endConferenceOnExit
-                        // Uncomment below lines
-                        // await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
+                        await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
                         assert.strictEqual(reservation.task.status, 'completed', 'Task status on reservation completed');
                         resolve(reservation);
                     } catch (err) {
