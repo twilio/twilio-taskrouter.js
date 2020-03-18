@@ -395,6 +395,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
                     }
 
+                    await outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0)
+                        .catch(err => reject(`Error caught while wrapping and completing transferor's reservation. Error: ${err}`));
+
                     try {
                         // end the customer leg
                         let participantPropertiesMap = await envTwilio.fetchParticipantPropertiesByName(aliceReservation.task.sid);
@@ -404,9 +407,6 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                     } catch (err) {
                         reject(`Something went wrong when terminating customer leg. Error: ${err}`);
                     }
-
-                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0)
-                        .catch(err => reject(`Error caught while wrapping and completing transferor's reservation. Error: ${err}`));
 
                     bobReservation.on('canceled', async() => {
                         try {
