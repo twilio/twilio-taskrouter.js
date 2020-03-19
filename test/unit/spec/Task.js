@@ -385,6 +385,20 @@ describe('Task', () => {
             }).should.throw(/hold does not meet the required type/);
         });
 
+        it('should return an error if the optional holdUrl param fails type check', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+                task.updateParticipant({ hold: true, holdUrl: 3 });
+            }).should.throw(/holdUrl does not meet the required type/);
+        });
+
+        it('should return an error if the optional holdMethod param fails type check', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+                task.updateParticipant({ hold: true, holdUrl: 'https://api.twilio.com/cowbell.mp3', holdMethod: 200 });
+            }).should.throw(/holdMethod does not meet the required type/);
+        });
+
         it('should place a hold/unhold request on the Task upon successful execution', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.resolve(taskHoldUnhold));
 
@@ -407,7 +421,7 @@ describe('Task', () => {
         });
     });
 
-    describe('#hold(targetWorkerSid, onHold)', () => {
+    describe('#hold(targetWorkerSid, onHold, options)', () => {
         let sandbox;
 
         const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/HoldWorkerParticipant';
@@ -430,6 +444,20 @@ describe('Task', () => {
                 const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
                 task.hold(null, false);
             }).should.throw('Error calling method hold(). <string>targetWorkerSid is a required parameter.');
+        });
+
+        it('should return an error if the holdUrl parameter fails type check', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+                task.hold('WTxx1', true, { holdUrl: 3 });
+            }).should.throw(/holdUrl does not meet the required type/);
+        });
+
+        it('should return an error if the holdMethod parameter fails type check', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+                task.hold('WTxx1', true, { holdUrl: 'https://api.twilio.com/cowbell.mp3', holdMethod: 200 });
+            }).should.throw(/holdMethod does not meet the required type/);
         });
 
         it('should place a hold/unhold request on the Task upon successful execution', () => {

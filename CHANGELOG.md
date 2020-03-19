@@ -1,3 +1,14 @@
+0.5.1
+==========
+New Features
+----------
+- Accept HoldUrl and HoldMethod when holding a customer or worker participant
+
+Maintenance
+----------
+- Add additional hold tests and transfer tests
+
+
 0.5.0
 ==========
 Bug Fixes
