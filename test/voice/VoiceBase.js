@@ -3,5 +3,5 @@ export const twimletUrl = 'http://twimlets.com/echo?Twiml=%3CResponse%3E%0A%20%2
 
 // helper to sleep during the test
 export const pauseTestExecution = async(timeout) => {
-    await new Promise((resolve, reject) => setTimeout(resolve, timeout));
+    await new Promise((resolve) => setTimeout(resolve, timeout));
 };

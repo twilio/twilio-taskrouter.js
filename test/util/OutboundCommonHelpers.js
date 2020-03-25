@@ -120,7 +120,7 @@ export default class OutboundCommonHelpers {
      * 3) Initiate Transfer
      * 4) Call helper function to assert properties after transfer is initiated
      * @param {Reservation} transferorReservation  The Transferor's reservation
-     * @param {sid} transferToSid The Sid to which Task should be transferred. (Worker Sid or Queue Sid)
+     * @param {string} transferToSid The Sid to which Task should be transferred. (Worker Sid or Queue Sid)
      * @param {boolean} makeTransfereeAvailable  To specify if Transferee needs to be made available (true or false)
      * @param {string} transfereeSid The Sid of transferee
      * @param {string} transferMode The mode of Transfer (COLD or WARM)
@@ -207,7 +207,7 @@ export default class OutboundCommonHelpers {
                     await reservation.complete();
                     resolve(reservation);
                 } catch (err) {
-                    reject(`Failed to validate Conference properties on reservation wrapup event. Error: ${err}`);
+                    reject(`Failed to validate Conference properties on reservation=${reservation.sid} for Transferor=${isTransferor} wrap-up event. Error: ${err}`);
                 }
             });
         }).then(() => {
@@ -219,7 +219,7 @@ export default class OutboundCommonHelpers {
                             assert.notStrictEqual(reservation.task.status, 'completed', 'Task status on Reservation Completed for Transferor');
                         } else {
                             await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
-                            assert.strictEqual(reservation.task.status, 'completed', 'Task status on Reservation Completed for Transferee');
+                            assert((reservation.task.status === 'wrapping' || reservation.task.status === 'completed'), 'Task status on Reservation Completed for Transferee');
                         }
                         resolve(reservation);
                     } catch (err) {
