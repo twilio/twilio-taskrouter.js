@@ -48,9 +48,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
         bob.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             return Promise.all([envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid,
-                                       credentials.multiTaskBobSid, credentials.multiTaskUpdateActivitySid),
-                                   envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid,
-                                       credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid)]);
+                                                               credentials.multiTaskBobSid, credentials.multiTaskUpdateActivitySid),
+                                envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid,
+                                                               credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid)]);
         });
     });
 
@@ -678,7 +678,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         });
 
                         if (reservationCountWorkerA === 2) {
-                             outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, false, 1, 0).then(() => resolve('Test for multiple WARM transfers finished.'))
+                            outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, false, 1, 0).then(() => resolve('Test for multiple WARM transfers finished.'))
                                 .catch(err => reject(`Error caught while wrapping and completing Alice reservation. Error: ${err}`));
 
                             aliceReservation.conference({ endConferenceOnExit: true }).catch(err => {
@@ -812,6 +812,115 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 });
             }).timeout(20000);
         });
+    });
+
+    describe.only('#Back to Back Cold Transfer for Workers', () => {
+        it('should transfer task Worker B and then transfers back Worker A', () => {
+            let firstTransfer = true;
+            return new Promise(async(resolve, reject) => {
+                await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
+                                       credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+
+                alice.on('reservationCreated', async(aliceReservation) => {
+                    try {
+                        if (firstTransfer) {
+                            outboundCommonHelpers.assertOnReservationCreated(alice);
+                            // if this is 1st accept request from worker A
+                            aliceReservation.conference().catch(err => {
+                                reject(`Error in establishing conference. Error: ${err}`);
+                            });
+                        } else {
+                            AssertionUtils.verifyTransferProperties(aliceReservation.transfer,
+                                                                    credentials.multiTaskBobSid,
+                                                                    credentials.multiTaskAliceSid, TRANSFER_MODE.cold, 'WORKER',
+                                                                    'initiated', 'Transfer');
+                            AssertionUtils.verifyTransferProperties(aliceReservation.task.transfers.incoming,
+                                                                    credentials.multiTaskBobSid,
+                                                                    credentials.multiTaskAliceSid, TRANSFER_MODE.cold, 'WORKER',
+                                                                    'initiated', 'Incoming Transfer');
+                            // Wait for wrapup event on bobReservation before issuing conference instruction for Worker
+                            // A
+                            await pauseTestExecution(STATUS_CHECK_DELAY);
+                            aliceReservation.conference({ endConferenceOnExit: true }).catch(err => {
+                                reject(`Error in establishing conference. Error: ${err}`);
+                            });
+                        }
+                    } catch (err) {
+                        reject(
+                            `Failed to validate Reservation/Task/Transfer properties on reservation created event. Error: ${err}`);
+                    }
+
+                    aliceReservation.on('accepted', async() => {
+                        try {
+                            if (firstTransfer) {
+                                await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(
+                                    aliceReservation, credentials.multiTaskBobSid,
+                                    true, credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'in-progress', 2);
+
+                            } else {
+                                await outboundCommonHelpers.assertOnTransfereeAccepted(aliceReservation,
+                                                                                       credentials.workerNumber,
+                                                                                       'in-progress', 2);
+                            }
+                        } catch (err) {
+                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                        }
+                    });
+
+                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, firstTransfer, 1, 0)
+                        .then(() => {
+                            if (!firstTransfer) {
+                                resolve('Test for transfer task back to Worker A when Worker B rejects is finished');
+                            }
+                        })
+                        .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
+                });
+
+                bob.on('reservationCreated', async(bobReservation) => {
+                    try {
+                        AssertionUtils.verifyTransferProperties(bobReservation.transfer,
+                                                                credentials.multiTaskAliceSid,
+                                                                credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'WORKER',
+                                                                'initiated', 'Transfer');
+                        AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
+                                                                credentials.multiTaskAliceSid,
+                                                                credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'WORKER',
+                                                                'initiated', 'Incoming Transfer');
+
+                    } catch (err) {
+                        reject(
+                            `Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
+                    }
+
+                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, true, 1, 0)
+                        .catch(
+                            err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
+
+                    bobReservation.on('accepted', async() => {
+                        try {
+                            await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
+                                                                                   credentials.supervisorNumber,
+                                                                                   'in-progress', 2);
+                            // initiate a transfer back
+                            firstTransfer = false;
+                            await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(
+                                bobReservation, credentials.multiTaskAliceSid,
+                                true, credentials.multiTaskAliceSid, TRANSFER_MODE.cold, 'in-progress', 2);
+
+                        } catch (err) {
+                            reject(`Error caught after receiving reservation rejected event. Error: ${err}`);
+                        }
+                    });
+
+                    // Wait for wrapup event on aliceReservation before accepting reservation for Worker B
+                    await pauseTestExecution(STATUS_CHECK_DELAY);
+                    bobReservation.conference().catch(err => {
+                        reject(`Error in establishing conference. Error: ${err}`);
+                    });
+
+                });
+            });
+        }).timeout(75000);
     });
 
 });
