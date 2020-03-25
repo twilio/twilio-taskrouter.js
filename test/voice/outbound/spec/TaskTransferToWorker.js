@@ -814,7 +814,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
         });
     });
 
-    describe.only('#Back to Back Cold Transfer for Workers', () => {
+    describe('#Back to Back Cold Transfer for Workers', () => {
         it('should transfer task Worker B and then transfers back Worker A', () => {
             let firstTransfer = true;
             return new Promise(async(resolve, reject) => {
