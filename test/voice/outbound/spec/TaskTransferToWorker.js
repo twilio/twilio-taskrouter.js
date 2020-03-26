@@ -540,7 +540,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         });
 
                         // reservation wrap & complete listeners
-                        Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0),
+                        Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 2, 0),
                                      outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, false, 1, 0)])
                             .then(() => resolve('Test completed'))
                             .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
@@ -613,7 +613,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         });
 
                         // reservation wrap & complete listeners
-                        Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0),
+                        Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 2, 0),
                                      outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, false, 1, 0)])
                             .then(() => resolve('Test for Worker A tries to wrap up task before Worker B accepts reservation completed.'))
                             .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
