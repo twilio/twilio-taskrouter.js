@@ -239,5 +239,43 @@ describe('Outbound Voice Task', () => {
             });
         });
     });
+
+    describe('#Create Task Validations', () => {
+        it('should throw a validation error when using an incorrect workflow sid', () => {
+            return new Promise(async(resolve, reject) => {
+                // eslint-disable-next-line
+                const expected = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
+                                 ' WorkflowSid has an invalid format';
+                try {
+
+                    await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
+                                           credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+
+                    await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
+                                           credentials.multiTaskWorkflowSid + 'z', credentials.multiTaskQueueSid);
+                    reject('Invalid WorkflowSid should be rejected');
+                } catch (err) {
+                    assert.strictEqual(err.response.status, 400, 'expecting a bad request');
+                    assert.strictEqual(err.response.statusText, expected,
+                                       'Got a different validation failure than expected');
+                    resolve('Test for validation error when using an incorrect workflowSid finished');
+                }
+            });
+        }).timeout(5000);
+
+        it('should throw a validation error when using an incorrect queue sid', () => {
+            return new Promise(async(resolve, reject) => {
+                try {
+                    await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
+                                           credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid + 'z');
+                    reject('Invalid QueueSid should be rejected');
+                } catch (err) {
+                    assert.strictEqual(err.response.status, 400, 'expecting a bad request');
+                    // taskrouter doesn't send a validation message here
+                    resolve('Test for validation error when using an incorrect QueueSid finished');
+                }
+            });
+        }).timeout(5000);
+    });
 });
 
