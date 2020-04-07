@@ -4,7 +4,9 @@ import { getAccessToken } from '../../../util/MakeAccessToken';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import {
     RESERVATION_CANCELED_REASON,
+    CONNECTING_PARTICIPANT_ERROR_CODE,
     INVALID_NUMBER,
+    GEO_NOT_ALLOW_NUMBER,
     TASK_CANCELED_REASON,
 } from '../../../util/Constants';
 
@@ -183,6 +185,30 @@ describe('Reservation with Outbound Voice Task', () => {
 
                 outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'completed', options, 0).then(() => {
                     resolve('Outbound cancel reservation for invalid customer number test finished ');
+                }).catch(err => {
+                    reject(err);
+                });
+
+                workerReservation.conference({
+                    endConferenceOnExit: true
+                }).catch(err => {
+                    reject(`Error in establishing conference. Error: ${err}`);
+                });
+            });
+        });
+
+        it('should cancel reservation if customer number is not allowed for geo permission', () => {
+            const options = {
+                customerNumber: GEO_NOT_ALLOW_NUMBER,
+                reasonCode: CONNECTING_PARTICIPANT_ERROR_CODE,
+                reason: TASK_CANCELED_REASON + credentials.multiTaskAliceSid,
+            };
+
+            return new Promise(async(resolve, reject) => {
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
+
+                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'completed', options, 0).then(() => {
+                    resolve('Outbound cancel reservation when customer number is not allowed for geo permission finished');
                 }).catch(err => {
                     reject(err);
                 });
