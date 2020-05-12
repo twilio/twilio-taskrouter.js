@@ -19,7 +19,8 @@
     "worker"
   ],
   "files": [
-    "dist"
+    "dist",
+    "./types.d.ts"
   ],
   "main": "./dist/index.commonjs2.js",
   "browser": "./dist/index.window.js",
