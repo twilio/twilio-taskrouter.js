@@ -191,6 +191,72 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 });
             });
         }).timeout(50000);
+
+        it('should allow available worker to accept the reservation if transferee rejects', () => {
+            let aliceReservationCount = 0;
+            let bobReservationCount = 0;
+
+            return new Promise(async (resolve, reject) => {
+                await alice.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+
+                alice.on('reservationCreated', async(aliceReservation) => {
+                    aliceReservationCount++;
+                    aliceReservation.on('accepted', async() => {
+                        if (aliceReservationCount === 1) {
+                            try {
+                                await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation,
+                                                                                                          credentials.multiTaskBobSid,
+                                                                                                          true,
+                                                                                                          credentials.multiTaskBobSid,
+                                                                                                          TRANSFER_MODE.cold, 'in-progress',
+                                                                                                          2);
+                            } catch (err) {
+                                reject(`Error caught after receiving reservationAccepted ResSid=${aliceReservation.sid}. Error: ${err}`);
+                            }
+                        } else if (aliceReservationCount == 2) {
+                            // verify bob's reservation was created from the transfer
+                            assert.equal(1, bobReservationCount);
+                            await outboundCommonHelpers.verifyConferenceProperties(aliceReservation.task.sid, 'in-progress', 2);
+                            resolve('Test succeeded: should reassign Task to available worker if transferee rejects');
+                        }
+                    });
+
+                    await aliceReservation.conference().catch(err => {
+                        reject(`Error while establishing conference for alice. Error: ${err}`);
+                    });
+                });
+
+                bob.on('reservationCreated', async(bobReservation) => {
+                    bobReservationCount++;
+                    if (bobReservationCount === 1) {
+                        try {
+                            // assert the Reservation transfer object
+                            AssertionUtils.verifyTransferProperties(bobReservation.transfer,
+                                                                    credentials.multiTaskAliceSid,
+                                                                    credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'WORKER',
+                                                                    'initiated', 'Transfer');
+                            // assert the Task transfers object
+                            AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
+                                                                    credentials.multiTaskAliceSid,
+                                                                    credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'WORKER',
+                                                                    'initiated', 'Incoming Transfer');
+                        } catch (err) {
+                            reject(
+                                `Failed to validate Reservation and Transfer properties on Bob reservationCreated ResSid=${bobReservation.sid}. Error: ${err}`);
+                        }
+
+                        bobReservation.task.transfers.incoming.on('failed', failedTransfer => {
+                            assert.strictEqual(failedTransfer.status, 'failed', 'Outgoing Transfer Status');
+                            assert.strictEqual(failedTransfer.transfer_failed_reason, 'Transfer failed because the reservation was rejected', 'Transfer fail reason');
+                        });
+
+                        await bobReservation.reject().catch(error => reject(`Could not reject Bob's Reservation=${bobReservation.sid}`));
+                    } else if (bobReservationCount === 2) {
+                        reject(`Expected bobReservationCount to be 1 but was ${bobReservationCount}`);
+                    }
+                });
+            });
+        }).timeout(15000);
     });
 
     describe('#Failed Cold Transfer to a Worker', () => {
