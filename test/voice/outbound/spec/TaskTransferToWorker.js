@@ -792,24 +792,25 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         bobReservationCount++;
                         bobReservation.on('accepted', async() => {
                             await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
-                              credentials.supervisorNumber, 'in-progress', 3);
+                                                                                   credentials.supervisorNumber, 'in-progress', 3);
                             if (bobReservationCount === 2) {
                                 // Make sure Bob's second reservation is getting accepted
-                                resolve('Test succeeded: should reassign Task to available worker if transferee rejects');
+                                resolve('Test succeeded: should reassign task and send reservation.accepted event to an available worker on 2nd transfer' +
+                                    ' when transferee cancels the 1st transfer');
                             }
                         });
 
                         try {
                             // assert the Reservation transfer object
                             AssertionUtils.verifyTransferProperties(bobReservation.transfer,
-                              credentials.multiTaskAliceSid,
-                              credentials.multiTaskBobSid, TRANSFER_MODE.warm, 'WORKER',
-                              'initiated', 'Transfer');
+                                credentials.multiTaskAliceSid,
+                                credentials.multiTaskBobSid, TRANSFER_MODE.warm, 'WORKER',
+                                'initiated', 'Transfer');
                             // assert the Task transfers object
                             AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
-                              credentials.multiTaskAliceSid,
-                              credentials.multiTaskBobSid, TRANSFER_MODE.warm, 'WORKER',
-                              'initiated', 'Incoming Transfer');
+                                credentials.multiTaskAliceSid,
+                                credentials.multiTaskBobSid, TRANSFER_MODE.warm, 'WORKER',
+                                'initiated', 'Incoming Transfer');
 
                             if (bobReservationCount === 2) {
                                 await bobReservation.conference({ endConferenceOnExit: true }).catch(err => {
