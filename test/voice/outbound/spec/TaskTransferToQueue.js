@@ -4,6 +4,7 @@ import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import { pauseTestExecution } from '../../VoiceBase';
+import {TRANSFER_MODE} from "../../../util/Constants";
 const STATUS_CHECK_DELAY = 2000;
 
 const credentials = require('../../../env');
@@ -203,6 +204,105 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     });
                 });
             });
+        });
+    });
+
+    describe('#Warm Transfer To a Queue', () => {
+        describe('should complete successfully', () => {
+            it('when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer', () => {
+                let aliceTransferCount = 0;
+                let bobReservationCount = 0;
+
+                return new Promise(async(resolve, reject) => {
+                    const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
+
+                    aliceReservation.on('accepted', async() => {
+                        try {
+                            await outboundCommonHelpers.verifyConferenceProperties(aliceReservation.task.sid, 'in-progress', 2);
+                            await envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid);
+
+                            // alice making the 1st transfer
+                            await aliceReservation.task.transfer(credentials.multiTaskQueueSid, { mode: TRANSFER_MODE.warm });
+
+                            aliceReservation.task.on('transferInitiated', async(outgoingTransfer) => {
+                                aliceTransferCount++;
+                                try {
+                                    assert.strictEqual(outgoingTransfer.status, 'initiated', 'Outgoing Transfer Status');
+
+                                    await pauseTestExecution(STATUS_CHECK_DELAY);
+
+                                    const conference = await envTwilio.fetchConferenceByName(aliceReservation.task.sid);
+                                    const participantPropertiesMap = await envTwilio.fetchParticipantProperties(conference.sid);
+                                    assert.deepStrictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+
+                                    // alice cancelling the 1st transfer after the 1st transfer timeout
+                                    outgoingTransfer.on('attemptFailed', async()=> {
+                                        try {
+                                            if (aliceTransferCount === 1) {
+                                                await outgoingTransfer.cancel();
+                                            }
+                                        } catch (err) {
+                                            reject(`Error while canceling transfer for alice. Error: ${err}`);
+                                        }
+                                    });
+                                } catch (err) {
+                                    reject(`Error while canceling transfer for alice. Error: ${err}`);
+                                }
+                            });
+
+                            // alice making the 2nd transfer after cancelling the 1st
+                            aliceReservation.task.transfers.outgoing.on('canceled', async(updatedTransfer) => {
+                                try {
+                                    assert.equal(updatedTransfer.status, 'canceled');
+                                    await aliceReservation.task.transfer(credentials.multiTaskQueueSid, { mode: TRANSFER_MODE.warm });
+                                } catch (err) {
+                                    reject(`Error while Alice making the 2nd transfer to Bob. Error: ${err}`);
+                                }
+                            });
+                        } catch (err) {
+                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                        }
+                    });
+
+                    bob.on('reservationCreated', async(bobReservation) => {
+                        bobReservationCount++;
+                        bobReservation.on('accepted', async() => {
+                            await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
+                              credentials.supervisorNumber, 'in-progress', 3);
+                            if (bobReservationCount === 2) {
+                                // Make sure Bob's second reservation is getting accepted
+                                resolve('Test succeeded: should reassign Task to available worker if transferee rejects');
+                            }
+                        });
+
+                        try {
+                            // assert the Reservation transfer object
+                            AssertionUtils.verifyTransferProperties(bobReservation.transfer,
+                              credentials.multiTaskAliceSid,
+                              credentials.multiTaskQueueSid, TRANSFER_MODE.warm, 'QUEUE',
+                              'initiated', 'Transfer');
+                            // assert the Task transfers object
+                            AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
+                              credentials.multiTaskAliceSid,
+                              credentials.multiTaskQueueSid, TRANSFER_MODE.warm, 'QUEUE',
+                              'initiated', 'Incoming Transfer');
+
+                            if (bobReservationCount === 2) {
+                                await bobReservation.conference({ endConferenceOnExit: true }).catch(err => {
+                                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                                });
+                            }
+                        } catch (err) {
+                            reject(
+                              `Failed to validate Reservation and Transfer properties on Bob reservationCreated ResSid=${bobReservation.sid}. Error: ${err}`);
+                        }
+                    });
+
+                    aliceReservation.conference().catch(err => {
+                        reject(`Error while establishing conference for alice. Error: ${err}`);
+                    });
+                });
+            }).timeout(30000);
         });
     });
 
