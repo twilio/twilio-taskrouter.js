@@ -827,7 +827,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error while establishing conference for alice. Error: ${err}`);
                     });
                 });
-            }).timeout(15000);
+            }).timeout(45000);
         });
 
         describe('should fail', () => {

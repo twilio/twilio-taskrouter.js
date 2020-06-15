@@ -4,7 +4,7 @@ import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import { pauseTestExecution } from '../../VoiceBase';
-import {TRANSFER_MODE} from "../../../util/Constants";
+import { TRANSFER_MODE } from '../../../util/Constants';
 const STATUS_CHECK_DELAY = 2000;
 
 const credentials = require('../../../env');
@@ -296,7 +296,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     reject(`Error while establishing conference for alice. Error: ${err}`);
                 });
             });
-        }).timeout(30000);
+        }).timeout(45000);
     });
 
     describe('#Back to Back Cold Transfer to Queue', () => {
