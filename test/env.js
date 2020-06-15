@@ -20,7 +20,8 @@ const voiceE2EKeys = [
   'supervisorNumber',
   'customerNumber',
   'flexCCNumber',
-  'workerNumber'
+  'workerNumber',
+  'region'
 ];
 
 // Ensure required variables are present

@@ -51,6 +51,7 @@
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
+    "async-test-tools": "^1.0.7",
     "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.2",
@@ -78,6 +79,7 @@
     "sinon": "^4.5.0",
     "sinon-chai": "^3.0.0",
     "twilio": "^3.6.1",
+    "twilio-sync": "^0.12.1",
     "uglifyjs-webpack-plugin": "^1.2.5",
     "utf-8-validate": "^4.0.1",
     "vinyl-fs": "^3.0.2",
