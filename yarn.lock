@@ -389,6 +389,13 @@ async-limiter@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
+async-test-tools@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/async-test-tools/-/async-test-tools-1.0.7.tgz#6761b50816b70c30c7d1af69d7d8444ba5bc69c2"
+  integrity sha1-Z2G1CBa3DDDH0a9p19hES6W8acI=
+  dependencies:
+    async "^2.1.4"
+
 async@1.x, async@^1.4.0, async@^1.5.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
@@ -3820,6 +3827,11 @@ isurl@^1.0.0-alpha5:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
 
+javascript-state-machine@^3.0.1:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/javascript-state-machine/-/javascript-state-machine-3.1.0.tgz#06eeb2136a6a19ae1b56105c25caec283dd5cd14"
+  integrity sha512-BwhYxQ1OPenBPXC735RgfB+ZUG8H3kjsx8hrYTgWnoy6TPipEy4fiicyhT2lxRKAXq9pG7CfFT8a2HLr6Hmwxg==
+
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-3.0.2.tgz#9866df395102130e38f7f996bceb65443209c25b"
@@ -4334,6 +4346,11 @@ log-update@^1.0.2:
 loglevel@^1.4.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.1.tgz#e0fc95133b6ef276cdc8887cdaf24aa6f156f8fa"
+
+loglevel@^1.6.3:
+  version "1.6.8"
+  resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.8.tgz#8a25fb75d092230ecd4457270d80b54e28011171"
+  integrity sha512-bsU7+gc9AJ2SqpzxwU3+1fedl8zAntbtC5XYlt3s2j1hJcn2PsXSmgN8TaLG/J1/2mod4+cE/3vNL70/c1RNCA==
 
 lolex@^2.2.0, lolex@^2.3.2:
   version "2.3.2"
@@ -5159,6 +5176,11 @@ opener@~1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.4.3.tgz#5c6da2c5d7e5831e8ffa3964950f8d6674ac90b8"
 
+operation-retrier@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/operation-retrier/-/operation-retrier-3.0.1.tgz#c671902af3e40015005863e912226fd485ed749a"
+  integrity sha512-lmrISisi5nbu0WNXBCMagrdJFwLUYFnaas87PgOMM3aNi+Z2YFvyC5K7/cAJuNUtpljztwJPzvp8bho02sAMAg==
+
 optimist@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
@@ -5482,6 +5504,11 @@ pkg-dir@^2.0.0:
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-2.0.0.tgz#f6d5d1109e19d63edf428e0bd57e12777615334b"
   dependencies:
     find-up "^2.1.0"
+
+platform@^1.3.5:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/platform/-/platform-1.3.5.tgz#fb6958c696e07e2918d2eeda0f0bc9448d733444"
+  integrity sha512-TuvHS8AOIZNAlE77WUDiR4rySV/VMptyMfcfeoMgs4P8apaZM3JrnbzBiixKUv+XR6i+BXrQh8WAnjaSPFO65Q==
 
 pluralize@^7.0.0:
   version "7.0.0"
@@ -6983,6 +7010,28 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
+twilio-notifications@^0.5.9:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/twilio-notifications/-/twilio-notifications-0.5.9.tgz#c5302f1f4e0a465ec1e458ac3f90f61f396f7946"
+  integrity sha512-jgfh7ElgT0j+ZOGqFko5cXb4OnnYBJZnhVsBgSNxmXAbXBmcVIql3rw+lIoPefjl0hzHQacoJwc682zVlco87A==
+  dependencies:
+    loglevel "^1.6.3"
+    operation-retrier "^3.0.0"
+    twilsock "^0.5.12"
+    uuid "^3.2.1"
+
+twilio-sync@^0.12.1:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/twilio-sync/-/twilio-sync-0.12.2.tgz#87993f6abdd84926e089a6ba94c34b51b653d837"
+  integrity sha512-4R6GLrLi9fcD1PA79G0OEnphW0Euq7NdNpkHnSNJgkl0Z6FzqEmi+CRHG185TmqKkkCjYx5v//mEgYX/n1kP7A==
+  dependencies:
+    loglevel "^1.6.3"
+    operation-retrier "^3.0.0"
+    platform "^1.3.5"
+    twilio-notifications "^0.5.9"
+    twilsock "^0.5.12"
+    uuid "^3.3.2"
+
 twilio@^3.6.1:
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/twilio/-/twilio-3.14.0.tgz#77131d8c70fa47b157705f38c334a67cccab7ad9"
@@ -6996,6 +7045,18 @@ twilio@^3.6.1:
     rootpath "0.1.2"
     scmp "0.0.3"
     xmlbuilder "9.0.1"
+
+twilsock@^0.5.12:
+  version "0.5.12"
+  resolved "https://registry.yarnpkg.com/twilsock/-/twilsock-0.5.12.tgz#d4ea06499cf904435d5ae6cfebbd1cb694f17014"
+  integrity sha512-Nq3Eg0gCnMvIzb63ICew8R2lhElqOvpU79RAwXNMTYAQvIYdjDbcqysJDdIbixvJeD0fJhLkuCbaenlzWP83pQ==
+  dependencies:
+    javascript-state-machine "^3.0.1"
+    loglevel "^1.6.3"
+    operation-retrier "^3.0.0"
+    platform "^1.3.5"
+    uuid "^3.2.1"
+    ws "^5.1.0"
 
 type-check@~0.3.2:
   version "0.3.2"
@@ -7237,6 +7298,11 @@ util@0.10.3, util@^0.10.3:
 uuid@^3.0.0, uuid@^3.1.0, uuid@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.2.1.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
+
+uuid@^3.3.2:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
+  integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
 v8-compile-cache@^1.1.2:
   version "1.1.2"
