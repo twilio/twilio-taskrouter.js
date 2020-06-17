@@ -219,12 +219,11 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                                     reject(`Error caught after receiving reservationAccepted ResSid=${aliceReservation.sid}. Error: ${err}`);
                                 }
                             } else if (aliceReservationCount === 2) {
-                                // verify bob's reservation was created from the transfer
-                                assert.equal(1, bobReservationCount);
-                                await outboundCommonHelpers.verifyConferenceProperties(aliceReservation.task.sid, 'in-progress', 2);
-                                resolve('Test succeeded: should allow available worker to accept the reservation');
+                                reject(`Expected aliceReservationCount to be 1 but was ${aliceReservationCount}`);
                             }
                         });
+
+                        aliceReservation.on('wrapup', () => aliceReservation.complete());
 
                         await aliceReservation.conference().catch(err => {
                             reject(`Error while establishing conference for alice. Error: ${err}`);
@@ -257,8 +256,16 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
                             await bobReservation.reject().catch(err => reject(`Could not reject Bob's Reservation=${bobReservation.sid}. Error=${err}`));
                         } else if (bobReservationCount === 2) {
-                            reject(`Expected bobReservationCount to be 1 but was ${bobReservationCount}`);
+                            await bobReservation.conference().catch(err => {
+                                reject(`Error while establishing conference for Bob. Error: ${err}`);
+                            });
                         }
+
+                        bobReservation.on('accepted', async() => {
+                            assert.equal(bobReservationCount, 2);
+                            await outboundCommonHelpers.verifyConferenceProperties(bobReservation.task.sid, 'in-progress', 2);
+                            resolve('Test succeeded: should allow available worker to accept the reservation');
+                        });
                     });
                 });
             }).timeout(15000);
@@ -295,7 +302,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                             } else if (aliceReservationCount === 2) {
                                 // ensure Bob had 2 reservations
                                 assert.equal(bobReservationCount, 2);
-                                await outboundCommonHelpers.assertOnTransfereeAccepted(aliceReservation, credentials.workerNumber, 'in-progress', 2);
+                                await outboundCommonHelpers.assertOnTransfereeAccepted(aliceReservation, 'in-progress', 2);
                                 resolve('Test succeeded: should allow available worker to accept the reservation & perform consequent transfers');
                             }
                         });
