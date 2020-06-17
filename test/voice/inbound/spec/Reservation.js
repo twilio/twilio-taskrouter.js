@@ -85,7 +85,7 @@ describe('Reservation with Inbound Voice Task', () => {
                     });
                 });
             });
-        });
+        }).timeout(45000);
     });
 });
 

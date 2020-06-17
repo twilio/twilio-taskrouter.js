@@ -67,7 +67,7 @@ describe('Reservation with Outbound Voice Task', () => {
                     reject(`Error in establishing conference. Error: ${err}`);
                 });
             });
-        });
+        }).timeout(50000);
 
         it('should issue a conference instruction on the Reservation even worker is offline', () => {
             // If a “RoutableTarget” is given, a Worker’s capacity and availability are ignored.
@@ -100,7 +100,7 @@ describe('Reservation with Outbound Voice Task', () => {
                     reject(`Error in establishing conference. Error: ${err}`);
                 });
             });
-        });
+        }).timeout(50000);
 
         it('should issue a conference instruction on the Reservation even worker has no capacity', () => {
             // If a “RoutableTarget” is given, a Worker’s capacity and availability are ignored.
@@ -135,7 +135,7 @@ describe('Reservation with Outbound Voice Task', () => {
                 });
             });
         });
-    });
+    }).timeout(50000);
 
     describe('#failed conference reservation', () => {
         before(() => {

@@ -83,14 +83,14 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
                     }
 
-                    Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0),
-                        outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, false, 1, 0)])
+                    Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true),
+                        outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, false, 0)])
                         .then(() => resolve('Test for cold transfer to worker B successfully is finished'))
                         .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
 
                     bobReservation.on('accepted', async() => {
                         try {
-                            await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation, credentials.supervisorNumber,
+                            await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
                                 'in-progress', 2);
                         } catch (err) {
                             reject(`Error caught after receiving Bob's reservation accepted event. Error: ${err}`);
@@ -108,7 +108,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     reject(`Error while establishing conference for alice. Error: ${err}`);
                 });
             });
-        }).timeout(50000);
+        }).timeout(60000);
     });
 
     describe('#Cold Transfer with worker capacity > 1', () => {
@@ -177,7 +177,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         }
                     });
 
-                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true, 1, 0)
+                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true)
                         .catch(err => reject(`Error caught while wrapping and completing Alice's reservation. Error: ${err}`));
 
                     bob.on('reservationCreated', async(bobReservation) => {
@@ -322,7 +322,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     aliceReservation.on('accepted', async() => {
                         try {
                             if (reservationCountWorkerA === 2) {
-                                await outboundCommonHelpers.assertOnTransfereeAccepted(aliceReservation, credentials.workerNumber, 'in-progress', 2);
+                                await outboundCommonHelpers.assertOnTransfereeAccepted(aliceReservation, 'in-progress', 2);
                             } else {
                                 await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskQueueSid,
                                     true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
@@ -332,7 +332,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         }
                     });
 
-                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, reservationCountWorkerA === 1, 1, 0).then(() => {
+                    outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, reservationCountWorkerA === 1).then(() => {
                         if (reservationCountWorkerA === 2) {
                             resolve('Test for transfer task back to Worker A when Worker B rejects is finished');
                         }
@@ -349,12 +349,12 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
                         }
 
-                        outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, true, 1, 0)
+                        outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, true)
                             .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
 
                         bobReservation.on('accepted', async() => {
                             try {
-                                await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation, credentials.supervisorNumber,
+                                await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
                                     'in-progress', 2);
 
                                 reservationCountWorkerA++;
@@ -387,7 +387,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     }
                 });
             });
-        }).timeout(52000);
+        }).timeout(75000);
     });
 });
 

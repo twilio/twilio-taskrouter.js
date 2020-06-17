@@ -10,7 +10,7 @@ const chai = require('chai');
 const assert = chai.assert;
 
 const credentials = require('../../../env');
-const STATUS_CHECK_DELAY = 2500;
+const STATUS_CHECK_DELAY = 3000;
 
 describe('Supervisor with Inbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
@@ -125,7 +125,7 @@ describe('Supervisor with Inbound Voice Task', () => {
 
                 });
             });
-        });
+        }).timeout(45000);
     });
 });
 

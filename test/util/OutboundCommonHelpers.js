@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import _ from 'lodash';
 import { pauseTestExecution } from '../voice/VoiceBase';
-const STATUS_CHECK_DELAY = 2000;
+const STATUS_CHECK_DELAY = 1000;
 const credentials = require('../env');
 /**
  * Utility class for common helper methods.
@@ -97,18 +97,11 @@ export default class OutboundCommonHelpers {
 
                     const conference = await this.envTwilio.fetchConferenceByName(transferorReservation.task.sid);
                     const participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
-                    assert.deepStrictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+                    assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
                     resolve(outgoingTransfer);
                 } catch (err) {
                     reject(`Failed to validate transfer initiated properties. Error: ${err}`);
                 }
-            });
-        }).then(outgoingTransfer => {
-            return new Promise(resolve => {
-                outgoingTransfer.on('failed', outgoingTransferFailed => {
-                    assert.strictEqual(outgoingTransferFailed.status, 'failed', 'Outgoing Transfer Status');
-                    resolve(outgoingTransfer);
-                });
             });
         });
     }
@@ -152,12 +145,11 @@ export default class OutboundCommonHelpers {
      * 3) Un-hold customer to bring him/her back into the conference
      * 4) Verify there are no participants on-hold
      * @param {Reservation} transfereeReservation  The Transferee's reservation
-     * @param {string} transfereeNumber  Phone number of Transferee
      * @param {string} expectedConfStatus Expected Conference status
      * @param {number} expectedConfParticipantSize Expected number of Participants in the Conference
      * @return {Promise<void>}
      */
-    async assertOnTransfereeAccepted(transfereeReservation, transfereeNumber, expectedConfStatus, expectedConfParticipantSize) {
+    async assertOnTransfereeAccepted(transfereeReservation, expectedConfStatus, expectedConfParticipantSize) {
         let participantPropertiesMap;
         let conference;
         try {
@@ -172,12 +164,11 @@ export default class OutboundCommonHelpers {
             // Un-hold customer to bring him/her back into the conference
             await transfereeReservation.task.updateParticipant({ hold: false });
 
-            // Verify there are no participants on-hold
+            // Verify customer is un-hold now
             await pauseTestExecution(STATUS_CHECK_DELAY);
             conference = await this.envTwilio.fetchConferenceByName(transfereeReservation.task.sid);
             participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
             assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, false, 'Customer put on-hold value');
-            assert.strictEqual(participantPropertiesMap.get(transfereeNumber).hold, false, 'Transferee put on-hold value');
         } catch (err) {
             throw err;
         }
@@ -187,23 +178,24 @@ export default class OutboundCommonHelpers {
      * Helper function to :
      * 1) Assert conference properties and task status on reservation wrapup and complete event
      * 2) Make request to complete reservation
-     * @param {Reservation} reservation  The Reservation listening to events
-     * @param {boolean} isTransferor  To specify if reservation is of Transferor (value: true) or Transferee (value: false)
-     * @param {number} transferorExpConfPSize Expected number of Participants in the Conference for Transferor's reservation
-     * @param {number} transfereeExpPSize Expected number of Participants in the Conference for Transferee's reservation
-     * @return {Promise<Reservation>}
+     * @param reservation The Reservation listening to events
+     * @param isTransferor To specify if reservation is of Transferor (value: true) or Transferee (value: false)
+     * @param expectedConfParticipantsSize Expected number of Participants in the Conference
+     * @returns {Promise<Reservation>}
      */
-    assertOnResWrapUpAndCompleteEvent(reservation, isTransferor, transferorExpConfPSize, transfereeExpPSize) {
+    assertOnResWrapUpAndCompleteEvent(reservation, isTransferor, expectedConfParticipantsSize) {
         return new Promise(async(resolve, reject) => {
             reservation.on('wrapup', async() => {
                 try {
                     if (isTransferor) {
-                        await this.verifyConferenceProperties(reservation.task.sid, 'in-progress', transferorExpConfPSize);
+                        await this.verifyConferenceProperties(reservation.task.sid, 'in-progress', expectedConfParticipantsSize);
+                        assert((reservation.task.status === 'reserved' || reservation.task.status === 'assigned'),
+                            'Task status on Transferor Reservation assigned/reserved');
                     } else {
-                        await this.verifyConferenceProperties(reservation.task.sid, 'completed', transfereeExpPSize);
+                        await this.verifyConferenceProperties(reservation.task.sid, 'completed', expectedConfParticipantsSize);
+                        assert.strictEqual(reservation.task.status, 'wrapping', 'Task status on Transferee Reservation wrapping');
                     }
 
-                    assert.notStrictEqual(reservation.task.status, 'completed', 'Task status on Reservation wrapup');
                     await reservation.complete();
                     resolve(reservation);
                 } catch (err) {
@@ -215,15 +207,16 @@ export default class OutboundCommonHelpers {
                 reservation.on('completed', async() => {
                     try {
                         if (isTransferor) {
-                            await this.verifyConferenceProperties(reservation.task.sid, 'in-progress', transferorExpConfPSize);
-                            assert.notStrictEqual(reservation.task.status, 'completed', 'Task status on Reservation Completed for Transferor');
+                            await this.verifyConferenceProperties(reservation.task.sid, 'in-progress', expectedConfParticipantsSize);
+                            assert((reservation.task.status === 'reserved' || reservation.task.status === 'assigned'),
+                                'Task status on Reservation assigned/reserved');
                         } else {
-                            await this.verifyConferenceProperties(reservation.task.sid, 'completed', 0);
-                            assert((reservation.task.status === 'wrapping' || reservation.task.status === 'completed'), 'Task status on Reservation Completed for Transferee');
+                            await this.verifyConferenceProperties(reservation.task.sid, 'completed', expectedConfParticipantsSize);
+                            assert.strictEqual(reservation.task.status, 'completed', 'Task status on Reservation Completed for Transferee');
                         }
                         resolve(reservation);
                     } catch (err) {
-                        reject(`Failed to validate Conference properties on reservation completed event. Error: ${err}`);
+                        reject(`Failed to validate Conference properties on reservation=${reservation.sid} for completed event. Error: ${err}`);
                     }
                 });
             });
