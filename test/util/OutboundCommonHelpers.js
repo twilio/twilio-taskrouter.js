@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import _ from 'lodash';
 import { pauseTestExecution } from '../voice/VoiceBase';
-const STATUS_CHECK_DELAY = 1000;
+const STATUS_CHECK_DELAY = 2000;
 const credentials = require('../env');
 /**
  * Utility class for common helper methods.
@@ -92,6 +92,9 @@ export default class OutboundCommonHelpers {
             transferorReservation.task.on('transferInitiated', async(outgoingTransfer) => {
                 try {
                     assert.strictEqual(outgoingTransfer.status, 'initiated', 'Outgoing Transfer Status');
+
+                    //TODO: Set a fixed pausing time to wait some events happening is very flaky for our tests
+                    // should explore a better way(sync map is an option)
 
                     await pauseTestExecution(STATUS_CHECK_DELAY);
 

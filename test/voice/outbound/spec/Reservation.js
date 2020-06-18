@@ -51,20 +51,20 @@ describe('Reservation with Outbound Voice Task', () => {
                     try {
                         await outboundCommonHelpers.verifyConferenceProperties(workerReservation.task.sid, 'in-progress', 2);
                     } catch (err) {
-                        reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
+                        reject(`Failed to validate Conference properties for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                     }
                 });
 
                 outboundCommonHelpers.assertOnResWrapUpAndCompleteEventOutbound(workerReservation).then(() => {
                     resolve('Outbound Reservation Conference test finished.');
                 }).catch(err => {
-                    reject(err);
+                    reject(`Failed to validate wraup & completed event Task for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
 
                 workerReservation.conference({
                     endConferenceOnExit: true
                 }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
+                    reject(`Error in establishing conference for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
         }).timeout(50000);
@@ -84,20 +84,20 @@ describe('Reservation with Outbound Voice Task', () => {
                     try {
                        await outboundCommonHelpers.verifyConferenceProperties(workerReservation.task.sid, 'in-progress', 2);
                     } catch (err) {
-                        reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
+                        reject(`Failed to validate Conference properties for Outbound Task ${workerReservation.task.sid}. Error. ${err}`);
                     }
                 });
 
                 outboundCommonHelpers.assertOnResWrapUpAndCompleteEventOutbound(workerReservation).then(() => {
                     resolve('Outbound Reservation Conference when worker is offline test finished.');
                 }).catch(err => {
-                    reject(err);
+                    reject(`Failed to validate wraup & completed event for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
 
                 workerReservation.conference({
                     endConferenceOnExit: true
                 }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
+                    reject(`Error in establishing conference for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
         }).timeout(50000);
@@ -118,20 +118,20 @@ describe('Reservation with Outbound Voice Task', () => {
                     try {
                         await outboundCommonHelpers.verifyConferenceProperties(workerReservation.task.sid, 'in-progress', 2);
                     } catch (err) {
-                        reject(`Failed to validate Conference properties for the Outbound Task. Error: ${err}`);
+                        reject(`Failed to validate Conference properties for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                     }
                 });
 
                 outboundCommonHelpers.assertOnResWrapUpAndCompleteEventOutbound(workerReservation).then(() => {
                     resolve('Outbound Reservation Conference when worker has no capacity test finished.');
                 }).catch(err => {
-                    reject(err);
+                    reject(`Failed to validate wraup & completed event for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
 
                 workerReservation.conference({
                     endConferenceOnExit: true
                 }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
+                    reject(`Error in establishing conference or Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
         });
@@ -158,17 +158,17 @@ describe('Reservation with Outbound Voice Task', () => {
                 outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'in-progress', options).then(() => {
                     resolve('Outbound cancel reservation after cancel task test finished ');
                 }).catch(err => {
-                    reject(err);
+                    reject(`Failed to validate wraup & completed event for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
 
                 workerReservation.conference({
                     endConferenceOnExit: true
                 }).then(() => {
                     envTwilio.cancelTask(credentials.multiTaskWorkspaceSid, workerReservation.task.sid, options.reason).catch(err => {
-                        reject(`Failed to cancel the Outbound Task. Error: ${err}`);
+                        reject(`Failed to cancel the Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                     });
                 }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
+                    reject(`Error in establishing conference for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
         });
@@ -186,13 +186,13 @@ describe('Reservation with Outbound Voice Task', () => {
                 outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'completed', options, 0).then(() => {
                     resolve('Outbound cancel reservation for invalid customer number test finished ');
                 }).catch(err => {
-                    reject(err);
+                    reject(`Failed to validate wraup & completed event for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
 
                 workerReservation.conference({
                     endConferenceOnExit: true
                 }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
+                    reject(`Error in establishing conference or Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
         });
@@ -210,13 +210,13 @@ describe('Reservation with Outbound Voice Task', () => {
                 outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'completed', options, 0).then(() => {
                     resolve('Outbound cancel reservation when customer number is not allowed for geo permission finished');
                 }).catch(err => {
-                    reject(err);
+                    reject(`Failed to validate wraup & completed event for the Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
 
                 workerReservation.conference({
                     endConferenceOnExit: true
                 }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
+                    reject(`Error in establishing conference for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
         });

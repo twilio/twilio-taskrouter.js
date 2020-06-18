@@ -66,7 +66,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskQueueSid,
                             true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                     } catch (err) {
-                        reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                        reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     }
                 });
 
@@ -80,32 +80,32 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         // expect task assignment is reserved before accepting
                         assert.strictEqual(bobReservation.task.status, 'reserved', 'Transfer Task Assignment Status');
                     } catch (err) {
-                        reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
+                        reject(`Failed to validate Reservation ${bobReservation.sid} and Transfer properties on reservation created event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                     }
 
                     Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true),
                         outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, false, 0)])
                         .then(() => resolve('Test for cold transfer to worker B successfully is finished'))
-                        .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
+                        .catch(err => reject(`Error caught while wrapping and completing reservation for Outbound Task ${bobReservation.task.sid}. Error: ${err}`));
 
                     bobReservation.on('accepted', async() => {
                         try {
                             await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
                                 'in-progress', 2);
                         } catch (err) {
-                            reject(`Error caught after receiving Bob's reservation accepted event. Error: ${err}`);
+                            reject(`Error caught after receiving Bob's reservation accepted event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                         }
                     });
 
                     // Wait for wrapup event on aliceReservation before issuing conference instruction for Worker B
                     await pauseTestExecution(STATUS_CHECK_DELAY);
                     bobReservation.conference({ endConferenceOnExit: true }).catch(err => {
-                        reject(`Error in establishing conference for transferred worker. Error: ${err}`);
+                        reject(`Error in establishing conference for transferred worker on Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                     });
                 });
 
                 aliceReservation.conference().catch(err => {
-                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                    reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                 });
             });
         }).timeout(60000);
@@ -130,7 +130,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         }
                         outboundCommonHelpers.assertOnReservationCreated(alice);
                     } catch (err) {
-                        reject(`Failed to validate Reservation and Task properties on reservation created event. Error: ${err}`);
+                        reject(`Failed to validate Reservation ${aliceReservation.sid} and Task properties on reservation created event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     }
 
                     aliceReservation.on('accepted', async() => {
@@ -139,12 +139,12 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskQueueSid,
                                 false, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                         } catch (err) {
-                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                            reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                         }
                     });
 
                     aliceReservation.conference().catch(err => {
-                        reject(`Error in establishing conference. Error: ${err}`);
+                        reject(`Error in establishing conference for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     });
                 });
             });
@@ -165,7 +165,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         }
                         outboundCommonHelpers.assertOnReservationCreated(alice);
                     } catch (err) {
-                        reject(`Failed to validate Reservation and Task properties on reservation created event. Error: ${err}`);
+                        reject(`Failed to validate Reservation ${aliceReservation.sid} and Task properties on reservation created event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     }
 
                     aliceReservation.on('accepted', async() => {
@@ -173,12 +173,13 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskQueueSid,
                                 true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                         } catch (err) {
-                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                            reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                         }
                     });
 
                     outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true)
-                        .catch(err => reject(`Error caught while wrapping and completing Alice's reservation. Error: ${err}`));
+                        .catch(err => reject(`Error caught while wrapping and completing Alice's reservation 
+                        for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`));
 
                     bob.on('reservationCreated', async(bobReservation) => {
                         try {
@@ -187,7 +188,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
                                 credentials.multiTaskAliceSid, credentials.multiTaskQueueSid, 'COLD', 'QUEUE', 'initiated', 'Incoming Transfer');
                         } catch (err) {
-                            reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
+                            reject(`Failed to validate Reservation and Transfer properties on reservation created event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                         }
 
                         // Wait for wrapup event on aliceReservation before rejecting reservation for Worker B
@@ -196,11 +197,12 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             .then(() => {
                                 reservationCountWorkerA++;
                             })
-                            .catch(err => reject(`Error in rejecting Bob's reservation. Error: ${err}`));
+                            .catch(err => reject(`Error in rejecting Bob's reservation 
+                                for Outbound Task ${bobReservation.task.sid}. Error: ${err}`));
                     });
 
                     aliceReservation.conference().catch(err => {
-                        reject(`Error in establishing conference. Error: ${err}`);
+                        reject(`Error in establishing conference for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     });
                 });
             });
@@ -208,7 +210,14 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
     });
 
     describe('#Warm Transfer To a Queue', () => {
-        it('should complete successfully when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer', () => {
+        it('should complete successfully when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer to Queue', () => {
+            /**
+             * 1. Alice makes 1st WARM transfers to Queue
+             * 2. Alice cancels the 1st transfer before Bob accepts it
+             * 3. Alice makes 2nd WARM transfers to Queue after cancelling the 1st transfer
+             * 4. Bob accepts 2nd transfer with a conference instruction
+             */
+
             let aliceTransferCount = 0;
             let bobReservationCount = 0;
 
@@ -219,9 +228,6 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     try {
                         await outboundCommonHelpers.verifyConferenceProperties(aliceReservation.task.sid, 'in-progress', 2);
                         await envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid);
-
-                        // alice making the 1st transfer
-                        await aliceReservation.task.transfer(credentials.multiTaskQueueSid, { mode: TRANSFER_MODE.warm });
 
                         aliceReservation.task.on('transferInitiated', async(outgoingTransfer) => {
                             aliceTransferCount++;
@@ -234,38 +240,44 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                                 const participantPropertiesMap = await envTwilio.fetchParticipantProperties(conference.sid);
                                 assert.deepStrictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
 
-                                // alice cancelling the 1st transfer
+                                // 2. Alice cancels the 1st transfer before Bob accepts it
                                 if (aliceTransferCount === 1) {
                                     await outgoingTransfer.cancel();
                                 }
                             } catch (err) {
-                                reject(`Error while canceling transfer for alice. Error: ${err}`);
+                                reject(`Error while alice canceling 1st transfer. reservationSid=${aliceReservation.sid}. Error: ${err}`);
                             }
+                        });
+
+                        // 1. Alice makes 1st WARM transfers to Queue
+                        await aliceReservation.task.transfer(credentials.multiTaskQueueSid, { mode: TRANSFER_MODE.warm }).catch(err => {
+                            reject(`Failed to make the 1st transfer reservationSid=${aliceReservation.sid}. ${err}`);
                         });
 
                         aliceReservation.task.transfers.outgoing.on('canceled', async(updatedTransfer) => {
                             try {
                                 assert.equal(updatedTransfer.status, 'canceled');
-                                // alice making the 2nd transfer after cancelling the 1st
+                                // 3. Alice makes 2nd WARM transfers to Queue after cancelling the 1st transfer
                                 await aliceReservation.task.transfer(credentials.multiTaskQueueSid, { mode: TRANSFER_MODE.warm });
                             } catch (err) {
-                                reject(`Error while Alice making the 2nd transfer to Bob. Error: ${err}`);
+                                reject(`Error while alice making the 2nd transfer to Bob. reservationSid=${aliceReservation}. Error: ${err}`);
                             }
                         });
                     } catch (err) {
-                        reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                        reject(`Error caught after receiving reservation accepted event. sid=${aliceReservation}. Error: ${err}`);
                     }
                 });
 
                 bob.on('reservationCreated', async(bobReservation) => {
                     bobReservationCount++;
                     bobReservation.on('accepted', async() => {
-                        await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
-                          credentials.supervisorNumber, 'in-progress', 3);
+                        await outboundCommonHelpers.verifyConferenceProperties(bobReservation.task.sid, 'in-progress', 3);
                         if (bobReservationCount === 2) {
                             // Make sure Bob's second reservation is getting accepted
                             resolve('Test succeeded: should reassign task and send reservation.accepted event to an available worker on 2nd transfer' +
                                 ' when transferee cancels the 1st transfer');
+                        } else {
+                            reject(`Bob should not accept the 1st reservation sid=${bobReservation}`);
                         }
                     });
 
@@ -282,13 +294,15 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             'initiated', 'Incoming Transfer');
 
                         if (bobReservationCount === 2) {
+
+                            // 4. Bob accepts 2nd transfer with a conference instruction
                             await bobReservation.conference({ endConferenceOnExit: true }).catch(err => {
-                                reject(`Error while establishing conference for alice. Error: ${err}`);
+                                reject(`Error while establishing conference for bob. sid=${bobReservation.sid}. Error: ${err}`);
                             });
                         }
                     } catch (err) {
                         reject(
-                          `Failed to validate Reservation and Transfer properties on Bob reservationCreated ResSid=${bobReservation.sid}. Error: ${err}`);
+                          `Failed to validate Reservation and Transfer properties sid=${bobReservation.sid}. Error: ${err}`);
                     }
                 });
 
@@ -316,7 +330,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                             outboundCommonHelpers.assertOnReservationCreated(alice);
                         }
                     } catch (err) {
-                        reject(`Failed to validate Reservation/Task/Transfer properties on reservation created event. Error: ${err}`);
+                        reject(`Failed to validate Reservation/Task/Transfer properties on reservation ${aliceReservation.sid} created event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     }
 
                     aliceReservation.on('accepted', async() => {
@@ -328,7 +342,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                                     true, credentials.multiTaskBobSid, 'COLD', 'in-progress', 2);
                             }
                         } catch (err) {
-                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                            reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                         }
                     });
 
@@ -346,11 +360,12 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                                 credentials.multiTaskAliceSid, credentials.multiTaskQueueSid, 'COLD', 'QUEUE', 'initiated', 'Incoming Transfer');
 
                         } catch (err) {
-                            reject(`Failed to validate Reservation and Transfer properties on reservation created event. Error: ${err}`);
+                            reject(`Failed to validate Reservation ${bobReservation.sid} and Transfer properties on reservation created event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                         }
 
                         outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, true)
-                            .catch(err => reject(`Error caught while wrapping and completing reservation. Error: ${err}`));
+                            .catch(err => reject(`Error caught while wrapping and completing reservation 
+                                for Outbound Task ${bobReservation.task.sid}. Error: ${err}`));
 
                         bobReservation.on('accepted', async() => {
                             try {
@@ -362,14 +377,14 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                                     true, credentials.multiTaskAliceSid, 'COLD', 'in-progress', 2);
 
                             } catch (err) {
-                                reject(`Error caught after receiving reservation rejected event. Error: ${err}`);
+                                reject(`Error caught after receiving reservation rejected event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                             }
                         });
 
                         // Wait for wrapup event on aliceReservation before accepting reservation for Worker B
                         await pauseTestExecution(STATUS_CHECK_DELAY);
                         bobReservation.conference().catch(err => {
-                            reject(`Error in establishing conference. Error: ${err}`);
+                            reject(`Error in establishing conference for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                         });
                     });
 
@@ -377,12 +392,12 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                         // Wait for wrapup event on bobReservation before issuing conference instruction for Worker A
                         await pauseTestExecution(STATUS_CHECK_DELAY);
                         aliceReservation.conference({ endConferenceOnExit: true }).catch(err => {
-                            reject(`Error in establishing conference. Error: ${err}`);
+                            reject(`Error in establishing conference for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                         });
                     } else {
                         // if this is 1st accept request from worker A
                         aliceReservation.conference().catch(err => {
-                            reject(`Error in establishing conference. Error: ${err}`);
+                            reject(`Error in establishing conference for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                         });
                     }
                 });

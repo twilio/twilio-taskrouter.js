@@ -64,7 +64,7 @@ describe('Outbound Voice Task', () => {
                         await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
                             true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
                     } catch (err) {
-                        reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                        reject(`Error caught after receiving reservation ${aliceReservation.sid} accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     }
                 });
 
@@ -113,18 +113,19 @@ describe('Outbound Voice Task', () => {
 
                             resolve('Outbound test to let worker A put worker B on hold is finished');
                         } catch (err) {
-                            reject(`Failed to validate Task on-hold properties. Error: ${err}`);
+                            reject(`Failed to validate Task on-hold properties for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                         }
                     });
 
                     // issue the conference instruction for Worker B's reservation
                     bobReservation.conference({ endConferenceOnExit: true }).catch(err => {
-                        reject(`Error in establishing conference for transferred worker. Error: ${err}`);
+                        reject(`Error in establishing conference for transferred worker 
+                            on Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
                     });
                 });
 
                 aliceReservation.conference().catch(err => {
-                    reject(`Error while establishing conference for alice. Error: ${err}`);
+                    reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                 });
             });
         });
@@ -139,11 +140,11 @@ describe('Outbound Voice Task', () => {
                             await outboundCommonHelpers.verifyConferenceProperties(aliceRes.task.sid, 'in-progress', 2);
                             resolve(aliceRes);
                         } catch (err) {
-                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                            reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceRes.task.sid}. Error: ${err}`);
                         }
                     });
                     aliceRes.conference().catch(err => {
-                        reject(`Error while establishing conference for alice. Error: ${err}`);
+                        reject(`Error while establishing conference for alice on Outbound Task ${aliceRes.task.sid}. Error: ${err}`);
                     });
                 });
             });
@@ -156,11 +157,11 @@ describe('Outbound Voice Task', () => {
                             await outboundCommonHelpers.verifyConferenceProperties(bobRes.task.sid, 'in-progress', 2);
                             resolve(bobRes);
                         } catch (err) {
-                            reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
+                            reject(`Error caught after receiving reservation accepted event for Outbound Task ${bobRes.task.sid}. Error: ${err}`);
                         }
                     });
                     bobRes.conference().catch(err => {
-                        reject(`Error while establishing conference for bob. Error: ${err}`);
+                        reject(`Error while establishing conference for bob on Outbound Task ${bobRes.task.sid}. Error: ${err}`);
                     });
                 });
             });
