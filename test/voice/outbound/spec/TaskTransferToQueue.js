@@ -12,6 +12,8 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const assert = chai.assert;
 
+const it = require('repeat-it');
+
 describe('Task Transfer to Queue for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
@@ -57,7 +59,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
     });
 
     describe('#Cold Transfer to a Queue', () => {
-        it('should transfer task to Worker B in queue successfully', () => {
+        it(credentials.iterations)('should transfer task to Worker B in queue successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -108,7 +110,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                 });
             });
-        }).timeout(60000);
+        });
     });
 
     describe('#Cold Transfer with worker capacity > 1', () => {
@@ -116,7 +118,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
             return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, alice.sid, 'default', 1);
         });
 
-        it('should transfer back to Worker A if it is the only worker in queue', () => {
+        it(credentials.iterations)('should transfer back to Worker A if it is the only worker in queue', () => {
             let reservationCountWorkerA = 1;
             return new Promise(async(resolve, reject) => {
                 await envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, alice.sid, 'default', 2);
@@ -152,7 +154,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
     });
 
     describe('#Failed Cold Transfer to Queue', () => {
-        it('should transfer task back to Worker A when Worker B rejects', () => {
+        it(credentials.iterations)('should transfer task back to Worker A when Worker B rejects', () => {
             let reservationCountWorkerA = 1;
             return new Promise(async(resolve, reject) => {
                 await alice.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
@@ -210,7 +212,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
     });
 
     describe('#Warm Transfer To a Queue', () => {
-        it('should complete successfully when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer to Queue', () => {
+        it(credentials.iterations)('should complete successfully when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer to Queue', () => {
             /**
              * 1. Alice makes 1st WARM transfers to Queue
              * 2. Alice cancels the 1st transfer before Bob accepts it
@@ -310,11 +312,11 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     reject(`Error while establishing conference for alice. Error: ${err}`);
                 });
             });
-        }).timeout(45000);
+        });
     });
 
     describe('#Back to Back Cold Transfer to Queue', () => {
-        it('should transfer task to queue having Worker B which transfers back to Queue with Worker A', () => {
+        it(credentials.iterations)('should transfer task to queue having Worker B which transfers back to Queue with Worker A', () => {
             let reservationCountWorkerA = 1;
             return new Promise(async(resolve, reject) => {
                 await alice.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
@@ -402,7 +404,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
                     }
                 });
             });
-        }).timeout(75000);
+        });
     });
 });
 

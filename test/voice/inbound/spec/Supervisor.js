@@ -12,6 +12,8 @@ const assert = chai.assert;
 const credentials = require('../../../env');
 const STATUS_CHECK_DELAY = 3000;
 
+const it = require('repeat-it');
+
 describe('Supervisor with Inbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const supervisorToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, null, 'supervisor');
@@ -42,7 +44,7 @@ describe('Supervisor with Inbound Voice Task', () => {
     describe('#supervise conference', () => {
         let conferenceSid;
 
-        it('should issue a conference instruction on the Reservation', () => {
+        it(credentials.iterations)('should issue a conference instruction on the Reservation', () => {
             // supervisor stays offline
             supervisor = new Supervisor(supervisorToken, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
@@ -125,7 +127,7 @@ describe('Supervisor with Inbound Voice Task', () => {
 
                 });
             });
-        }).timeout(45000);
+        });
     });
 });
 

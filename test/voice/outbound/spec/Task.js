@@ -10,6 +10,8 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const assert = chai.assert;
 
+const it = require('repeat-it');
+
 describe('Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
@@ -55,7 +57,7 @@ describe('Outbound Voice Task', () => {
     });
 
     describe('#Outbound Task during Transfer', () => {
-        it('should let worker A put worker B or herself on hold/unhold successfully', () => {
+        it(credentials.iterations)('should let worker A put worker B or herself on hold/unhold successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -130,7 +132,7 @@ describe('Outbound Voice Task', () => {
             });
         });
 
-        it('should fail if worker A put worker B (and vice versa) on hold if they are not in same conference', async() => {
+        it(credentials.iterations)('should fail if worker A put worker B (and vice versa) on hold if they are not in same conference', async() => {
             await envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid);
             const aliceResPromise = new Promise((resolve, reject) => {
                 outboundCommonHelpers.createTaskAndAssertOnResCreated(alice).then((aliceRes) => {
@@ -192,7 +194,7 @@ describe('Outbound Voice Task', () => {
             });
         });
 
-        it('should fail when both worker A and worker B does not have accepted reservation', () => {
+        it(credentials.iterations)('should fail when both worker A and worker B does not have accepted reservation', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -242,7 +244,7 @@ describe('Outbound Voice Task', () => {
     });
 
     describe('#Create Task Validations', () => {
-        it('should throw a validation error when using an incorrect workflow sid', () => {
+        it(credentials.iterations)('should throw a validation error when using an incorrect workflow sid', () => {
             return new Promise(async(resolve, reject) => {
                 // eslint-disable-next-line
                 const expected = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
@@ -262,9 +264,9 @@ describe('Outbound Voice Task', () => {
                     resolve('Test for validation error when using an incorrect workflowSid finished');
                 }
             });
-        }).timeout(5000);
+        });
 
-        it('should throw a validation error when using an incorrect queue sid', () => {
+        it(credentials.iterations)('should throw a validation error when using an incorrect queue sid', () => {
             return new Promise(async(resolve, reject) => {
                 try {
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
@@ -276,7 +278,7 @@ describe('Outbound Voice Task', () => {
                     resolve('Test for validation error when using an incorrect QueueSid finished');
                 }
             });
-        }).timeout(5000);
+        });
     });
 });
 

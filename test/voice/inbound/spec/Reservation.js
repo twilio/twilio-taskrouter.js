@@ -6,6 +6,8 @@ import { twimletUrl } from '../../VoiceBase';
 
 const credentials = require('../../../env');
 
+const it = require('repeat-it');
+
 describe('Reservation with Inbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
@@ -27,7 +29,7 @@ describe('Reservation with Inbound Voice Task', () => {
     });
 
     describe('#conference reservation', () => {
-        it('should issue a conference instruction on the Reservation', () => {
+        it(credentials.iterations)('should issue a conference instruction on the Reservation', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
@@ -85,7 +87,7 @@ describe('Reservation with Inbound Voice Task', () => {
                     });
                 });
             });
-        }).timeout(45000);
+        });
     });
 });
 

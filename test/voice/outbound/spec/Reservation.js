@@ -12,6 +12,8 @@ import {
 
 const credentials = require('../../../env');
 
+const it = require('repeat-it');
+
 describe('Reservation with Outbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
@@ -43,7 +45,7 @@ describe('Reservation with Outbound Voice Task', () => {
     });
 
     describe('#conference reservation', () => {
-        it('should issue a conference instruction on the Reservation', () => {
+        it(credentials.iterations)('should issue a conference instruction on the Reservation', () => {
             return new Promise(async(resolve, reject) => {
                 const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
 
@@ -67,9 +69,9 @@ describe('Reservation with Outbound Voice Task', () => {
                     reject(`Error in establishing conference for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
-        }).timeout(50000);
+        });
 
-        it('should issue a conference instruction on the Reservation even worker is offline', () => {
+        it(credentials.iterations)('should issue a conference instruction on the Reservation even worker is offline', () => {
             // If a “RoutableTarget” is given, a Worker’s capacity and availability are ignored.
             envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
@@ -100,9 +102,9 @@ describe('Reservation with Outbound Voice Task', () => {
                     reject(`Error in establishing conference for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
                 });
             });
-        }).timeout(50000);
+        });
 
-        it('should issue a conference instruction on the Reservation even worker has no capacity', () => {
+        it(credentials.iterations)('should issue a conference instruction on the Reservation even worker has no capacity', () => {
             // If a “RoutableTarget” is given, a Worker’s capacity and availability are ignored.
             envTwilio.updateWorkerCapacity(
                 credentials.multiTaskWorkspaceSid,
@@ -147,7 +149,7 @@ describe('Reservation with Outbound Voice Task', () => {
             );
         });
 
-        it('should cancel reservation after cancel the task', () => {
+        it(credentials.iterations)('should cancel reservation after cancel the task', () => {
             const options = {
                 reason: 'RoutingTarget not available',
             };
@@ -173,7 +175,7 @@ describe('Reservation with Outbound Voice Task', () => {
             });
         });
 
-        it('should cancel reservation if customer number is invalid', () => {
+        it(credentials.iterations)('should cancel reservation if customer number is invalid', () => {
             const options = {
                 customerNumber: INVALID_NUMBER,
                 reasonCode: RESERVATION_CANCELED_REASON,
@@ -197,7 +199,7 @@ describe('Reservation with Outbound Voice Task', () => {
             });
         });
 
-        it('should cancel reservation if customer number is not allowed for geo permission', () => {
+        it(credentials.iterations)('should cancel reservation if customer number is not allowed for geo permission', () => {
             const options = {
                 customerNumber: GEO_NOT_ALLOW_NUMBER,
                 reasonCode: CONNECTING_PARTICIPANT_ERROR_CODE,

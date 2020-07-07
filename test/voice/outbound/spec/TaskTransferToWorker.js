@@ -13,6 +13,8 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const assert = chai.assert;
 
+const it = require('repeat-it');
+
 describe('Task Transfer to Worker for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                       credentials.multiTaskAliceSid);
@@ -55,7 +57,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
     });
 
     describe('#Cold Transfer to a Worker', () => {
-        it('should complete transfer to worker B successfully', () => {
+        it(credentials.iterations)('should complete transfer to worker B successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -115,9 +117,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                     reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                 });
             });
-        }).timeout(50000);
+        });
 
-        it('should not fail even if Worker A tries to wrap up task before Worker B accepts', () => {
+        it(credentials.iterations)('should not fail even if Worker A tries to wrap up task before Worker B accepts', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -188,7 +190,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                     reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                 });
             });
-        }).timeout(55000);
+        });
 
         describe('when transferee rejects', function() {
             /**
@@ -197,7 +199,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
              * 3. Task gets back on the Q and reassigned to Bob (least active) with a new reservation
              * 4. Bob accepts the new reservation with a conference instruction
              */
-            it('should allow available worker to accept the reservation', () => {
+            it(credentials.iterations)('should allow available worker to accept the reservation', () => {
                 let aliceReservationCount = 0;
                 let bobReservationCount = 0;
 
@@ -268,7 +270,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         });
                     });
                 });
-            }).timeout(15000);
+            });
 
             /**
              * 1. Alice COLD transfers to Bob
@@ -278,7 +280,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
              * 5. Bob initiates a COLD transfer back to Alice
              * 6. Alice accepts the transfer with a conference instruction
              */
-            it('should allow available worker to accept the reservation & perform consequent transfers', () => {
+            it(credentials.iterations)('should allow available worker to accept the reservation & perform consequent transfers', () => {
                 let aliceReservationCount = 0;
                 let bobReservationCount = 0;
 
@@ -366,12 +368,12 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         });
                     });
                 });
-            }).timeout(30000);
+            });
         });
     });
 
     describe('#Failed Cold Transfer to a Worker', () => {
-        it('should fail if transferee rejects', () => {
+        it(credentials.iterations)('should fail if transferee rejects', () => {
             let bobReservationCount = 0;
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
@@ -445,7 +447,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             });
         });
 
-        it('should not initiate transfer when transferee is unavailable', () => {
+        it(credentials.iterations)('should not initiate transfer when transferee is unavailable', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -474,7 +476,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             });
         });
 
-        it('should fail if transferee issues a overriding conference(options) with invalid number', () => {
+        it(credentials.iterations)('should fail if transferee issues a overriding conference(options) with invalid number', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -541,7 +543,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                                                                   credentials.multiTaskWorkflowSid, 120);
         });
 
-        it('should fail if transferee does not accept reservation within time limit', () => {
+        it(credentials.iterations)('should fail if transferee does not accept reservation within time limit', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -606,7 +608,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
     });
 
     describe('#Cold Transfer to a Worker when customer hangs up before worker accept', () => {
-        it('should fail if customer hangs up before the transferee accepts', () => {
+        it(credentials.iterations)('should fail if customer hangs up before the transferee accepts', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -694,7 +696,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
     describe('#Warm Transfer', () => {
         describe('should complete successfully', () => {
-            it('when worker B accepts transfer reservation', () => {
+            it(credentials.iterations)('when worker B accepts transfer reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -754,9 +756,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     });
                 });
-            }).timeout(55000);
+            });
 
-            it('when Worker A tries to wrap up task before Worker B accepts reservation', () => {
+            it(credentials.iterations)('when Worker A tries to wrap up task before Worker B accepts reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -826,9 +828,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     });
                 });
-            }).timeout(60000);
+            });
 
-            it('when multiple transfers are made', () => {
+            it(credentials.iterations)('when multiple transfers are made', () => {
                 let reservationCountWorkerA = 1;
                 return new Promise(async(resolve, reject) => {
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
@@ -915,9 +917,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         });
                     });
                 });
-            }).timeout(75000);
+            });
 
-            it('when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer to Worker', () => {
+            it(credentials.iterations)('when worker B accept the 2nd transfer after worker A cancelling the 1st Transfer to Worker', () => {
                 /**
                  * 1. Alice makes 1st WARM transfers to Worker
                  * 2. Alice cancels the 1st transfer before Bob accepts it
@@ -1014,11 +1016,11 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error while establishing conference for alice. Error: ${err}`);
                     });
                 });
-            }).timeout(45000);
+            });
         });
 
         describe('should fail', () => {
-            it('when Worker B rejects transfer reservation', () => {
+            it(credentials.iterations)('when Worker B rejects transfer reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -1088,12 +1090,12 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         reject(`Error while establishing conference for alice on Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     });
                 });
-            }).timeout(20000);
+            });
         });
     });
 
     describe('#Back to Back Cold Transfer for Workers', () => {
-        it('should transfer task Worker B and then transfers back Worker A', () => {
+        it(credentials.iterations)('should transfer task Worker B and then transfers back Worker A', () => {
             let firstTransfer = true;
             return new Promise(async(resolve, reject) => {
                 await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
@@ -1195,6 +1197,6 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                     });
                 });
             });
-        }).timeout(75000);
+        });
     });
 });
