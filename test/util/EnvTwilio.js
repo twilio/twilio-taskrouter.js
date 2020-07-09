@@ -1,5 +1,7 @@
 const Twilio = require('twilio');
 const credentials = require('../../test/env');
+import { pauseTestExecution } from '../voice/VoiceBase';
+
 
 export default class EnvTwilio {
     constructor(accountSid, authToken, environment) {
@@ -175,5 +177,19 @@ export default class EnvTwilio {
     endCall(callSid) {
         return this.twilioClient.calls(callSid)
             .update({ status: 'completed' });
+    }
+
+    /**
+     * Helper to end conference participant calls
+     * @param {string} conferenceName task sid
+     * @param {string} phoneNumberList list of phone numbers of participants
+     */
+    async terminateParticipantCall(conferenceName, phoneNumberList) {
+        for (let phoneNumber of phoneNumberList) {
+            const participantProperties = await this.fetchParticipantPropertiesByName(conferenceName);
+            const participant = participantProperties.get(phoneNumber);
+            this.endCall(participant.callSid);
+            await pauseTestExecution(1000);
+        }
     }
 }

@@ -3,14 +3,14 @@ import Worker from '../../../../lib/Worker';
 import Supervisor from '../../../../lib/Supervisor';
 import { getAccessToken } from '../../../util/MakeAccessToken';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
+import SyncClientInstance from '../../../util/SyncClientInstance';
 
-import { pauseTestExecution } from '../../VoiceBase';
 
 const chai = require('chai');
 const assert = chai.assert;
 
 const credentials = require('../../../env');
-const STATUS_CHECK_DELAY = 3000;
+
 
 const it = require('repeat-it');
 
@@ -22,6 +22,15 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let worker;
     let supervisor;
+    let syncClient;
+
+    before(() => {
+        syncClient = new SyncClientInstance(supervisorToken);
+    });
+
+    after(() => {
+        syncClient.shutdown();
+    });
 
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
@@ -64,6 +73,8 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
             const taskSid = workerReservation.task.sid;
 
+            const syncMap = await syncClient._fetchSyncMap(taskSid);
+
             workerReservation.on('accepted', async() => {
                 try {
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 2);
@@ -73,7 +84,9 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
                         reject(`Failed to issue monitor request on Reservation ${workerReservation.sid}. ${err}`);
                     });
 
-                    await pauseTestExecution(STATUS_CHECK_DELAY);
+                    await syncClient.waitForWorkerJoin(syncMap, credentials.multiTaskBobSid).catch(err => {
+                        reject(`Failed to fetch supervisor join event for ${workerReservation.sid}. ${err}`);
+                    });
                     // validate that there are 3 participants in the conference
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 3);
 
@@ -83,7 +96,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
                     assert.isTrue(supervisorProperties.muted);
 
                     // if the supervisor leaves, the ongoging conference is unaffected
-                    await envTwilio.endCall(supervisorProperties.callSid);
+                    await envTwilio.terminateParticipantCall(taskSid, [credentials.supervisorNumber]);
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 2);
                     resolve('Test Case: Supervisor successfully able to monitor Conference passed.');
 
@@ -107,6 +120,8 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
             const taskSid = workerReservation.task.sid;
 
+            const syncMap = await syncClient._fetchSyncMap(taskSid);
+
             workerReservation.on('accepted', async() => {
                 try {
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 2);
@@ -117,7 +132,9 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
                         reject(`Failed to issue monitor request on Reservation ${workerReservation.sid}. ${err}`);
                     });
 
-                    await pauseTestExecution(STATUS_CHECK_DELAY);
+                    await syncClient.waitForWorkerJoin(syncMap, credentials.multiTaskBobSid).catch(err => {
+                        reject(`Failed to fetch supervisor join event for ${workerReservation.sid}. ${err}`);
+                    });
                     // validate that there are 3 participants in the conference
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 3);
                     resolve('Test Case: Supervisor successfully able to monitor Conference regardless of current Activity state passed.');
@@ -142,6 +159,8 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
             const taskSid = workerReservation.task.sid;
 
+            const syncMap = await syncClient._fetchSyncMap(taskSid);
+
             workerReservation.on('accepted', async() => {
                 try {
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 2);
@@ -151,13 +170,15 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
                         reject(`Failed to issue monitor request on Reservation ${workerReservation.sid}. ${err}`);
                     });
 
-                    await pauseTestExecution(STATUS_CHECK_DELAY);
+                    await syncClient.waitForWorkerJoin(syncMap, credentials.multiTaskBobSid).catch(err => {
+                        reject(`Failed to issue monitor request on Reservation ${workerReservation.sid}. ${err}`);
+                    });
                     // validate that there are 3 participants in the conference
                     await outboundCommonHelpers.verifyConferenceProperties(taskSid, 'in-progress', 3);
 
                     // transfer the call to the supervisor (the supervisor continues to monitor)
                     await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(workerReservation, credentials.multiTaskBobSid,
-                        true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 3);
+                        true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 3, syncClient, syncMap);
                 } catch (err) {
                     reject(`Succesfully created and accepted the Outbound Task ${taskSid}, but failed to validate Conference properties. ${err}`);
                 }
