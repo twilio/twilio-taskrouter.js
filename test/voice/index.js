@@ -5,4 +5,4 @@ require('./outbound/spec/Supervisor');
 require('./outbound/spec/Task');
 require('./outbound/spec/TaskTransferToQueue');
 require('./outbound/spec/TaskTransferToWorker');
-
+require('./outbound/spec/ExternalTransfer');
