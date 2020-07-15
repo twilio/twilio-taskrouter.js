@@ -10,9 +10,6 @@ const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 
-
-const it = require('repeat-it');
-
 describe('External Transfer for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                       credentials.multiTaskAliceSid);
@@ -64,7 +61,7 @@ describe('External Transfer for Outbound Voice Task', () => {
     });
 
     describe('#Warm transfer to an external number', () => {
-        it(credentials.iterations)('should complete warm transfer to an external number successfully', () => {
+        it('should complete warm transfer to an external number successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
                 const taskSid = aliceReservation.task.sid;

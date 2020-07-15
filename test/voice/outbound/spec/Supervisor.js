@@ -12,8 +12,6 @@ const assert = chai.assert;
 const credentials = require('../../../env');
 
 
-const it = require('repeat-it');
-
 describe('Supervisor Mode with Outbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const supervisorToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, null, 'supervisor', { useSync: true });
@@ -67,7 +65,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             ));
     });
 
-    it(credentials.iterations)('should allow a Supervisor to monitor a live conference/task successfully', () => {
+    it('should allow a Supervisor to monitor a live conference/task successfully', () => {
         return new Promise(async(resolve, reject) => {
             // setup the conference call between worker and customer
             const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
@@ -114,7 +112,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
         });
     });
 
-    it(credentials.iterations)('should allow a Supervisor to monitor a call regardless of Activity state', () => {
+    it('should allow a Supervisor to monitor a call regardless of Activity state', () => {
         return new Promise(async(resolve, reject) => {
             // setup the conference call between worker and customer
             const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
@@ -153,7 +151,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
         });
     });
 
-    it(credentials.iterations)('should allow a Supervisor to accept a Transfer irrespective if it is for a Conference it is already monitoring', () => {
+    it('should allow a Supervisor to accept a Transfer irrespective if it is for a Conference it is already monitoring', () => {
         return new Promise(async(resolve, reject) => {
             // setup the conference call between worker and customer
             const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);

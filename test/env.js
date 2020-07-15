@@ -74,8 +74,4 @@ if (env.hasOwnProperty('env') && env.env &&
     env.env = env.env.concat('.us1');
 }
 
-if (!env.hasOwnProperty('iterations')) {
-    env.iterations = 1;
-}
-
 module.exports = env;
