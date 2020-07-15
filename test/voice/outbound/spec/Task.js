@@ -2,8 +2,9 @@ import EnvTwilio from '../../../util/EnvTwilio';
 import Worker from '../../../../lib/Worker';
 import { getAccessToken } from '../../../util/MakeAccessToken';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
-import SyncClientInstance from '../../../util/SyncClientInstance';
+import { pauseTestExecution } from '../../VoiceBase';
 
+const STATUS_CHECK_DELAY = 1000;
 const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -11,20 +12,11 @@ const assert = chai.assert;
 
 describe('Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, null, null, { useSync: true });
+    const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let alice;
     let bob;
-    let syncClient;
-
-    before(() => {
-        syncClient = new SyncClientInstance(bobToken);
-    });
-
-    after(() => {
-        syncClient.shutdown();
-    });
 
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
@@ -66,14 +58,11 @@ describe('Outbound Voice Task', () => {
         it('should let worker A put worker B or herself on hold/unhold successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
-                const taskSid = aliceReservation.task.sid;
-
-                const syncMap = await syncClient._fetchSyncMap(taskSid);
 
                 aliceReservation.on('accepted', async() => {
                     try {
                         await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
-                            true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2, syncClient, syncMap);
+                            true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation ${aliceReservation.sid} accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                     }
@@ -94,7 +83,7 @@ describe('Outbound Voice Task', () => {
                             await aliceReservation.task.hold(credentials.multiTaskBobSid, true);
 
                             // Verify worker B is on hold in conference
-                            await syncClient.waitForWorkerHoldStatus(syncMap, credentials.multiTaskBobSid, true);
+                            await pauseTestExecution(STATUS_CHECK_DELAY);
                             participantPropertiesMap = await envTwilio.fetchParticipantPropertiesByName(bobReservation.task.sid);
                             assert.deepStrictEqual(participantPropertiesMap.get(credentials.supervisorNumber).hold, true, 'Worker B put on-hold value');
 
@@ -102,7 +91,7 @@ describe('Outbound Voice Task', () => {
                             await aliceReservation.task.hold(credentials.multiTaskBobSid, false);
 
                             // Verify worker B is un-holded in conference
-                            await syncClient.waitForWorkerHoldStatus(syncMap, credentials.multiTaskBobSid, false);
+                            await pauseTestExecution(STATUS_CHECK_DELAY);
                             participantPropertiesMap = await envTwilio.fetchParticipantPropertiesByName(bobReservation.task.sid);
                             assert.deepStrictEqual(participantPropertiesMap.get(credentials.supervisorNumber).hold, false, 'Worker B put on-hold value');
 
@@ -110,7 +99,7 @@ describe('Outbound Voice Task', () => {
                             await aliceReservation.task.hold(credentials.multiTaskAliceSid, true);
 
                             // Verify worker A is on hold in conference
-                            await syncClient.waitForWorkerHoldStatus(syncMap, credentials.multiTaskAliceSid, true);
+                            await pauseTestExecution(STATUS_CHECK_DELAY);
                             participantPropertiesMap = await envTwilio.fetchParticipantPropertiesByName(aliceReservation.task.sid);
                             assert.deepStrictEqual(participantPropertiesMap.get(credentials.workerNumber).hold, true, 'Worker A put on-hold value');
 
@@ -118,7 +107,7 @@ describe('Outbound Voice Task', () => {
                             await aliceReservation.task.hold(credentials.multiTaskAliceSid, false);
 
                             // Verify worker A is un-holded in conference
-                            await syncClient.waitForWorkerHoldStatus(syncMap, credentials.multiTaskAliceSid, false);
+                            await pauseTestExecution(STATUS_CHECK_DELAY);
                             participantPropertiesMap = await envTwilio.fetchParticipantPropertiesByName(aliceReservation.task.sid);
                             assert.deepStrictEqual(participantPropertiesMap.get(credentials.workerNumber).hold, false, 'Worker A put on-hold value');
 
@@ -206,14 +195,11 @@ describe('Outbound Voice Task', () => {
         it('should fail when both worker A and worker B does not have accepted reservation', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
-                const taskSid = aliceReservation.task.sid;
-
-                const syncMap = await syncClient._fetchSyncMap(taskSid);
 
                 aliceReservation.on('accepted', async() => {
                     try {
                         await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation, credentials.multiTaskBobSid,
-                            true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2, syncClient, syncMap);
+                            true, credentials.multiTaskBobSid, 'WARM', 'in-progress', 2);
                     } catch (err) {
                         reject(`Error caught after receiving reservation accepted event. Error: ${err}`);
                     }
