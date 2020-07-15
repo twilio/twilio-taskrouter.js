@@ -1,5 +1,7 @@
 import { assert } from 'chai';
 import _ from 'lodash';
+import { pauseTestExecution } from '../voice/VoiceBase';
+const STATUS_CHECK_DELAY = 2000;
 const credentials = require('../env');
 /**
  * Utility class for common helper methods.
@@ -81,6 +83,33 @@ export default class OutboundCommonHelpers {
     }
 
     /**
+     * Helper function to assert properties after transfer is initiated
+     * @param {Reservation} transferorReservation  The Transferor's reservation
+     * @return {Promise<Transfer>} Outgoing {@link Transfer}
+     */
+    async validateTransferInitiated(transferorReservation) {
+        return new Promise((resolve, reject) => {
+            transferorReservation.task.on('transferInitiated', async(outgoingTransfer) => {
+                try {
+                    assert.strictEqual(outgoingTransfer.status, 'initiated', 'Outgoing Transfer Status');
+
+                    //TODO: Set a fixed pausing time to wait some events happening is very flaky for our tests
+                    // should explore a better way(sync map is an option)
+
+                    await pauseTestExecution(STATUS_CHECK_DELAY);
+
+                    const conference = await this.envTwilio.fetchConferenceByName(transferorReservation.task.sid);
+                    const participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
+                    assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+                    resolve(outgoingTransfer);
+                } catch (err) {
+                    reject(`Failed to validate transfer initiated properties. Error: ${err}`);
+                }
+            });
+        });
+    }
+
+    /**
      * Helper function to :
      * 1) Assert conference properties after transferor has accepted reservation
      * 2) Make Bob available if specified
@@ -96,7 +125,7 @@ export default class OutboundCommonHelpers {
      * @return {Promise<void>}
      */
     async assertOnTransferorAcceptedAndInitiateTransfer(transferorReservation, transferToSid, makeTransfereeAvailable, transfereeSid,
-                                                        transferMode, expectedConfStatus, expectedConfParticipantsSize, syncClient, syncMap) {
+                                                        transferMode, expectedConfStatus, expectedConfParticipantsSize) {
         try {
             await this.verifyConferenceProperties(transferorReservation.task.sid, expectedConfStatus, expectedConfParticipantsSize);
 
@@ -104,29 +133,12 @@ export default class OutboundCommonHelpers {
                 await this.envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, transfereeSid, credentials.multiTaskConnectActivitySid);
             }
 
-            transferorReservation.task.on('transferInitiated', async(outgoingTransfer) => {
-                try {
-                    assert.strictEqual(outgoingTransfer.status, 'initiated', 'Outgoing Transfer Status');
-                } catch (err) {
-                    throw new Error(`Failed to validate transfer initiated properties. Error: ${err}`);
-                }
-            });
-
             await transferorReservation.task.transfer(transferToSid, { mode: transferMode });
 
-            await this.assertOnCustomerHoldStatus(transferorReservation.task.sid, true, syncClient, syncMap);
+            await this.validateTransferInitiated(transferorReservation);
         } catch (err) {
             throw err;
         }
-    }
-
-    async assertOnCustomerHoldStatus(conferenceName, holdStatus, syncClient, syncMap) {
-        await syncClient.waitForCustomerHoldStatus(syncMap, holdStatus).catch(err => {
-            throw new Error(`Failed to fetch customer hold event in Sync. ${err}`);
-        });
-        const conference = await this.envTwilio.fetchConferenceByName(conferenceName);
-        const participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
-        assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, holdStatus, 'Customer put on-hold value');
     }
 
     /**
@@ -140,7 +152,7 @@ export default class OutboundCommonHelpers {
      * @param {number} expectedConfParticipantSize Expected number of Participants in the Conference
      * @return {Promise<void>}
      */
-    async assertOnTransfereeAccepted(transfereeReservation, expectedConfStatus, expectedConfParticipantSize, syncClient, syncMap) {
+    async assertOnTransfereeAccepted(transfereeReservation, expectedConfStatus, expectedConfParticipantSize) {
         let participantPropertiesMap;
         let conference;
         try {
@@ -156,7 +168,10 @@ export default class OutboundCommonHelpers {
             await transfereeReservation.task.updateParticipant({ hold: false });
 
             // Verify customer is un-hold now
-            await this.assertOnCustomerHoldStatus(transfereeReservation.task.sid, false, syncClient, syncMap);
+            await pauseTestExecution(STATUS_CHECK_DELAY);
+            conference = await this.envTwilio.fetchConferenceByName(transfereeReservation.task.sid);
+            participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
+            assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, false, 'Customer put on-hold value');
         } catch (err) {
             throw err;
         }

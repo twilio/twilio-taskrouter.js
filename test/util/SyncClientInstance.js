@@ -45,10 +45,13 @@ export default class SyncClientInstance {
      * @param {string} workerSid - The expected worker sid to join the conference
      */
     async waitForWorkerJoin(syncMap, workerSid) {
-        return Async.waitForEvent(syncMap, 'itemAdded', (args) => this.hasWorkerStatus(args, workerSid, 'joined'));
+        return Async.waitForEvent(syncMap, 'itemAdded').then((args) => {
+            expect(args[0].item.value.status).to.equal('joined');
+            expect(args[0].item.value.worker_sid).to.equal(workerSid);
+        });
     }
 
-    /**
+        /**
      * Verify that a worker left the conference
      * @param {string} syncMap - Sync Map for a task
      * @param {string} workerSid - The expected worker sid to join the conference
@@ -58,41 +61,15 @@ export default class SyncClientInstance {
     }
 
     hasWorkerStatus(args, workerSid, status) {
-        let arg = args;
         if (Array.isArray(args)) {
-            for (arg in args) {
+            for (let arg in args) {
                 if (arg.item.value.worker_sid === workerSid) {
                     expect(arg.item.value.status).to.equal(status);
                     return true;
                 }
             }
-        } else if (arg.item.value.worker_sid === workerSid) {
-            expect(arg.item.value.status).to.equal(status);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Verify customer hold status
-     * @param {string} syncMap - Sync Map for a task
-     * @param {string} hold - The expected hold status for cusomter
-     */
-    async waitForCustomerHoldStatus(syncMap, hold) {
-        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.isCustomerHold(args, hold));
-    }
-
-    isCustomerHold(args, hold) {
-        let arg = args;
-        if (Array.isArray(args)) {
-            for (arg in args) {
-                if (arg.item.value.participant_type === 'customer') {
-                    expect(arg.item.value.hold).to.equal(hold);
-                    return true;
-                }
-            }
-        } else if (arg.item.value.participant_type === 'customer') {
-            expect(arg.item.value.hold).to.equal(hold);
+        } else if (args.item.value.worker_sid === workerSid) {
+            expect(args.item.value.status).to.equal(status);
             return true;
         }
         return false;

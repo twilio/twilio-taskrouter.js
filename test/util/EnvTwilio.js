@@ -1,7 +1,7 @@
-const Twilio = require('twilio');
-const credentials = require('../../test/env');
 import { pauseTestExecution } from '../voice/VoiceBase';
 
+const Twilio = require('twilio');
+const credentials = require('../../test/env');
 
 export default class EnvTwilio {
     constructor(accountSid, authToken, environment) {
