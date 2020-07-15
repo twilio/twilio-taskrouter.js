@@ -1,3 +1,4 @@
+/* eslint camelcase: 0 */
 const SyncClient = require('twilio-sync');
 const credentials = require('../env');
 import { Async } from 'async-test-tools';
@@ -45,7 +46,7 @@ export default class SyncClientInstance {
      * @param {string} workerSid - The expected worker sid to join the conference
      */
     async waitForWorkerJoin(syncMap, workerSid) {
-        return Async.waitForEvent(syncMap, 'itemAdded', (args) => this.hasWorkerStatus(args, workerSid, 'joined'));
+        return Async.waitForEvent(syncMap, 'itemAdded', (args) => this.hasWorkerStatus(workerSid, 'joined', args));
     }
 
     /**
@@ -54,21 +55,16 @@ export default class SyncClientInstance {
      * @param {string} workerSid - The expected worker sid to join the conference
      */
     async waitForWorkerLeave(syncMap, workerSid) {
-        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.hasWorkerStatus(args, workerSid, 'left'));
+        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.hasWorkerStatus(workerSid, 'left', args));
     }
 
-    hasWorkerStatus(args, workerSid, status) {
-        let arg = args;
-        if (Array.isArray(args)) {
-            for (arg in args) {
-                if (arg.item.value.worker_sid === workerSid) {
-                    expect(arg.item.value.status).to.equal(status);
-                    return true;
-                }
+    hasWorkerStatus(workerSidVal, statusVal, ...args) {
+        for (let obj in args) {
+            const { item: { value: { worker_sid, status } = {} } = {} } = obj || {};
+            if (worker_sid === workerSidVal) {
+                expect(status).to.equal(statusVal);
+                return true;
             }
-        } else if (arg.item.value.worker_sid === workerSid) {
-            expect(arg.item.value.status).to.equal(status);
-            return true;
         }
         return false;
     }
@@ -76,24 +72,40 @@ export default class SyncClientInstance {
     /**
      * Verify customer hold status
      * @param {string} syncMap - Sync Map for a task
-     * @param {string} hold - The expected hold status for cusomter
+     * @param {string} hold - The expected hold status for customer
      */
     async waitForCustomerHoldStatus(syncMap, hold) {
-        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.isCustomerHold(args, hold));
+        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.isCustomerHold(hold, args));
     }
 
-    isCustomerHold(args, hold) {
-        let arg = args;
-        if (Array.isArray(args)) {
-            for (arg in args) {
-                if (arg.item.value.participant_type === 'customer') {
-                    expect(arg.item.value.hold).to.equal(hold);
-                    return true;
-                }
+    isCustomerHold(holdVal, ...args) {
+        for (let obj in args) {
+            const { item: { value: { participant_type, hold } = {} } = {} } = obj || {};
+            if (participant_type === 'customer') {
+                expect(hold).to.equal(holdVal);
+                return true;
             }
-        } else if (arg.item.value.participant_type === 'customer') {
-            expect(arg.item.value.hold).to.equal(hold);
-            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Verify worker hold status
+     * @param {string} syncMap - Sync Map for a task
+     * @param {string} workerSid - worker sid
+     * @param {string} hold - The expected hold status for customer
+     */
+    async waitForWorkerHoldStatus(syncMap, workerSid, hold) {
+        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.isWorkerHold(workerSid, hold, args));
+    }
+
+    isWorkerHold(workerSidVal, holdVal, ...args) {
+        for (let obj in args) {
+            const { item: { value: { worker_sid, hold } = {} } = {} } = obj || {};
+            if (worker_sid === workerSidVal) {
+                expect(hold).equal(holdVal);
+                return true;
+            }
         }
         return false;
     }
@@ -109,22 +121,15 @@ export default class SyncClientInstance {
         ]);
     }
 
-    isExternalCallJoin(args) {
-        let arg = args;
-        if (Array.isArray(args)) {
-            for (arg in args) {
-                if (arg.item.value.participant_type === 'unknown') {
-                    expect(arg.item.value.status).to.equal('joined');
-                    expect(arg.item.value.worker_sid).to.equal(null);
-                    expect(arg.item.value.reservation_sid).to.equal(null);
-                    return true;
-                }
+    isExternalCallJoin(...args) {
+        for (let obj in args) {
+            const { item: { value: { participant_type, status, worker_sid, reservation_sid } = {} } = {} } = obj || {};
+            if (participant_type === 'unknown') {
+                expect(status).to.equal('joined');
+                expect(worker_sid).to.equal(null);
+                expect(reservation_sid).to.equal(null);
+                return true;
             }
-        } else if (arg.item.value.participant_type === 'unknown') {
-            expect(arg.item.value.status).to.equal('joined');
-            expect(arg.item.value.worker_sid).to.equal(null);
-            expect(arg.item.value.reservation_sid).to.equal(null);
-            return true;
         }
         return false;
     }
