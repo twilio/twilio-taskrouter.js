@@ -13,9 +13,9 @@ const expect = chai.expect;
 
 const sleep = (delay) => {
   return new Promise(resolve => {
-    setTimeout(resolve, delay)
+    setTimeout(resolve, delay);
   });
-}
+};
 
 describe('EventBridgeSignaling', () => {
   describe('constructor', () => {
@@ -89,7 +89,7 @@ describe('EventBridgeSignaling', () => {
   describe('websocket teardown', () => {
     it('should close the existing websocket when no heartbeat is received in 60s', async() => {
       const worker = new Worker(initialToken, WorkerConfig);
-      
+
       const disconnectedSpy = sinon.spy();
       const connectedSpy = sinon.spy();
 
@@ -97,28 +97,27 @@ describe('EventBridgeSignaling', () => {
       worker._signaling.on('connected', connectedSpy);
 
       // verify that the current websocket is not already closing or closed
-      assert.isTrue(worker._signaling.webSocket.readyState != WebSocket.CLOSED && worker._signaling.webSocket.readyState != WebSocket.CLOSING)
+      assert.isTrue(worker._signaling.webSocket.readyState !== WebSocket.CLOSED && worker._signaling.webSocket.readyState !== WebSocket.CLOSING);
       // verify that if the websocket disconnects, it will attempt to reconnect
-      assert.isTrue(worker._signaling.reconnect)
-      
+      assert.isTrue(worker._signaling.reconnect);
+
       // wait for the socket to transition from CONNECTING -> OPEN state
       await sleep(500);
-      assert.isTrue(worker._signaling.webSocket.readyState == WebSocket.OPEN)
+      assert.isTrue(worker._signaling.webSocket.readyState === WebSocket.OPEN);
 
       // trigger the heartbeat sleep function (no heartbeat felt within max 60s interval)
       worker._signaling._heartbeat.onsleep();
 
       // verify that websocket moves to closed when the onsleep triggers a disconnect
-      assert.isTrue(worker._signaling.webSocket.readyState == WebSocket.CLOSED)
+      assert.isTrue(worker._signaling.webSocket.readyState === WebSocket.CLOSED);
       expect(disconnectedSpy).to.have.been.calledOnce;
       expect(connectedSpy).to.have.been.calledOnce;
 
       // random backoff will wait x ms before attempting to create a new websocket
       await sleep(1000);
       // verify that a new websocket was created
-      assert.isTrue(worker._signaling.webSocket.readyState != WebSocket.CLOSED && worker._signaling.webSocket.readyState != WebSocket.CLOSING)
+      assert.isTrue(worker._signaling.webSocket.readyState !== WebSocket.CLOSED && worker._signaling.webSocket.readyState !== WebSocket.CLOSING);
       expect(connectedSpy).to.have.been.calledTwice;
     });
-    
   });
 });
