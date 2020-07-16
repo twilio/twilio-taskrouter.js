@@ -1,3 +1,11 @@
+0.5.2
+==========
+Maintenance
+----------
+- Explicitly close the current websocket if no heartbeat has been detected within 60s before attempting to reconnect using a new websocket
+- Additional integration tests on outbound voice functionality
+
+
 0.5.1
 ==========
 New Features
