@@ -4,29 +4,31 @@ import Supervisor from '../../../../lib/Supervisor';
 
 import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
-import { twimletUrl, pauseTestExecution } from '../../VoiceBase';
+import { twimletUrl } from '../../VoiceBase';
+import SyncClientInstance from '../../../util/SyncClientInstance';
 
 const chai = require('chai');
 const assert = chai.assert;
-
 const credentials = require('../../../env');
-const STATUS_CHECK_DELAY = 3000;
 
 describe('Supervisor with Inbound Voice Task', () => {
-    const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
+    const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, null, null, { useSync: true });
     const supervisorToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, null, 'supervisor');
 
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     let worker;
     let supervisor;
+    let syncClient;
 
     beforeEach(() => {
+        syncClient = new SyncClientInstance(workerToken);
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
     });
 
     afterEach(() => {
         supervisor.removeAllListeners();
         worker.removeAllListeners();
+        syncClient.shutdown();
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
             .then(() => envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
@@ -40,9 +42,8 @@ describe('Supervisor with Inbound Voice Task', () => {
     });
 
     describe('#supervise conference', () => {
-        let conferenceSid;
 
-        it('should issue a conference instruction on the Reservation', () => {
+        it('should allow a Supervisor to monitor an inbound conference/task successfully', () => {
             // supervisor stays offline
             supervisor = new Supervisor(supervisorToken, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
@@ -74,9 +75,12 @@ describe('Supervisor with Inbound Voice Task', () => {
                 });
 
                 worker.on('reservationCreated', async(createdReservation) => {
+                    let conferenceSid;
+                    const taskSid = createdReservation.task.sid;
+                    const syncMap = await syncClient._fetchSyncMap(taskSid);
                     createdReservation.on('accepted', async(acceptedReservation) => {
-                        conferenceSid = acceptedReservation.task.attributes.conference.sid;
                         // check that there are 2 participants in the conference
+                        conferenceSid = acceptedReservation.task.attributes.conference.sid;
                         const conference = await envTwilio.fetchConference(conferenceSid);
                         if (conference.status !== 'in-progress') {
                             reject(`Conference status invalid. Expected in-progress. Got ${conference.status}.`);
@@ -93,17 +97,23 @@ describe('Supervisor with Inbound Voice Task', () => {
                             supervisor.monitor(acceptedReservation.task.sid, acceptedReservation.sid).catch(err => {
                                 reject(`Failed to issue monitor request on Reservation ${acceptedReservation.sid}. Error: ${err}`);
                             });
-                            // pause to ensure that the supervisor has connected to the conference
-                            await pauseTestExecution(STATUS_CHECK_DELAY);
+                            await syncClient.waitForWorkerJoin(syncMap, credentials.multiTaskBobSid).catch(err => {
+                                reject(`Failed to fetch supervisor join event for ${acceptedReservation.sid}. ${err}`);
+                            });
                             const participants = await envTwilio.fetchConferenceParticipants(conferenceSid);
                             assert.strictEqual(participants.length, 3, 'Participant count (with supervisor) in conference');
                         }).catch(err => {
                             reject(`Error when using Supervisor ${supervisor.sid}. Error: ${err}`);
                         });
+
+                        await syncClient.waitForWorkerLeave(syncMap, credentials.multiTaskAliceSid).catch(err => {
+                            reject(`Failed to catch Sync event for Alice ${credentials.multiTaskAliceSid} leaving the conference. ${err}`);
+                        });
                     });
 
                     createdReservation.on('wrapup', async() => {
                         // check that the participants have left the conference
+                        conferenceSid = createdReservation.task.attributes.conference.sid;
                         const conference = await envTwilio.fetchConference(conferenceSid);
                         if (conference.status !== 'completed') {
                             reject(`Conference status invalid. Expected completed. Got ${conference.status}.`);
@@ -112,7 +122,7 @@ describe('Supervisor with Inbound Voice Task', () => {
                         if (participants.length !== 0) {
                             reject(`Conference participant size invalid. Expected 0. Got ${participants.length}.`);
                         }
-
+                        await createdReservation.complete();
                         resolve('Inbound Reservation Conference test finished.');
                     });
 
@@ -128,4 +138,3 @@ describe('Supervisor with Inbound Voice Task', () => {
         }).timeout(45000);
     });
 });
-

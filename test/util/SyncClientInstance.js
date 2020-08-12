@@ -45,10 +45,7 @@ export default class SyncClientInstance {
      * @param {string} workerSid - The expected worker sid to join the conference
      */
     async waitForWorkerJoin(syncMap, workerSid) {
-        return Async.waitForEvent(syncMap, 'itemAdded').then((args) => {
-            expect(args[0].item.value.status).to.equal('joined');
-            expect(args[0].item.value.worker_sid).to.equal(workerSid);
-        });
+        return Async.waitForEvent(syncMap, 'itemAdded', (args) => this.hasWorkerStatus(workerSid, 'joined', args));
     }
 
         /**
@@ -57,10 +54,10 @@ export default class SyncClientInstance {
      * @param {string} workerSid - The expected worker sid to join the conference
      */
     async waitForWorkerLeave(syncMap, workerSid) {
-        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.hasWorkerStatus(args, workerSid, 'left'));
+        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.hasWorkerStatus(workerSid, 'left', args));
     }
 
-    hasWorkerStatus(args, workerSid, status) {
+    hasWorkerStatus(workerSid, status, args) {
         if (Array.isArray(args)) {
             for (let arg in args) {
                 if (arg.item.value.worker_sid === workerSid) {
