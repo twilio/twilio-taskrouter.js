@@ -1,3 +1,4 @@
+/* eslint camelcase: 0 */
 const SyncClient = require('twilio-sync');
 const credentials = require('../env');
 import { Async } from 'async-test-tools';
@@ -48,7 +49,7 @@ export default class SyncClientInstance {
         return Async.waitForEvent(syncMap, 'itemAdded', (args) => this.hasWorkerStatus(workerSid, 'joined', args));
     }
 
-        /**
+    /**
      * Verify that a worker left the conference
      * @param {string} syncMap - Sync Map for a task
      * @param {string} workerSid - The expected worker sid to join the conference
@@ -67,6 +68,31 @@ export default class SyncClientInstance {
             }
         } else if (args.item.value.worker_sid === workerSid) {
             expect(args.item.value.status).to.equal(status);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Verify customer hold status
+     * @param {string} syncMap - Sync Map for a task
+     * @param {string} hold - The expected hold status for customer
+     */
+    async waitForCustomerHoldStatus(syncMap, hold) {
+        return Async.waitForEvent(syncMap, 'itemUpdated', (args) => this.isCustomerHold(hold, args));
+    }
+
+    isCustomerHold(holdVal, args) {
+        if (Array.isArray(args)) {
+            for (let arg in args) {
+                if (arg.item.value.participant_type === 'customer') {
+                    expect(args.item.value.hold).to.equal(holdVal);
+                    return true;
+                }
+            }
+        }
+        else if (args.item.value.participant_type === 'customer') {
+            expect(args.item.value.hold).to.equal(holdVal);
             return true;
         }
         return false;

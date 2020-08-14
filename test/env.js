@@ -62,7 +62,7 @@ requiredKeys.forEach(key => {
       // check for voice
       voiceE2EKeys.forEach(voiceKey => {
         if (!(voiceKey in env)) {
-          throw new Error('Missing Voice Integrtion Key: ' + voiceKey);
+          throw new Error('Missing Voice Integration Key: ' + voiceKey);
         }
       });
     }

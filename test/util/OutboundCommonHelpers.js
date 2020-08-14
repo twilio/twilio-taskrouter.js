@@ -2,6 +2,7 @@ import { assert } from 'chai';
 import _ from 'lodash';
 import { pauseTestExecution } from '../voice/VoiceBase';
 const STATUS_CHECK_DELAY = 2000;
+import AssertionUtils from './AssertionUtils';
 const credentials = require('../env');
 /**
  * Utility class for common helper methods.
@@ -47,12 +48,7 @@ export default class OutboundCommonHelpers {
         const customerNumber = options.customerNumber || credentials.customerNumber;
         return new Promise((resolve) => {
             worker.on('reservationCreated', createdRes => {
-                assert.strictEqual(createdRes.task.status, 'reserved', 'Task status');
-                assert.strictEqual(createdRes.task.routingTarget, worker.sid, 'Routing target');
-                assert.deepStrictEqual(createdRes.task.attributes.from, credentials.flexCCNumber, 'Conference From number');
-                assert.deepStrictEqual(createdRes.task.attributes.outbound_to, customerNumber, 'Conference To number');
-                assert.strictEqual(createdRes.status, 'pending', 'Reservation Status');
-                assert.strictEqual(createdRes.workerSid, worker.sid, 'Worker Sid in conference');
+                AssertionUtils.verifyCreatedReservationProperties(createdRes, worker, credentials.flexCCNumber, customerNumber);
                 resolve(createdRes);
             });
         });
@@ -139,6 +135,66 @@ export default class OutboundCommonHelpers {
         } catch (err) {
             throw err;
         }
+    }
+
+    /**
+     * Helper function to :
+     * 1) Assert conference properties after transferor has accepted reservation using Sync Client
+     * 2) Make Bob available if specified
+     * 3) Initiate Transfer
+     * 4) Call helper function to assert customer is put on hold
+     * @param {Reservation} transferorReservation  The Transferor's reservation
+     * @param {string} transferToSid The Sid to which Task should be transferred. (Worker Sid or Queue Sid)
+     * @param {boolean} makeTransfereeAvailable  To specify if Transferee needs to be made available (true or false)
+     * @param {string} transfereeSid The Sid of transferee
+     * @param {string} transferMode The mode of Transfer (COLD or WARM)
+     * @param {string} expectedConfStatus Expected Conference status
+     * @param {number} expectedConfParticipantsSize Expected number of Participants in the Conference
+     * @param {SyncClientInstance} syncClient Sync client instance
+     * @param {string} syncMap Sync Map for a task
+     * @return {Promise<void>}
+     */
+    async assertOnTransferorAcceptedAndInitiateTransferWithSyncClient(transferorReservation, transferToSid, makeTransfereeAvailable, transfereeSid,
+                                                        transferMode, expectedConfStatus, expectedConfParticipantsSize, syncClient, syncMap) {
+        try {
+            await this.verifyConferenceProperties(transferorReservation.task.sid, expectedConfStatus, expectedConfParticipantsSize);
+
+            if (makeTransfereeAvailable) {
+                await this.envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, transfereeSid, credentials.multiTaskConnectActivitySid);
+            }
+
+            transferorReservation.task.on('transferInitiated', async(outgoingTransfer) => {
+                try {
+                    assert.strictEqual(outgoingTransfer.status, 'initiated', 'Outgoing Transfer Status');
+                } catch (err) {
+                    throw new Error(`Failed to validate transfer initiated properties. Error: ${err}`);
+                }
+            });
+
+            await transferorReservation.task.transfer(transferToSid, { mode: transferMode });
+
+            await this.assertOnCustomerHoldStatus(transferorReservation.task.sid, true, syncClient, syncMap);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    /**
+     * Helper function to assert Customer hold status
+     * @param {string} conferenceName Conference name
+     * @param {boolean} holdStatus expected hold status for customer
+     * @param {SyncClientInstance} syncClient Sync client instance
+     * @param {string} syncMap Sync Map for a task
+     * @return {Promise<void>}
+     */
+    async assertOnCustomerHoldStatus(conferenceName, holdStatus, syncClient, syncMap) {
+        await syncClient.waitForCustomerHoldStatus(syncMap, holdStatus).catch(err => {
+            throw new Error(`Failed to fetch customer hold event in Sync. ${err}`);
+        });
+
+        const conference = await this.envTwilio.fetchConferenceByName(conferenceName);
+        const participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
+        assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, holdStatus, 'Customer put on-hold value');
     }
 
     /**

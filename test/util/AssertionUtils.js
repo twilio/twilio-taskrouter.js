@@ -91,4 +91,13 @@ export default class AssertionUtils {
         assert.strictEqual(transfer.type, expectedType, `${prefixMessage} Type`);
         assert.strictEqual(transfer.status, expectedStatus, `${prefixMessage} Status`);
     }
+
+    static verifyCreatedReservationProperties(reservation, worker, expectedFrom, expectedTo) {
+        assert.strictEqual(reservation.task.status, 'reserved', 'Task status');
+        assert.strictEqual(reservation.task.routingTarget, worker.sid, 'Routing target');
+        assert.deepStrictEqual(reservation.task.attributes.from, expectedFrom, 'Conference From number');
+        assert.deepStrictEqual(reservation.task.attributes.outbound_to, expectedTo, 'Conference To number');
+        assert.strictEqual(reservation.status, 'pending', 'Reservation Status');
+        assert.strictEqual(reservation.workerSid, worker.sid, 'Worker Sid in conference');
+    }
 }
