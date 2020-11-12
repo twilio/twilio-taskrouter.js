@@ -43,7 +43,10 @@ describe('EventBridgeSignaling', () => {
             alice.on('tokenExpired', () => {
                 assert.isFalse(alice._signaling.reconnect);
                 alice.disconnect(); // simulate a disconnect event after token expiration
+            });
 
+            alice.on('disconnected', event => {
+                assert.equal(event.message, 'SDK Disconnect');
                 // update token after disconnecting
                 const newToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 20);
                 alice.updateToken(newToken);

@@ -105,7 +105,10 @@ describe('Common Worker Client', () => {
             });
 
             bob.on('ready', () => bob.disconnect());
-            bob.on('disconnected', () => done());
+            bob.on('disconnected', event => {
+                assert.equal(event.message, 'SDK Disconnect');
+                done();
+            });
         });
     });
 });

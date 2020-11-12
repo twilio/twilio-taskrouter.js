@@ -438,6 +438,21 @@ describe('Worker', () => {
       worker._signaling.emit('init', mockEvents.signaling.initWorkerEvent);
     }).timeout(5000);
 
+    it('should receive a disconnected event message', done => {
+      const worker = new Worker(initialToken, WorkerConfig);
+      sinon.stub(worker, 'getRoutes').returns(routes);
+
+      const workerUnsubscribeSpy = sinon.spy(worker, '_unSubscribeFromTaskRouterEvents');
+
+      worker.on('disconnected', event => {
+        expect(workerUnsubscribeSpy.calledOnce).to.be.true;
+        expect(event).to.equal("worker got disconnected message");
+        done();
+      });
+      worker._signaling.emit('disconnected', "worker got disconnected message");
+
+    }).timeout(5000);
+
     it('should unsubscribe from taskrouter events once on disconnect', done => {
       let worker = new Worker(initialToken, WorkerConfig);
       sinon.stub(worker, 'getRoutes').returns(routes);

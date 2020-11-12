@@ -1,3 +1,11 @@
+0.5.3
+==========
+New Features
+----------
+- Add explicit logging for server, programmatic, client disconnects
+- Updates the Worker disconnected event emitter to also include the reason for disconnect
+- Additional unit and integration tests to confirm logging
+
 0.5.2
 ==========
 Maintenance
