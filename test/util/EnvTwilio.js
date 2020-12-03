@@ -192,4 +192,49 @@ export default class EnvTwilio {
             await pauseTestExecution(1000);
         }
     }
+
+    /**
+     * Helper function to send a message from one number to another
+     * @param {string} toNumber - The number to dial
+     * @param {string} fromNumber - The number to dial from
+     * @param {string} body - The message body
+     */
+    async sendMessage(toNumber, fromNumber, body) {
+        return this.twilioClient.messages.create({
+            to: toNumber,
+            from: fromNumber,
+            body: body
+        });
+    }
+
+    /**
+     * Helper function to fetch a conversation
+     * @param {string} conversationSid - conversation to fetch
+     */
+    async fetchConversation(conversationSid) {
+        return this.twilioClient.conversations.conversations(conversationSid).fetch();
+    }
+
+    /**
+     * Helper function to fetch participants in a conversation
+     * @param {string} conversationSid - conversation to fetch
+     */
+    async fetchConversationParticipants(conversationSid) {
+        return this.twilioClient.conversations.conversations(conversationSid).participants.list();
+    }
+
+    async deleteAllConversations() {
+        return this.twilioClient.conversations.conversations.list()
+            .then(convos => Promise.all(
+                convos.map(convo => {
+                    return convo.remove().catch(err => {
+                        console.log('error deleting conversation', err);
+                        throw err;
+                    });
+                })
+            )).catch(err => {
+                console.log('err with deleting conversations', err);
+                throw err;
+            });
+    }
 }
