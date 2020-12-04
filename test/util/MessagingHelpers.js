@@ -67,11 +67,13 @@ export default class MessagingHelpers {
      * @param {string} conversationSid - The Sid of the Conversation
      * @param {string} expectedStatus - The expected Conference Status
      */
-    async verifyConversationProperties(conversationSid, expectedStatus, expectedSize) {
+    async verifyConversationProperties(conversationSid, expectedStatus, expectedSize = null) {
         const conversation = await this.envTwilio.fetchConversation(conversationSid);
         assert.strictEqual(conversation.state, expectedStatus, 'Conversation Status');
-        const participants = await this.envTwilio.fetchConversationParticipants(conversationSid);
-        assert.strictEqual(participants.length, expectedSize, 'Number of Participants');
+        if (expectedSize) {
+            const participants = await this.envTwilio.fetchConversationParticipants(conversationSid);
+            assert.strictEqual(participants.length, expectedSize, 'Number of Participants');
+        }
     }
 
     /**
@@ -85,7 +87,6 @@ export default class MessagingHelpers {
         return new Promise(async(resolve, reject) => {
             reservation.on('wrapup', async() => {
                 try {
-                    await this.verifyConversationProperties(reservation.task.attributes.conversationSid, 'active', 2);
                     assert.strictEqual(reservation.task.status, 'wrapping', 'Task status on reservation wrapup');
                     await reservation.complete();
                     resolve(reservation);
@@ -97,6 +98,7 @@ export default class MessagingHelpers {
             return new Promise(async(resolve, reject) => {
                 reservation.on('completed', async() => {
                     try {
+                        await this.pauseTestExecution(5000);
                         await this.verifyConversationProperties(reservation.task.attributes.conversationSid, 'closed', 2);
                         assert.strictEqual(reservation.task.status, 'completed', 'Task status on reservation completed');
                         resolve(reservation);
@@ -108,5 +110,9 @@ export default class MessagingHelpers {
         }).catch(err => {
             throw err;
         });
+    }
+
+    async pauseTestExecution(timeout) {
+        return await new Promise((resolve) => setTimeout(resolve, timeout));
     }
 }

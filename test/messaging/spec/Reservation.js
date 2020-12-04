@@ -7,28 +7,40 @@ import MessagingHelpers from '../../util/MessagingHelpers';
 const credentials = require('../../env');
 
 describe('Reservation with Messaging Task', () => {
-    const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
+    const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
+        credentials.multiTaskAliceSid);
+    const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
+      credentials.multiTaskBobSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     const messagingHelpers = new MessagingHelpers(envTwilio);
-    let worker;
+    let alice;
+    let bob;
 
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             envTwilio.deleteAllConversations();
 
             // make worker available
-            worker = new Worker(workerToken, {
+            alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`
             });
 
-            return messagingHelpers.listenToWorkerReadyOrErrorEvent(worker);
+            // bob stays offline
+            bob = new Worker(bobToken, {
+                connectActivitySid: credentials.multiTaskUpdateActivitySid,
+                ebServer: `${credentials.ebServer}/v1/wschannels`,
+                wsServer: `${credentials.wsServer}/v1/wschannels`
+            });
+
+            return messagingHelpers.listenToWorkerReadyOrErrorEvent(alice);
         });
     });
 
     afterEach(() => {
-        worker.removeAllListeners();
+        alice.removeAllListeners();
+        bob.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             return envTwilio.updateWorkerActivity(
                 credentials.multiTaskWorkspaceSid,
@@ -42,25 +54,20 @@ describe('Reservation with Messaging Task', () => {
         it('should create a conversation', () => {
             return new Promise(async(resolve, reject) => {
                 await messagingHelpers.sendMessage();
-                const workerReservation = await messagingHelpers.assertOnReservationCreated(worker);
+                const aliceReservation = await messagingHelpers.assertOnReservationCreated(alice);
 
-                workerReservation.on('accepted', async() => {
-                    try {
-                        await messagingHelpers.verifyConversationProperties(workerReservation.task.attributes.conversationSid, 'active', 2);
-                    } catch (err) {
-                        reject(`Failed to validate Conversation properties for ${workerReservation.task.sid}. Error: ${err}`);
-                    }
-
-                    workerReservation.wrap();
+                aliceReservation.on('accepted', async() => {
+                    await messagingHelpers.pauseTestExecution(5000);
+                    aliceReservation.wrap();
                 });
 
-                messagingHelpers.assertOnResWrapUpAndCompleteEvent(workerReservation).then(() => {
+                messagingHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation).then(() => {
                     resolve('Conversation test finished.');
                 }).catch(err => {
-                    reject(`Failed to validate wraup & completed event Task for ${workerReservation.task.sid}. Error: ${err}`);
+                    reject(`Failed to validate wraup & completed event Task for ${aliceReservation.task.sid}. Error: ${err}`);
                 });
 
-                workerReservation.accept();
+                aliceReservation.accept();
             });
         }).timeout(50000);
     });
