@@ -5,7 +5,6 @@ require('./spec/EventBridgeSignaling');
 require('./spec/OutgoingTransfer');
 require('./spec/ReservationReject');
 require('./spec/ReservationAccept');
-require('./spec/ReservationCancel');
 require('./spec/Reservation');
 require('./spec/Supervisor');
 require('./spec/TaskEvents');

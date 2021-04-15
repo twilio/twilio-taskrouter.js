@@ -80,22 +80,6 @@ describe('Common Worker Client', () => {
         }).timeout(5000);
     });
 
-    describe('Two Worker clients in the same browser', () => {
-        it('should not allow log levels across unique workers to be affected', () => {
-            const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
-                logLevel: 'info'
-            });
-
-            assert.equal(alice._config._logLevel, 'error');
-            assert.equal(bob._config._logLevel, 'info');
-
-            assert.equal(alice._log.getLevel(), 'error');
-            assert.equal(bob._log.getLevel(), 'info');
-        });
-    });
-
     describe('should disconnect', () => {
         it('should fire a disconnect event', done => {
             const bob = new Worker(bobToken, {

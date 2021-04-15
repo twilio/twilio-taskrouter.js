@@ -10,7 +10,7 @@ const JWT = require('../../util/MakeAccessToken');
 
 describe('Supervisor Client', function() {
   /* eslint-disable no-invalid-this */
-  this.timeout(5000);
+  this.timeout(10000);
   /* eslint-enable */
 
   const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);

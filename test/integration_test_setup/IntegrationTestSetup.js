@@ -2,7 +2,7 @@ const ACCOUNT_SID = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 const AUTH_TOKEN = 'bXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 const SIGNING_KEY_SID = 'SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 const SIGNING_KEY_SECRET = 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-const client = require('twilio')(ACCOUNT_SID, AUTH_TOKEN);
+const client = require('twilio')(ACCOUNT_SID, AUTH_TOKEN, { region: 'stage' });
 const fs = require('fs');
 
 async function createWorkspaces() {
@@ -131,7 +131,7 @@ async function createWorkspaces() {
              };
 
     const data = JSON.stringify(obj);
-    fs.writeFileSync('/.../test.json', data);
+    fs.writeFileSync(path, data);
 }
 
 createWorkspaces();
