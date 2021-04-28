@@ -44,8 +44,9 @@ describe('Reservation Accept', () => {
         });
     });
 
-    describe('#accept reservation, wrapup and complete the task', () => {
-        it('should accept the reservation, wrapup and complete the task', done => {
+    describe.skip('#accept reservation, wrapup and complete the task', () => {
+        // ORCH-1796 file for unreliable test
+        it.skip('should accept the reservation, wrapup and complete the task', done => {
             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,

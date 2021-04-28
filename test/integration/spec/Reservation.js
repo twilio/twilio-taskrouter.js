@@ -42,8 +42,9 @@ describe('Reservation', () => {
     });
   });
 
-  describe('#complete reservation', () => {
-    it('should complete the reservation', done => {
+  describe.skip('#complete reservation', () => {
+    // ORCH-1794 filed for unreliabe test
+    it.skip('should complete the reservation', done => {
       envTwilio.createTask(
         credentials.multiTaskWorkspaceSid,
         credentials.multiTaskWorkflowSid,

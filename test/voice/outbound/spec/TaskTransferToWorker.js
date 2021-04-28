@@ -117,7 +117,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             });
         }).timeout(50000);
 
-        it('should not fail even if Worker A tries to wrap up task before Worker B accepts', () => {
+        // ORCH-1799 filed for unreliable test
+        it.skip('should not fail even if Worker A tries to wrap up task before Worker B accepts', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -577,7 +578,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 });
             }).timeout(55000);
 
-            it('when Worker A tries to wrap up task before Worker B accepts reservation', () => {
+            // ORCH-1781 filed for unreliable test
+            it.skip('when Worker A tries to wrap up task before Worker B accepts reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -649,7 +651,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 });
             }).timeout(60000);
 
-            it('when multiple transfers are made', () => {
+            // ORCH-1782 filed for unreliable test
+            it.skip('when multiple transfers are made', () => {
                 let reservationCountWorkerA = 1;
                 return new Promise(async(resolve, reject) => {
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber, credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
@@ -839,7 +842,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
         });
 
         describe('should fail', () => {
-            it('when Worker B rejects transfer reservation', () => {
+            // ORCH-1787 filed for unreliable test
+            it.skip('when Worker B rejects transfer reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -913,8 +917,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
         });
     });
 
-    describe('#Back to Back Cold Transfer for Workers', () => {
-        it('should transfer task Worker B and then transfers back Worker A', () => {
+    describe.skip('#Back to Back Cold Transfer for Workers', () => {
+        // ORCH-1800 filed for unreliable test
+        it.skip('should transfer task Worker B and then transfers back Worker A', () => {
             let firstTransfer = true;
             return new Promise(async(resolve, reject) => {
                 await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,

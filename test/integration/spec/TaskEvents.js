@@ -75,8 +75,9 @@ describe('TaskEvents', () => {
         }).timeout(10000);
     });
 
-    describe('#Task Wrapup', () => {
-        it('should get the wrapup event on the task.', done => {
+    describe.skip('#Task Wrapup', () => {
+        // ORCH-1795 filed for unreliable test.
+        it.skip('should get the wrapup event on the task.', done => {
             new Promise(resolve => {
                 alice.on('reservationCreated', reservation => {
                     resolve(reservation);
@@ -149,8 +150,9 @@ describe('TaskEvents', () => {
         }).timeout(5000);
     });
 
-    describe('#Task Completed', () => {
-        it('should get the completed event on the task.', done => {
+    describe.skip('#Task Completed', () => {
+        // ORCH-1784 filed for unreliable test
+        it.skip('should get the completed event on the task.', done => {
             new Promise(resolve => {
                 alice.on('reservationCreated', reservation => resolve(reservation));
             }).then(reservation => {

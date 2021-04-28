@@ -57,8 +57,9 @@ describe('OutgoingTransfer', () => {
         });
     });
 
-    describe('when cancel() is called', () => {
-        it('should cancel an ongoing transfer and update transfers object correctly', done => {
+    describe.skip('when cancel() is called', () => {
+        //ORCH-1783 filed for unreliable test 
+        it.skip('should cancel an ongoing transfer and update transfers object correctly', done => {
             return alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid)
@@ -83,7 +84,8 @@ describe('OutgoingTransfer', () => {
             });
         }).timeout(10000);
 
-        it('should cancel an ongoing transfer and update task object correctly', done => {
+        //ORCH-1797 filed for unreliable test 
+        it.skip('should cancel an ongoing transfer and update task object correctly', done => {
             return alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid)
