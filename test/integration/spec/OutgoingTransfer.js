@@ -58,7 +58,8 @@ describe('OutgoingTransfer', () => {
     });
 
     describe.skip('when cancel() is called', () => {
-        //ORCH-1783 filed for unreliable test 
+
+        // ORCH-1783 filed for unreliable test
         it.skip('should cancel an ongoing transfer and update transfers object correctly', done => {
             return alice.on('reservationCreated', reservation => {
                 // Make Bob available
@@ -84,7 +85,8 @@ describe('OutgoingTransfer', () => {
             });
         }).timeout(10000);
 
-        //ORCH-1797 filed for unreliable test 
+
+        // ORCH-1797 filed for unreliable test
         it.skip('should cancel an ongoing transfer and update task object correctly', done => {
             return alice.on('reservationCreated', reservation => {
                 // Make Bob available
