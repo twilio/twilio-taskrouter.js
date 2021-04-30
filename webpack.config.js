@@ -1,3 +1,4 @@
+const CopyPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const WebpackAutoInject = require('webpack-auto-inject-version');
 const webpack = require('webpack');
@@ -20,7 +21,8 @@ const createConfig = libraryTarget => {
             }),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-            })
+            }),
+            new CopyPlugin(['types.d.ts']),
         ],
         module: {},
         optimization: {
