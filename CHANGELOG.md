@@ -1,3 +1,10 @@
+0.5.4
+==========
+Maintenance
+----------
+- Clean up flaky tests
+- Include types.d.ts in build
+
 0.5.3
 ==========
 New Features

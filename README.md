@@ -10,11 +10,6 @@ TaskRouter is Twilio's skills based routing system. With this library, you can m
 **NOTE: This SDK is in a Developer Preview Release**. This version of TaskRouter is intended for Twilio Flex. If you are using it outside of Twilio Flex, you may encounter bugs and instability, and
 the underlying APIs available in this release may change in subsequent releases.
 
-**We want your feedback!** Email Tyler Cole
-at [tcole@twilio.com](mailto:tcole@twilio.com) with suggested
-improvements, feature requests and general feedback. If you need technical
-support, contact [help@twilio.com](mailto:help@twilio.com).
-
 Installation
 ------------
 
