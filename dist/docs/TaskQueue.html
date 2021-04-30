@@ -1,0 +1,665 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Class: TaskQueue</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.simplex.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Activity.html">Activity</a></li><li><a href="Channel.html">Channel</a></li><li><a href="IncomingTransfer.html">IncomingTransfer</a></li><li><a href="OutgoingTransfer.html">OutgoingTransfer</a></li><li><a href="Reservation.html">Reservation</a></li><li><a href="Task.html">Task</a></li><li><a href="TaskQueue.html">TaskQueue</a></li><li><a href="Transfers.html">Transfers</a></li><li><a href="Worker.html">Worker</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Channel.html#event:availabilityUpdated">Channel#event:availabilityUpdated</a></li><li><a href="Channel.html#event:capacityUpdated">Channel#event:capacityUpdated</a></li><li><a href="OutgoingTransfer.html#event:attemptFailed">OutgoingTransfer#event:attemptFailed</a></li><li><a href="OutgoingTransfer.html#event:canceled">OutgoingTransfer#event:canceled</a></li><li><a href="OutgoingTransfer.html#event:completed">OutgoingTransfer#event:completed</a></li><li><a href="OutgoingTransfer.html#event:failed">OutgoingTransfer#event:failed</a></li><li><a href="Reservation.html#event:accepted">Reservation#event:accepted</a></li><li><a href="Reservation.html#event:canceled">Reservation#event:canceled</a></li><li><a href="Reservation.html#event:completed">Reservation#event:completed</a></li><li><a href="Reservation.html#event:rejected">Reservation#event:rejected</a></li><li><a href="Reservation.html#event:rescinded">Reservation#event:rescinded</a></li><li><a href="Reservation.html#event:timeout">Reservation#event:timeout</a></li><li><a href="Reservation.html#event:wrapup">Reservation#event:wrapup</a></li><li><a href="Task.html#event:canceled">Task#event:canceled</a></li><li><a href="Task.html#event:completed">Task#event:completed</a></li><li><a href="Task.html#event:transferInitiated">Task#event:transferInitiated</a></li><li><a href="Task.html#event:updated">Task#event:updated</a></li><li><a href="Task.html#event:wrapup">Task#event:wrapup</a></li><li><a href="Worker.html#event:activityUpdated">Worker#event:activityUpdated</a></li><li><a href="Worker.html#event:attributesUpdated">Worker#event:attributesUpdated</a></li><li><a href="Worker.html#event:disconnected">Worker#event:disconnected</a></li><li><a href="Worker.html#event:error">Worker#event:error</a></li><li><a href="Worker.html#event:ready">Worker#event:ready</a></li><li><a href="Worker.html#event:reservationCreated">Worker#event:reservationCreated</a></li><li><a href="Worker.html#event:reservationFailed">Worker#event:reservationFailed</a></li><li><a href="Worker.html#event:tokenExpired">Worker#event:tokenExpired</a></li><li><a href="Worker.html#event:tokenUpdated">Worker#event:tokenUpdated</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: TaskQueue</h1>
+<section>
+
+<header>
+    
+        <h2>
+        TaskQueue
+        </h2>
+        
+            <div class="class-description"><p>A <a href="TaskQueue.html">TaskQueue</a> represents a set of <a href="Task.html">Task</a>s awaiting assignment.</p></div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        
+        
+
+
+
+    
+
+    
+<dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Sid of the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>accountSid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Sid of the owning Account of the <a href="TaskQueue.html">TaskQueue</a>}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>workspaceSid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Sid of the Workspace the <a href="TaskQueue.html">TaskQueue</a> belongs to</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The friendly name of the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>assignmentActivityName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <a href="Activity.html">Activity</a> name for the reservation of the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reservationActivityName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <a href="Activity.html">Activity</a> name for the assignment of the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>assignmentActivitySid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Sid of the assignment <a href="Activity.html">Activity</a> for the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reservationActivitySid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The Sid of the reservation <a href="Activity.html">Activity</a> for the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetWorkers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The expression used to target workers</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxReservedWorkers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The maximum number of reserved workers for the <a href="TaskQueue.html">TaskQueue</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>taskOrder</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The task order for the <a href="TaskQueue.html">TaskQueue</a> FIFO or LIFO</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dateCreated</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The date when the <a href="TaskQueue.html">TaskQueue</a> was created</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dateUpdated</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The date when the <a href="TaskQueue.html">TaskQueue</a> was last updated</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&#xD7;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on 2021-04-30T18:39:30+00:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+
+</body></html>
