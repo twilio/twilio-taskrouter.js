@@ -60,8 +60,9 @@ describe('External Transfer for Outbound Voice Task', () => {
         });
     });
 
-    describe('#Warm transfer to an external number', () => {
-        it('should complete warm transfer to an external number successfully', () => {
+    // ORCH-1860 filed for unreliable test
+    describe.skip('#Warm transfer to an external number', () => {
+        it.skip('should complete warm transfer to an external number successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
                 const taskSid = aliceReservation.task.sid;

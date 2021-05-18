@@ -427,8 +427,9 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
         });
     });
 
-    describe('#Cold Transfer to a Worker when customer hangs up before worker accept', () => {
-        it('should fail if customer hangs up before the transferee accepts', () => {
+    describe.skip('#Cold Transfer to a Worker when customer hangs up before worker accept', () => {
+        // ORCH-1832 filed for unreliable test
+        it.skip('should fail if customer hangs up before the transferee accepts', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
@@ -516,7 +517,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
     describe('#Warm Transfer', () => {
         describe('should complete successfully', () => {
-            it('when worker B accepts transfer reservation', () => {
+            // ORCH-1833 filed for unreliable test
+            it.skip('when worker B accepts transfer reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
