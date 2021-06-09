@@ -48,7 +48,7 @@
   "dependencies": {
     "lodash": "^4.17.5",
     "loglevel": "^1.4.1",
-    "ws": "^5.1.0",
+    "ws": "^7.4.6",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
