@@ -49,13 +49,13 @@ describe('Reservation Reject', () => {
                 });
             }).then(reservation => {
                 assert.equal(alice.reservations.size, 1,
-                    envTwilio.getErrorMessage("Reservation size mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Reservation size mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(reservation.status, 'pending',
-                    envTwilio.getErrorMessage("Reservation status mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Reservation status mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(reservation.task.taskChannelUniqueName, 'default',
-                    envTwilio.getErrorMessage("Reservation channel unique name mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Reservation channel unique name mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 const promises = [];
                 promises.push(reservation.reject());
@@ -68,7 +68,7 @@ describe('Reservation Reject', () => {
                 // Reservation object
                 return Promise.all(promises).then(results => {
                     assert.equal(results.length, 2,
-                        envTwilio.getErrorMessage("POST API and WebSocket Reservation results count mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                        envTwilio.getErrorMessage('POST API and WebSocket Reservation results count mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                     expect(results[0]).to.equal(results[1]);
                     expect(results[0].status).equal(results[1].status);

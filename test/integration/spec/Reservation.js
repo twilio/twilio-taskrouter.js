@@ -63,8 +63,8 @@ describe('Reservation', () => {
   describe('#complete outbound task reservation', () => {
 
     it('should complete the outbound task reservation', done => {
-      
-      new Promise((resolve, reject) => worker.on('ready', resolve)).then (() => {
+
+      new Promise((resolve) => worker.on('ready', resolve)).then(() => {
         worker.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid).then (() => {
           worker.on('reservationCreated', reservation => {
             reservation.accept().then(() => reservation.complete()).then(updatedReservation => {

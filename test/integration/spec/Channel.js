@@ -38,17 +38,17 @@ describe('Channel', () => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
                 assert.isNotNull(multiTaskAlice.channels,
-                     envTwilio.getErrorMessage("Channel list is null", credentials.accountSid, credentials.multiTaskAliceSid));
-                assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels, 
-                     envTwilio.getErrorMessage("Channel count mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
+                     envTwilio.getErrorMessage('Channel list is null', credentials.accountSid, credentials.multiTaskAliceSid));
+                assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels,
+                     envTwilio.getErrorMessage('Channel count mismatch', credentials.accountSid, credentials.multiTaskAliceSid));
 
                 var msg;
                 multiTaskAlice.channels.forEach(channel => {
-                    msg = "Channel " + WorkerChannelCapacities[channel.taskChannelUniqueName] + " capacity mismatch";''
+                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} capacity mismatch`;
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.multiTaskAliceSid));
-                    
-                    msg = "Channel " + WorkerChannelCapacities[channel.taskChannelUniqueName] + " availability mismatch";''
+
+                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} availability mismatch`;
                     assert.equal(channel.available, WorkerChannelCapacities[channel.taskChannelUniqueName].available,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.multiTaskAliceSid));
 
@@ -67,18 +67,18 @@ describe('Channel', () => {
                 alice.on('ready', resolve);
             }).then(() => {
                 assert.isNotNull(alice.channels,
-                    envTwilio.getErrorMessage("Channel list is null", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+                    envTwilio.getErrorMessage('Channel list is null', credentials.accountSid, credentials.nonMultiTaskAliceSid));
 
                 assert.equal(alice.channels.size, credentials.multiTaskNumChannels,
-                    envTwilio.getErrorMessage("Channel count mismatch", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+                    envTwilio.getErrorMessage('Channel count mismatch', credentials.accountSid, credentials.nonMultiTaskAliceSid));
 
                 var msg;
                 alice.channels.forEach(channel => {
-                    msg = "Channel " + WorkerChannelCapacities[channel.taskChannelUniqueName] + " capacity mismatch";''
+                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} capacity mismatch`;
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.nonMultiTaskAliceSid));
 
-                    msg = "Channel " + WorkerChannelCapacities[channel.taskChannelUniqueName] + " availability mismatch";''
+                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} availability mismatch`;
                     assert.isTrue(WorkerChannelCapacities[channel.taskChannelUniqueName].available,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.nonMultiTaskAliceSid));
 

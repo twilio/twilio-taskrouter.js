@@ -61,10 +61,10 @@ describe('Activity', () => {
                 expect(worker.activity).to.deep.equal(updateActivity);
                 expect(worker.activity).to.deep.equal(updatedActivity);
                 assert.isTrue(updateActivity.isCurrent,
-                    envTwilio.getErrorMessage("Worker update activity state mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Worker update activity state mismatch', credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
                 assert.isFalse(connectActivity.isCurrent,
-                    envTwilio.getErrorMessage("Worker connect activity state mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Worker connect activity state mismatch', credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
                 done();
             });

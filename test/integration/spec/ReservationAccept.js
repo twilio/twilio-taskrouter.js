@@ -113,7 +113,7 @@ describe('Reservation Accept', () => {
                     .all(promises)
                     .then(results => {
                         assert.equal(results.length, 2,
-                            envTwilio.getErrorMessage("Results count mismatch (not sure which results type is being counted)", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                            envTwilio.getErrorMessage('Results count mismatch (not sure which results type is being counted)', credentials.accountSid, credentials.multiTaskConnectActivitySid));
                         let reservation = results[0];
                         return reservation
                                 .accept()
@@ -123,7 +123,7 @@ describe('Reservation Accept', () => {
                                     expect(1).to.equal(worker.reservations.size);
                                     // Assert that reservation by this sid exists
                                     assert.exists(worker.reservations.get(reservation.sid),
-                                        envTwilio.getErrorMessage("Worker/reservation mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                                        envTwilio.getErrorMessage('Worker/reservation mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                                 });
                     });
@@ -160,7 +160,7 @@ describe('Reservation Accept', () => {
                         .all(taskAndReservationCreated)
                         .then(results => {
                             assert.equal(results.length, 2,
-                                envTwilio.getErrorMessage("Created reservation count mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                                envTwilio.getErrorMessage('Created reservation count mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                             let reservation = results[0];
                             return reservation
@@ -194,7 +194,7 @@ describe('Reservation Accept', () => {
                                     .then(completedReservation)
                                     .then(results => {
                                         assert.equal(results.length, 2,
-                                            envTwilio.getErrorMessage("Completed results count mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                                            envTwilio.getErrorMessage('Completed results count mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                                         let reservation = results[0];
                                         expect(reservation.task.reason).to.equal('Work is done');

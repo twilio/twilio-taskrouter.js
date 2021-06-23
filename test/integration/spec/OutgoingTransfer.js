@@ -70,22 +70,22 @@ describe('OutgoingTransfer', () => {
                         return acceptedReservation.task.transfer(credentials.multiTaskBobSid)
                             .then(transferredTask => {
                                 assert.deepStrictEqual(acceptedReservation.task, transferredTask,
-                                    envTwilio.getErrorMessage("Reservation task and transferred task mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                    envTwilio.getErrorMessage('Reservation task and transferred task mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
                                         assert.equal(canceledTransfer.status, 'canceled',
-                                            envTwilio.getErrorMessage("Reservation transfer status mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                            envTwilio.getErrorMessage('Reservation transfer status mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                         assert.deepStrictEqual(transferredTask.transfers.outgoing, canceledTransfer,
-                                            envTwilio.getErrorMessage("Transfer task and canceled task mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                            envTwilio.getErrorMessage('Transfer task and canceled task mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                         acceptedReservation.task.transfers.outgoing.on('canceled', updatedTransfer => {
                                             assert.equal(updatedTransfer.status, 'canceled',
-                                                envTwilio.getErrorMessage("Reservation transfer status mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                                envTwilio.getErrorMessage('Reservation transfer status mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                             assert.deepStrictEqual(updatedTransfer, acceptedReservation.task.transfers.outgoing,
-                                                envTwilio.getErrorMessage("Updated task and accepted reservation task mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                                envTwilio.getErrorMessage('Updated task and accepted reservation task mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                             done();
                                         });
@@ -109,11 +109,11 @@ describe('OutgoingTransfer', () => {
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
                                         assert.deepStrictEqual(transferredTask.transfers.outgoing, canceledTransfer,
-                                            envTwilio.getErrorMessage("Transfer task and canceled task mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                            envTwilio.getErrorMessage('Transfer task and canceled task mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                         acceptedReservation.task.once('updated', updatedTask => {
                                             assert.equal(updatedTask.status, 'assigned',
-                                                envTwilio.getErrorMessage("Transfer task status mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                                envTwilio.getErrorMessage('Transfer task status mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                             done();
                                         });
@@ -137,15 +137,15 @@ describe('OutgoingTransfer', () => {
                                 return transferredTask.transfers.outgoing.cancel()
                                     .then(canceledTransfer => {
                                         assert.deepStrictEqual(transferredTask.transfers.outgoing, canceledTransfer,
-                                            envTwilio.getErrorMessage("Transfer task and canceled task mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                            envTwilio.getErrorMessage('Transfer task and canceled task mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                         // canceling the same outgoing task again
                                         return transferredTask.transfers.outgoing.cancel().catch(err => {
                                             assert.equal(err.response.status, 400,
-                                                envTwilio.getErrorMessage("400 not received when canceling same task twice", credentials.accountSid, credentials.multiTaskBobSid));
+                                                envTwilio.getErrorMessage('400 not received when canceling same task twice', credentials.accountSid, credentials.multiTaskBobSid));
 
                                             assert.equal(err.response.statusText, `Transfer ${canceledTransfer.sid} is already canceled . Cannot cancel transfer.`,
-                                                envTwilio.getErrorMessage("400 error message content mismatch", credentials.accountSid, credentials.multiTaskBobSid));
+                                                envTwilio.getErrorMessage('400 error message content mismatch', credentials.accountSid, credentials.multiTaskBobSid));
 
                                             done();
                                         });

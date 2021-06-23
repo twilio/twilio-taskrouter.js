@@ -39,10 +39,10 @@ describe('NonMuliTask Worker Client', () => {
                 bob.on('ready', resolve);
             }).then(() => {
                 assert.isNotNull(bob.activities,
-                    envTwilio.getErrorMessage("Activities is null", credentials.accountSid, credentials.nonMultiTaskBobSid));
+                    envTwilio.getErrorMessage('Activities is null', credentials.accountSid, credentials.nonMultiTaskBobSid));
 
                 assert.equal(bob.activities.size, credentials.nonMultiTaskNumActivities,
-                    envTwilio.getErrorMessage("Activities " + bob.sid + " size mismatch", credentials.accountSid, credentials.nonMultiTaskBobSid));
+                    envTwilio.getErrorMessage(`Activities {bob.sid} size mismatch`, credentials.accountSid, credentials.nonMultiTaskBobSid));
 
             });
         }).timeout(5000);
@@ -57,18 +57,17 @@ describe('NonMuliTask Worker Client', () => {
                 bob.on('ready', resolve);
             }).then(() => {
                 assert.isNotNull(bob.channels,
-                    envTwilio.getErrorMessage("Channels is null", credentials.accountSid, credentials.nonMultiTaskBobSid));
+                    envTwilio.getErrorMessage('Channels is null', credentials.accountSid, credentials.nonMultiTaskBobSid));
 
                 assert.equal(bob.channels.size, credentials.multiTaskNumChannels,
-                    envTwilio.getErrorMessage("Channels " + bob.sid + " size mismatch", credentials.accountSid, credentials.nonMultiTaskBobSid));
-
+                    envTwilio.getErrorMessage(`Channels {bob.sid} size mismatch`, credentials.accountSid, credentials.nonMultiTaskBobSid));
 
                 bob.channels.forEach(channel => {
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,
-                        envTwilio.getErrorMessage("Channel " + channel.sid + " capacity mismatch", credentials.accountSid, credentials.nonMultiTaskBobSid));
+                        envTwilio.getErrorMessage(`Channel {channel.sid} capacity mismatch`, credentials.accountSid, credentials.nonMultiTaskBobSid));
 
                     assert.equal(channel.available, WorkerChannelCapacities[channel.taskChannelUniqueName].available,
-                        envTwilio.getErrorMessage("Availability  " + channel.sid + " mismatch", credentials.accountSid, credentials.nonMultiTaskBobSid));
+                        envTwilio.getErrorMessage(`Availability {channel.sid} mismatch`, credentials.accountSid, credentials.nonMultiTaskBobSid));
 
                 });
             });
@@ -87,14 +86,14 @@ describe('NonMuliTask Worker Client', () => {
                 bob.activities.forEach(activity => {
                     if (activity.sid === credentials.nonMultiTaskConnectActivitySid) {
                         assert.isTrue(activity.isCurrent,
-                            envTwilio.getErrorMessage("Task " + activity.sid + " activity is not current and should be", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                            envTwilio.getErrorMessage(`Task {activity.sid} activity is not current and should be`, credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
                         assert.equal(bob.activity, activity,
-                            envTwilio.getErrorMessage("Task " + activity.sid + " activity mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                            envTwilio.getErrorMessage(`Task {activity.sid} activity mismatch`, credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
                     } else {
                         assert.isFalse(activity.isCurrent,
-                            envTwilio.getErrorMessage("Task " + activity.sid + " activity is current and should not be", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                            envTwilio.getErrorMessage(`Task {activity.sid} activity is current and should not be`, credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
                     }
                 });
@@ -112,7 +111,7 @@ describe('NonMuliTask Worker Client', () => {
                 bob.on('ready', resolve);
             }).then(() => {
                 assert.equal(bob.reservations.size, 0,
-                    envTwilio.getErrorMessage("Task " + bob.sid + " reservation size mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task {bob.sid} reservation size mismatch`, credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
             });
         }).timeout(5000);
@@ -140,7 +139,7 @@ describe('NonMuliTask Worker Client', () => {
                 bob.on('ready', resolve);
             }).then(() => {
                 assert.equal(bob.reservations.size, 1,
-                    envTwilio.getErrorMessage("Task " + bob.sid + " reservation size mismatch", credentials.accountSid, credentials.nonMultiTaskBobSid));
+                    envTwilio.getErrorMessage(`Task {bob.sid} reservation size mismatch`, credentials.accountSid, credentials.nonMultiTaskBobSid));
 
             });
         }).timeout(5000);
