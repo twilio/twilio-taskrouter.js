@@ -63,13 +63,13 @@ describe('TaskEvents', () => {
                 .then(taskResArr => {
                     assert.equal(taskResArr[0], taskResArr[1].task);
                     assert.equal(taskResArr[0].taskChannelUniqueName, 'default',
-                        envTwilio.getErrorMessage(`Task {taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                        envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                     assert.equal(taskResArr[0].status, 'canceled',
-                        envTwilio.getErrorMessage(`Task {taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                        envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                     assert.equal(taskResArr[0].reason, 'Time to go home',
-                        envTwilio.getErrorMessage(`Task {taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                        envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                     expect(taskResArr[0].attributes).to.deep.equal({
                         'selected_language': 'es'
@@ -103,7 +103,7 @@ describe('TaskEvents', () => {
                     return new Promise(resolve => {
                         reservation.task.on('wrapup', wrapupTask => {
                             assert.equal(reservation.task, wrapupTask,
-                                envTwilio.getErrorMessage(`Task {reservation.task.sid} status mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                                envTwilio.getErrorMessage(`Task ${reservation.task.sid} status mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                             resolve([wrapupTask, reservation]);
                         });
@@ -112,13 +112,13 @@ describe('TaskEvents', () => {
             }).then(taskResArr => {
                 assert.equal(taskResArr[0], taskResArr[1].task);
                 assert.equal(taskResArr[0].taskChannelUniqueName, 'default',
-                    envTwilio.getErrorMessage(`Task {taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(taskResArr[0].status, 'wrapping',
-                    envTwilio.getErrorMessage(`Task {taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(taskResArr[0].reason, 'Wrapping Task',
-                    envTwilio.getErrorMessage(`Task {taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 expect(taskResArr[0].attributes).to.deep.equal({
                     'selected_language': 'es'
@@ -185,7 +185,7 @@ describe('TaskEvents', () => {
                         return new Promise(resolve => {
                             completedTask.on('completed', ct => {
                                 assert.equal(reservation.task, ct,
-                                    envTwilio.getErrorMessage(`Reservation task {reservation.task.sid} does not equal complete task` + ct.sid,
+                                    envTwilio.getErrorMessage(`Reservation task ${reservation.task.sid} does not equal complete task` + ct.sid,
                                               credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                                 resolve([ct, reservation]);
@@ -196,13 +196,13 @@ describe('TaskEvents', () => {
             }).then(taskResArr => {
                 assert.equal(taskResArr[0], taskResArr[1].task);
                 assert.equal(taskResArr[0].taskChannelUniqueName, 'default',
-                    envTwilio.getErrorMessage(`Task {taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(taskResArr[0].status, 'completed',
-                    envTwilio.getErrorMessage(`Task {taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(taskResArr[0].reason, 'Completing Task',
-                    envTwilio.getErrorMessage(`Task {taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 expect(taskResArr[0].attributes).to.deep.equal({
                     'selected_language': 'es'

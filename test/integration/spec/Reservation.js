@@ -65,7 +65,7 @@ describe('Reservation', () => {
     it('should complete the outbound task reservation', done => {
 
       new Promise((resolve) => worker.on('ready', resolve)).then(() => {
-        worker.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid).then (() => {
+        worker.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid).then(() => {
           worker.on('reservationCreated', reservation => {
             reservation.accept().then(() => reservation.complete()).then(updatedReservation => {
               expect(reservation.status).equal('completed');

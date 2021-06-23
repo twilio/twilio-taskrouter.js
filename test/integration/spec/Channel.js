@@ -44,11 +44,11 @@ describe('Channel', () => {
 
                 var msg;
                 multiTaskAlice.channels.forEach(channel => {
-                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} capacity mismatch`;
+                    msg = `Channel ${WorkerChannelCapacities[channel.taskChannelUniqueName]} capacity mismatch`;
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.multiTaskAliceSid));
 
-                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} availability mismatch`;
+                    msg = `Channel ${WorkerChannelCapacities[channel.taskChannelUniqueName]} availability mismatch`;
                     assert.equal(channel.available, WorkerChannelCapacities[channel.taskChannelUniqueName].available,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.multiTaskAliceSid));
 
@@ -74,11 +74,11 @@ describe('Channel', () => {
 
                 var msg;
                 alice.channels.forEach(channel => {
-                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} capacity mismatch`;
+                    msg = `Channel ${WorkerChannelCapacities[channel.taskChannelUniqueName]} capacity mismatch`;
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.nonMultiTaskAliceSid));
 
-                    msg = `Channel {WorkerChannelCapacities[channel.taskChannelUniqueName]} availability mismatch`;
+                    msg = `Channel ${WorkerChannelCapacities[channel.taskChannelUniqueName]} availability mismatch`;
                     assert.isTrue(WorkerChannelCapacities[channel.taskChannelUniqueName].available,
                         envTwilio.getErrorMessage(msg, credentials.accountSid, credentials.nonMultiTaskAliceSid));
 
