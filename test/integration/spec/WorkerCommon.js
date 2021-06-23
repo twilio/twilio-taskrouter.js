@@ -34,15 +34,21 @@ describe('Common Worker Client', () => {
 
     describe('constructor', () => {
         it('should create an instance of Client', () => {
-            assert.instanceOf(alice, Worker);
+            assert.instanceOf(alice, Worker,
+                envTwilio.getErrorMessage("Client is not an instance of worker", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+
         });
 
         it('should set correct log level', () => {
-            assert.equal(alice._log.getLevel(), 'error');
+            assert.equal(alice._log.getLevel(), 'error',
+                envTwilio.getErrorMessage("Client log level setting mismatch", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+
         });
 
         it('should create an instance of Configuration', () => {
-            assert.instanceOf(alice._config, Configuration);
+            assert.instanceOf(alice._config, Configuration,
+                envTwilio.getErrorMessage("Client configuration is not an instance of configuration", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+
         });
     });
 
@@ -74,9 +80,15 @@ describe('Common Worker Client', () => {
 
             let updateAliceToken = JWT.getAccessToken(credentials.accountSid, credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskAliceSid);
             alice.updateToken(updateAliceToken);
-            assert.equal(alice._config.token, updateAliceToken);
-            assert.isTrue(spy.calledOnce);
-            assert.isTrue(alice._signaling.reconnect);
+            assert.equal(alice._config.token, updateAliceToken,
+                envTwilio.getErrorMessage("Token no updated as expected", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+
+            assert.isTrue(spy.calledOnce,
+                envTwilio.getErrorMessage("Update token called more than once", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+
+            assert.isTrue(alice._signaling.reconnect,
+                envTwilio.getErrorMessage("Account reconnect did not happen", credentials.accountSid, credentials.nonMultiTaskAliceSid));
+
         }).timeout(5000);
     });
 
@@ -90,7 +102,9 @@ describe('Common Worker Client', () => {
 
             bob.on('ready', () => bob.disconnect());
             bob.on('disconnected', event => {
-                assert.equal(event.message, 'SDK Disconnect');
+                assert.equal(event.message, 'SDK Disconnect',
+                     envTwilio.getErrorMessage("SDK disconnect message mismatch", credentials.accountSid, credentials.nonMultiTaskBobSid));
+
                 done();
             });
         });

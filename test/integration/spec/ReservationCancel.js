@@ -59,7 +59,9 @@ describe('Reservation Canceled', () => {
                     reservation.on('canceled', canceledRes => {
                         expect(canceledRes.task.status).equal('canceled');
                         expect(canceledRes.status).equal('canceled');
-                        assert.isFalse(canceledRes.hasOwnProperty('canceledReasonCode'));
+                        assert.isFalse(canceledRes.hasOwnProperty('canceledReasonCode'),
+                            envTwilio.getErrorMessage("Reservation state mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                     }),
                     client.taskrouter.workspaces(credentials.multiTaskWorkspaceSid)
                         .tasks(reservation.task.sid)

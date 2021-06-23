@@ -65,10 +65,12 @@ describe('ActivityRejectReservations', () => {
             }).then(async() => {
                 const promises = [];
                 multiTaskWorker.reservations.forEach(reservation => {
-                    assert.equal(reservation.status, 'pending');
-                    assert.equal(reservation.sid.substring(0, 2), 'WR');
-                    assert.equal(reservation.task.sid.substring(0, 2), 'WT');
-                    assert.equal(reservation.task.taskChannelUniqueName, 'default');
+                    assert.equal(reservation.status, 'pending',
+                        envTwilio.getErrorMessage("Reservation status mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                    assert.equal(reservation.task.taskChannelUniqueName, 'default',
+                        envTwilio.getErrorMessage("Reservation task channel name mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                     promises.push(new Promise(resolve => {
                         reservation.on('rejected', data => {
                             resolve(data);
@@ -85,18 +87,25 @@ describe('ActivityRejectReservations', () => {
                     }
                 });
 
-                assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
+                assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity,
+                    envTwilio.getErrorMessage("Reservation size mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 const options = { rejectPendingReservations: true };
                 const updatedActivity = await updateActivity.setAsCurrent(options);
                 expect(multiTaskWorker.activity).to.deep.equal(updatedActivity);
                 multiTaskWorker.channels.forEach( channel => {
                     if (channel.name === defaultChannelName) {
-                        assert.isFalse(channel.available);
+                        assert.isFalse(channel.available,
+                            envTwilio.getErrorMessage("Channel state mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                     }
                 });
-                assert.isTrue(updatedActivity.isCurrent);
-                assert.isFalse(connectActivity.isCurrent);
+                assert.isTrue(updatedActivity.isCurrent,
+                    envTwilio.getErrorMessage("Worker updated activity state mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                assert.isFalse(connectActivity.isCurrent,
+                    envTwilio.getErrorMessage("Worker connext activity state mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                 return Promise.all(promises).then(() => {
                     multiTaskWorker.reservations.forEach(reservation => {
                         expect(reservation.status).equal('rejected');
@@ -130,10 +139,12 @@ describe('ActivityRejectReservations', () => {
                 });
             }).then(() => {
                 multiTaskWorker.reservations.forEach(reservation => {
-                    assert.equal(reservation.status, 'pending');
-                    assert.equal(reservation.sid.substring(0, 2), 'WR');
-                    assert.equal(reservation.task.sid.substring(0, 2), 'WT');
-                    assert.equal(reservation.task.taskChannelUniqueName, 'default');
+                    assert.equal(reservation.status, 'pending',
+                        envTwilio.getErrorMessage("Reservation status mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+  
+                    assert.equal(reservation.task.taskChannelUniqueName, 'default',
+                        envTwilio.getErrorMessage("Reservation task channel name mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                 });
                 multiTaskWorker.activities.forEach(activity => {
                     if (activity.sid === credentials.multiTaskConnectActivitySid) {
@@ -141,7 +152,9 @@ describe('ActivityRejectReservations', () => {
                     }
                 });
 
-                assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity);
+                assert.equal(multiTaskWorker.reservations.size, defaultChannelCapacity,
+                    envTwilio.getErrorMessage("Reservation size mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                 const options = { rejectPendingReservations: true };
                 expect(() => availableUpdateActivity.setAsCurrent(options)).to.throw(
                     'Unable to reject pending reservations when updating to an Available activity state.');

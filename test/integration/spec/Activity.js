@@ -40,8 +40,11 @@ describe('Activity', () => {
             let connectActivity;
             let updateActivity;
             worker.on('activityUpdated', async connectWorker => {
-                assert.isNotNull(worker.activities);
-                assert.equal(worker.activities.size, 4);
+                assert.isNotNull(worker.activities,
+                    envTwilio.getErrorMessage("Worker activities list is null", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+
+                assert.equal(worker.activities.size, 4,
+                    envTwilio.getErrorMessage("Worker activities count mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
 
                     worker.activities.forEach(activity => {
                         if (activity.sid === credentials.nonMultiTaskConnectActivitySid) {
@@ -57,8 +60,12 @@ describe('Activity', () => {
                 const updatedActivity = await updateActivity.setAsCurrent();
                 expect(worker.activity).to.deep.equal(updateActivity);
                 expect(worker.activity).to.deep.equal(updatedActivity);
-                assert.isTrue(updateActivity.isCurrent);
-                assert.isFalse(connectActivity.isCurrent);
+                assert.isTrue(updateActivity.isCurrent,
+                    envTwilio.getErrorMessage("Worker update activity state mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+
+                assert.isFalse(connectActivity.isCurrent,
+                    envTwilio.getErrorMessage("Worker connect activity state mismatch", credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+
                 done();
             });
         }).timeout(5000);

@@ -30,7 +30,9 @@ describe('EventBridgeSignaling', () => {
     describe('Worker on token expiration', () => {
         it('should not reconnect', done => {
             alice.on('tokenExpired', () => {
-                assert.isFalse(alice._signaling.reconnect);
+                assert.isFalse(alice._signaling.reconnect,
+                    envTwilio.getErrorMessage("Connect mismatch on expired token", credentials.accountSid, credentials.multiTaskAliceSid));
+
                 done();
             });
         }).timeout(10000);
@@ -41,22 +43,30 @@ describe('EventBridgeSignaling', () => {
             let readyCount = 0;
 
             alice.on('tokenExpired', () => {
-                assert.isFalse(alice._signaling.reconnect);
+                assert.isFalse(alice._signaling.reconnect,
+                    envTwilio.getErrorMessage("Connect mismatch on expired token", credentials.accountSid, credentials.multiTaskAliceSid));
+
                 alice.disconnect(); // simulate a disconnect event after token expiration
             });
 
             alice.on('disconnected', event => {
-                assert.equal(event.message, 'SDK Disconnect');
+                assert.equal(event.message, 'SDK Disconnect',
+                    envTwilio.getErrorMessage("Connect mismatch on SDK disconnect", credentials.accountSid, credentials.multiTaskAliceSid));
+
                 // update token after disconnecting
                 const newToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 20);
                 alice.updateToken(newToken);
-                assert.isTrue(alice._signaling.reconnect);
+                assert.isTrue(alice._signaling.reconnect,
+                    envTwilio.getErrorMessage("Connect mismatch on updated token", credentials.accountSid, credentials.multiTaskAliceSid));
+
             });
 
             alice.on('ready', () => {
                 readyCount++;
                 if (readyCount === 2) {
-                    assert.isTrue(alice._signaling.reconnect);
+                    assert.isTrue(alice._signaling.reconnect,
+                        envTwilio.getErrorMessage("Connect mismatch after ready", credentials.accountSid, credentials.multiTaskAliceSid));
+
                     done();     // updating token after disconnecting should have brought us here to a new ready state
                 }
             });

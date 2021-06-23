@@ -10,6 +10,10 @@ export default class EnvTwilio {
         });
     }
 
+    getErrorMessage(message, accountSid, workerSid) {
+        return `${message} for accountSid ${accountSid}, workerSid ${workerSid}`;
+    }
+    
     createTask(workspaceSid, workflowSid, attributes) {
         return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
             .tasks

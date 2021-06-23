@@ -36,8 +36,12 @@ describe('MultiTask Worker Client', () => {
             return new Promise(resolve => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
-                assert.isNotNull(multiTaskAlice.activities);
-                assert.equal(multiTaskAlice.activities.size, credentials.multiTaskNumActivities);
+                assert.isNotNull(multiTaskAlice.activities,
+                    envTwilio.getErrorMessage("Task activities is null", credentials.accountSid, credentials.multiTaskAliceSid));
+
+                assert.equal(multiTaskAlice.activities.size, credentials.multiTaskNumActivities,
+                    envTwilio.getErrorMessage("Task " + multiTaskAlice.sid + " activities count mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
+
             });
         }).timeout(5000);
 
@@ -50,12 +54,20 @@ describe('MultiTask Worker Client', () => {
             return new Promise(resolve => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
-                assert.isNotNull(multiTaskAlice.channels);
-                assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels);
+                assert.isNotNull(multiTaskAlice.channels,
+                    envTwilio.getErrorMessage("Task channels is null", credentials.accountSid, credentials.multiTaskAliceSid));
+
+                assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels,
+                    envTwilio.getErrorMessage("Channels count mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
+
 
                 multiTaskAlice.channels.forEach(channel => {
-                    assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity);
-                    assert.equal(channel.available, WorkerChannelCapacities[channel.taskChannelUniqueName].available);
+                    assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,
+                        envTwilio.getErrorMessage("Channel " + channel.sid + " capacity mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
+
+                    assert.equal(channel.available, WorkerChannelCapacities[channel.taskChannelUniqueName].available,
+                        envTwilio.getErrorMessage("Channel " + channel.sid + " availability mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
+
                 });
             });
         }).timeout(5000);
@@ -72,10 +84,16 @@ describe('MultiTask Worker Client', () => {
             }).then(() => {
                 multiTaskAlice.activities.forEach(activity => {
                     if (activity.sid === credentials.multiTaskConnectActivitySid) {
-                        assert.isTrue(activity.isCurrent);
-                        assert.equal(multiTaskAlice.activity, activity);
+                        assert.isTrue(activity.isCurrent,
+                            envTwilio.getErrorMessage("Task " + multiTaskAlice.sid + " activity is not current and should be", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                        assert.equal(multiTaskAlice.activity, activity,
+                            envTwilio.getErrorMessage("Task " + multiTaskAlice.sid + " activity mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                     } else {
-                        assert.isFalse(activity.isCurrent);
+                        assert.isFalse(activity.isCurrent,
+                            envTwilio.getErrorMessage("Task " + multiTaskAlice.sid + " activity is current and should not be", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                     }
                 });
             });
@@ -91,7 +109,9 @@ describe('MultiTask Worker Client', () => {
             return new Promise(resolve => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
-                assert.equal(multiTaskAlice.reservations.size, 0);
+                assert.equal(multiTaskAlice.reservations.size, 0,
+                    envTwilio.getErrorMessage("Task " + multiTaskAlice.sid + " reservation size mismatch", credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
             });
         }).timeout(5000);
     });
@@ -128,11 +148,14 @@ describe('MultiTask Worker Client', () => {
             return new Promise(resolve => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
-                assert.equal(multiTaskAlice.reservations.size, defaultChannelCapacity);
+                assert.equal(multiTaskAlice.reservations.size, defaultChannelCapacity,
+                    envTwilio.getErrorMessage("Task " + multiTaskAlice.reservations.sid + " reservation size mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
 
                 multiTaskAlice.channels.forEach(channel => {
                     if (channel.name === defaultChannelName) {
-                        assert.isFalse(channel.available);
+                        assert.isFalse(channel.available,
+                            envTwilio.getErrorMessage("Channel name mismatch", credentials.accountSid, credentials.multiTaskAliceSid));
+
                     }
                 });
             });
@@ -150,7 +173,9 @@ describe('MultiTask Worker Client', () => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
                 return multiTaskAlice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid).then(createdTaskSid => {
-                    assert.isTrue(createdTaskSid.startsWith('WT'));
+                    assert.isTrue(createdTaskSid.startsWith('WT'),
+                        envTwilio.getErrorMessage("Task sid " + createdTaskSid + " does not start with WT", credentials.accountSid, credentials.multiTaskAliceSid));
+
                 });
             });
         });
