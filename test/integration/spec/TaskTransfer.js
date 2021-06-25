@@ -89,9 +89,11 @@ describe('Task Transfer', function() {
                                     bob.once('reservationCreated', transferReservation => {
 
                                         AssertionUtils.verifyTransferProperties(transferReservation.transfer,
-                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Transfer');
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated',
+                                            `Transfer (account ${credentials.accountSid}, task ${transferReservation.task.sid})`);
                                         AssertionUtils.verifyTransferProperties(transferReservation.task.transfers.incoming,
-                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Incoming Transfer');
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated',
+                                            `Incoming transfer (account ${credentials.accountSid}, task ${transferReservation.task.sid})`);
 
                                         transferReservation.once('canceled', () => {
                                             expect(transferReservation.status).equals('canceled');
@@ -137,9 +139,11 @@ describe('Task Transfer', function() {
                                 new Promise(resolve => {
                                     bob.once('reservationCreated', transferReservation => {
                                         AssertionUtils.verifyTransferProperties(transferReservation.transfer,
-                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Transfer');
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated',
+                                            `Transfer (account ${credentials.accountSid}, task ${transferReservation.task.sid})`);
                                         AssertionUtils.verifyTransferProperties(transferReservation.task.transfers.incoming,
-                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated', 'Incoming Transfer');
+                                            alice.sid, bob.sid, 'WARM', 'WORKER', 'initiated',
+                                            `Incoming transfer (account ${credentials.accountSid}, task ${transferReservation.task.sid})`);
 
                                         // expect task assignment is reserved before reject
                                         expect(transferReservation.task.status).equals('reserved');
@@ -149,7 +153,8 @@ describe('Task Transfer', function() {
                                             // is updated as well with the failed status
                                             transferReservation.once('rejected', rejectedReservation => {
                                                 AssertionUtils.verifyTransferProperties(rejectedReservation.transfer,
-                                                    alice.sid, bob.sid, 'WARM', 'WORKER', 'failed', 'Transfer');
+                                                    alice.sid, bob.sid, 'WARM', 'WORKER', 'failed',
+                                                    `Transfer (account ${credentials.accountSid}, task ${rejectedReservation.task.sid})`);
                                             });
                                         }).then(() => {
                                             acceptedReservation.task.once('updated', updatedTask => {
@@ -192,9 +197,11 @@ describe('Task Transfer', function() {
                                     bob.once('reservationCreated', transferReservation => {
 
                                         AssertionUtils.verifyTransferProperties(transferReservation.transfer,
-                                            alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated', 'Transfer');
+                                            alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated',
+                                            `Transfer (account ${credentials.accountSid}, task ${transferReservation.task.sid})`);
                                         AssertionUtils.verifyTransferProperties(transferReservation.task.transfers.incoming,
-                                            alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated', 'Incoming Transfer');
+                                            alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated',
+                                            `Transfer (account ${credentials.accountSid}, task ${transferReservation.task.sid})`);
 
                                          // expect task assignment is reserved before reject
                                          expect(transferReservation.task.status).equals('reserved');
@@ -203,7 +210,8 @@ describe('Task Transfer', function() {
                                             // verify that on rejecting the transfer reservation, the transfer object has a status of initiated
                                             transferReservation.once('rejected', rejectedReservation => {
                                                 AssertionUtils.verifyTransferProperties(rejectedReservation.transfer,
-                                                    alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated', 'Transfer');
+                                                    alice.sid, credentials.multiTaskQueueSid, 'WARM', 'QUEUE', 'initiated',
+                                                    `Transfer (account ${credentials.accountSid}, task ${rejectedReservation.task.sid})`);
                                             });
                                         }).then(() => {
                                             acceptedReservation.task.once('updated', updatedTask => {
