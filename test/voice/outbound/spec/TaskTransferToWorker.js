@@ -3,14 +3,16 @@ import Worker from '../../../../lib/Worker';
 import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
+import { pauseTestExecution } from '../../VoiceBase';
 import { TRANSFER_MODE } from '../../../util/Constants';
 import SyncClientInstance from '../../../util/SyncClientInstance';
+
+const STATUS_CHECK_DELAY = 1000;
 
 const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 const assert = chai.assert;
-
 
 describe('Task Transfer to Worker for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
