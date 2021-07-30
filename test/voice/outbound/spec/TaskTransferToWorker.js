@@ -5,6 +5,7 @@ import AssertionUtils from '../../../util/AssertionUtils';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import { pauseTestExecution } from '../../VoiceBase';
 import { TRANSFER_MODE } from '../../../util/Constants';
+import SyncClientInstance from '../../../util/SyncClientInstance';
 
 const STATUS_CHECK_DELAY = 1000;
 
@@ -15,13 +16,14 @@ const assert = chai.assert;
 
 describe('Task Transfer to Worker for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
-                                      credentials.multiTaskAliceSid);
+                                      credentials.multiTaskAliceSid, null, null, { useSync: true });
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                     credentials.multiTaskBobSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let alice;
     let bob;
+    let aliceSyncClient;
 
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
@@ -38,7 +40,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`
             });
-
+            aliceSyncClient = new SyncClientInstance(aliceToken);
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);
         });
     });
@@ -52,6 +54,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                                 envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid,
                                                                credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid)]);
         });
+        aliceSyncClient.shutdown();
     });
 
     describe('#Cold Transfer to a Worker', () => {
@@ -517,19 +520,26 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
     describe('#Warm Transfer', () => {
         describe('should complete successfully', () => {
-            // ORCH-1833 filed for unreliable test
-            it.skip('when worker B accepts transfer reservation', () => {
+            it('when worker B accepts transfer reservation', () => {
                 return new Promise(async(resolve, reject) => {
                     const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
+                    // Bring Bob online
+                    await envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid);
+                    
                     aliceReservation.on('accepted', async() => {
                         try {
-                            await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation,
-                                                                                                      credentials.multiTaskBobSid,
-                                                                                                      true,
-                                                                                                      credentials.multiTaskBobSid,
-                                                                                                      TRANSFER_MODE.warm, 'in-progress',
-                                                                                                      2);
+                            let syncMap = await aliceSyncClient._fetchSyncMap(aliceReservation.task.sid);
+                            await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransferWithSyncClient(
+                                aliceReservation,
+                                credentials.multiTaskBobSid,
+                                true,
+                                credentials.multiTaskBobSid,
+                                TRANSFER_MODE.warm,
+                                'in-progress',
+                                2,
+                                aliceSyncClient,
+                                syncMap);
                         } catch (err) {
                             reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
                         }
