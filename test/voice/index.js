@@ -1,6 +1,5 @@
 require('./inbound/spec/Reservation');
 require('./inbound/spec/Supervisor');
-require('./inbound/spec/TaskTransferToWorker');
 require('./outbound/spec/Reservation');
 require('./outbound/spec/Supervisor');
 require('./outbound/spec/Task');
