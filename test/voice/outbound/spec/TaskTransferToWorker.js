@@ -120,106 +120,6 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             });
         }).timeout(50000);
 
-        it('should complete transfer to worker B successfully with dual recording channels', () => {
-            return new Promise(async(resolve, reject) => {
-                const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
-
-                aliceReservation.on('accepted', async() => {
-                    try {
-                        // Confirm recording and channel counts with retry
-                        try {
-                            const participantProperties = await envTwilio.fetchParticipantPropertiesByName(aliceReservation.task.sid);
-                            const participant = participantProperties.get(credentials.workerNumber);
-                            const retryCount = 3;
-                            const expectedRecordingCount = 1;
-                            const expectedChannelCount = 2;
-                            let attempts = 0;
-                            let recordingCount = 0;
-                            let channelCount = 0;
-                            while (attempts < retryCount) {
-                                await pauseTestExecution(STATUS_CHECK_DELAY);
-                                const recordings = await envTwilio.fetchCallRecordings(participant.callSid);
-                                recordingCount = recordings.length;
-                                if (recordingCount === expectedRecordingCount) {
-                                    channelCount = recordings[0].channels;
-                                    break;
-                                }
-                                attempts++;
-                            }
-                            assert.strictEqual(recordingCount, expectedRecordingCount, `There should be ${expectedRecordingCount} recordings for dual channel recording`);
-                            assert.strictEqual(channelCount, expectedChannelCount, `There should be ${expectedChannelCount} channels for dual channel recording`);
-                        } catch (err) {
-                            reject(`Error verifying dual channel recordings for ${aliceReservation.task.sid}. Error: ${err}`);
-                        }
-                        await outboundCommonHelpers.assertOnTransferorAcceptedAndInitiateTransfer(aliceReservation,
-                                                                                                  credentials.multiTaskBobSid,
-                                                                                                  true,
-                                                                                                  credentials.multiTaskBobSid,
-                                                                                                  TRANSFER_MODE.cold, 'in-progress',
-                                                                                                  2);
-                    } catch (err) {
-                        reject(`Error caught after receiving reservation accepted event for Outbound Task ${aliceReservation.task.sid}. Error: ${err}`);
-                    }
-                });
-
-                bob.on('reservationCreated', async(bobReservation) => {
-                    try {
-                        AssertionUtils.verifyTransferProperties(bobReservation.transfer,
-                                                                credentials.multiTaskAliceSid,
-                                                                credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'WORKER',
-                                                                'initiated', `Transfer (account ${credentials.accountSid}, task ${bobReservation.task.sid})`);
-                        AssertionUtils.verifyTransferProperties(bobReservation.task.transfers.incoming,
-                                                                credentials.multiTaskAliceSid,
-                                                                credentials.multiTaskBobSid, TRANSFER_MODE.cold, 'WORKER',
-                                                                'initiated', `Incoming transfer (account ${credentials.accountSid}, task ${bobReservation.task.sid})`);
-
-                        // expect task assignment is reserved before accepting
-                        assert.strictEqual(bobReservation.task.status, 'reserved', 'Transfer Task Assignment Status');
-                    } catch (err) {
-                        reject(
-                            `Failed to validate Reservation and Transfer properties on reservation created event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
-                    }
-
-                    Promise.all([outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(aliceReservation, true),
-                                 outboundCommonHelpers.assertOnResWrapUpAndCompleteEvent(bobReservation, false, 0)])
-                        .then(() => resolve('Test for cold transfer to worker B successfully is finished'))
-                        .catch(err => reject(`Error caught while wrapping and completing reservation for Outbound Task ${bobReservation.task.sid}. Error: ${err}`));
-
-                    bobReservation.on('accepted', async() => {
-                        try {
-                            await outboundCommonHelpers.assertOnTransfereeAccepted(bobReservation,
-                                'in-progress', 2);
-                        } catch (err) {
-                            reject(`Error caught after receiving Bob's reservation accepted event for Outbound Task ${bobReservation.task.sid}. Error: ${err}`);
-                        }
-                    });
-
-                    // Wait for wrapup event on aliceReservation before issuing conference instruction for Worker B
-                    await pauseTestExecution(STATUS_CHECK_DELAY);
-                    // issue the conference instruction for bob
-                    bobReservation.conference({ endConferenceOnExit: true,
-                        record: 'true',
-                        recordingChannels: 'dual',
-                        recordingStatusCallback: 'https://myapp.com/recording-events',
-                        recordingStatusCallbackEvent: 'in-progress completed',
-                        recordingStatusCallbackMethod: 'POST' }).catch(err => {
-                        reject(`Error in establishing conference for Inbound Task ${bobReservation.task.sid}. Error: ${err}`);
-                    });
-
-                });
-                aliceReservation.conference({
-                    endConferenceOnExit: false,
-                    record: 'true',
-                    recordingChannels: 'dual',
-                    recordingStatusCallback: 'https://myapp.com/recording-events',
-                    recordingStatusCallbackEvent: 'in-progress completed',
-                    recordingStatusCallbackMethod: 'POST'
-                }).catch(err => {
-                    reject(`Error in establishing conference. Error: ${err}`);
-                });
-            });
-        }).timeout(50000);
-
         // ORCH-1799 filed for unreliable test
         it.skip('should not fail even if Worker A tries to wrap up task before Worker B accepts', () => {
             return new Promise(async(resolve, reject) => {
@@ -626,7 +526,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
 
                     // Bring Bob online
                     await envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskConnectActivitySid);
-
+                    
                     aliceReservation.on('accepted', async() => {
                         try {
                             let syncMap = await aliceSyncClient._fetchSyncMap(aliceReservation.task.sid);
