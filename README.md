@@ -89,9 +89,7 @@ See [LICENSE.md](https://github.com/twilio/twilio-taskrouter.js/blob/master/LICE
 Building
 --------
 
-Fork and clone the repository. Use npm to install node 8 (other versions may run into problems).
-
-Then, install dependencies with:
+Fork and clone the repository. Then, install dependencies with
 
 ```
 yarn install

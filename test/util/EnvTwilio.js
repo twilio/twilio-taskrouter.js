@@ -13,7 +13,7 @@ export default class EnvTwilio {
     getErrorMessage(message, accountSid, workerSid) {
         return `${message} for accountSid ${accountSid}, workerSid ${workerSid}`;
     }
-
+    
     createTask(workspaceSid, workflowSid, attributes) {
         return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
             .tasks
@@ -195,14 +195,6 @@ export default class EnvTwilio {
             this.endCall(participant.callSid);
             await pauseTestExecution(1000);
         }
-    }
-
-    /**
-     * Fetch the list of recordings for a particular call
-     * @param {string} callSid - The sid of the call
-     */
-    async fetchCallRecordings(callSid) {
-        return this.twilioClient.calls(callSid).recordings.list();
     }
 
     /**
