@@ -120,7 +120,8 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             });
         }).timeout(50000);
 
-        it('should complete transfer to worker B successfully with dual recording channels', () => {
+        // ORCH-2243 filed to fix failures of other tests when this one is present
+        it.skip('should complete transfer to worker B successfully with dual recording channels', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
