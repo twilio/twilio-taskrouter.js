@@ -60,7 +60,7 @@ describe('External Transfer for Outbound Voice Task', () => {
         });
     });
 
-    describe('#Warm transfer to an external number', () => {
+    describe.skip('#Warm transfer to an external number', () => {
         it('should complete warm transfer to an external number successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);

@@ -30,7 +30,7 @@ describe('Reservation with Inbound Voice Task', () => {
         });
     });
 
-    describe('#conference reservation', () => {
+    describe.skip('#conference reservation', () => {
         it('should issue an inbound conference instruction on the Reservation', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
