@@ -82,7 +82,6 @@
     "twilio": "^3.52.0",
     "twilio-sync": "^0.12.1",
     "uglifyjs-webpack-plugin": "^1.2.5",
-    "utf-8-validate": "^4.0.1",
     "vinyl-fs": "^3.0.2",
     "webpack": "^4.1.1",
     "webpack-auto-inject-version": "^1.0.0",
