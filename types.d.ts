@@ -90,6 +90,8 @@ export interface Reservation extends NodeJS.EventEmitter {
     readonly task: Task;
 
     accept(): Promise<Reservation>;
+    complete(): Promise<Reservation>;
+    wrap(): Promise<Reservation>;
     call(from: string, url: string, options?: CallOptions): Promise<Reservation>;
     dequeue(options?: DequeueOptions): Promise<Reservation>;
     conference(options?: ConferenceOptions): Promise<Reservation>;
