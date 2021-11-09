@@ -171,7 +171,7 @@ describe('Task Transfer', function() {
         }).timeout(15000);
     });
 
-    describe('#Failed Attempt Transfer to a worker', () => {
+    describe.skip('#Failed Attempt Transfer to a worker', () => {
         it('should accept reservation, transfer the task and reject the warm transfer to queue', done => {
             alice.on('reservationCreated', reservation => {
                 // Make Bob available

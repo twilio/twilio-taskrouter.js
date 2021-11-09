@@ -327,7 +327,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
         }).timeout(45000);
     });
 
-    describe('#Back to Back Cold Transfer to Queue', () => {
+    describe.skip('#Back to Back Cold Transfer to Queue', () => {
         it('should transfer task to queue having Worker B which transfers back to Queue with Worker A', () => {
             let reservationCountWorkerA = 1;
             return new Promise(async(resolve, reject) => {
