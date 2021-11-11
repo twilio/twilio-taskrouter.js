@@ -1,3 +1,10 @@
+0.5.5
+==========
+New Features
+----------
+- Updated Task Event Emitter to provide the Task object upon Task Updates
+- Export TaskRouterEventHandler
+
 0.5.4
 ==========
 Maintenance
