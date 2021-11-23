@@ -17,6 +17,7 @@ export class Worker extends NodeJS.EventEmitter {
     readonly sid: string;
     readonly workspaceSid: string;
 
+    createTask(to: string, from: string, workflowSid: string, taskQueueSid: string, options: Object): Promise<string>
     disconnect();
     setAttributes(attributes: any): Promise<Worker>;
     updateToken(newToken: string);
@@ -97,6 +98,11 @@ export interface Reservation extends NodeJS.EventEmitter {
     conference(options?: ConferenceOptions): Promise<Reservation>;
     redirect(callSid: string, url: string, options?: RedirectOptions);
     reject(options?: RejectOptions): Promise<Reservation>;
+}
+
+export class TaskRouterEventHandler {
+    constructor(worker: Worker, options?: Object);
+    getTREventsToHandlerMapping(): {[key: string]: string};
 }
 
 export interface CallOptions {
