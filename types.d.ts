@@ -1,5 +1,7 @@
+import EventEmitter from "events";
+
 export as namespace TaskRouter;
-export class Worker extends NodeJS.EventEmitter {
+export class Worker extends EventEmitter {
     constructor(token: string, options?: any);
 
     readonly accountSid: string;
