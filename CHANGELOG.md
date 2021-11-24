@@ -1,3 +1,9 @@
+0.5.6
+==========
+Maintenance
+----------
+- Add type declarations for TaskRouterEventHandler and Worker.createTask
+
 0.5.5
 ==========
 New Features
