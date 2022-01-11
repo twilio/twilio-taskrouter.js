@@ -148,7 +148,7 @@ export default class EnvTwilio {
      */
     async fetchParticipantProperties(conferenceSid) {
         const participantProperties = new Map();
-        const phoneNumbers = [credentials.workerNumber, credentials.supervisorNumber, credentials.customerNumber];
+        const phoneNumbers = [credentials.workerNumber, credentials.supervisorNumber, credentials.customerNumber, credentials.flexCCNumber];
 
         // Fetch list of all participants in a conference
         const participants = await this.fetchConferenceParticipants(conferenceSid);

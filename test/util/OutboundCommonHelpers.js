@@ -83,7 +83,7 @@ export default class OutboundCommonHelpers {
      * @param {Reservation} transferorReservation  The Transferor's reservation
      * @return {Promise<Transfer>} Outgoing {@link Transfer}
      */
-    async validateTransferInitiated(transferorReservation) {
+    async validateTransferInitiated(transferorReservation, directionOfInitialCall = 'outbound') {
         return new Promise((resolve, reject) => {
             transferorReservation.task.on('transferInitiated', async(outgoingTransfer) => {
                 try {
@@ -96,7 +96,13 @@ export default class OutboundCommonHelpers {
 
                     const conference = await this.envTwilio.fetchConferenceByName(transferorReservation.task.sid);
                     const participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
-                    assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+
+                    if (directionOfInitialCall === 'inbound') {
+                        assert.strictEqual(participantPropertiesMap.get(credentials.flexCCNumber).hold, true, 'Customer put on-hold value');
+                    } else {
+                        assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+                    }
+
                     resolve(outgoingTransfer);
                 } catch (err) {
                     reject(`Failed to validate transfer initiated properties. Error: ${err}`);
@@ -121,7 +127,7 @@ export default class OutboundCommonHelpers {
      * @return {Promise<void>}
      */
     async assertOnTransferorAcceptedAndInitiateTransfer(transferorReservation, transferToSid, makeTransfereeAvailable, transfereeSid,
-                                                        transferMode, expectedConfStatus, expectedConfParticipantsSize) {
+                                                        transferMode, expectedConfStatus, expectedConfParticipantsSize, directionOfInitialCall = 'outbound') {
         try {
             await this.verifyConferenceProperties(transferorReservation.task.sid, expectedConfStatus, expectedConfParticipantsSize);
 
@@ -130,8 +136,7 @@ export default class OutboundCommonHelpers {
             }
 
             await transferorReservation.task.transfer(transferToSid, { mode: transferMode });
-
-            await this.validateTransferInitiated(transferorReservation);
+            await this.validateTransferInitiated(transferorReservation, directionOfInitialCall);
         } catch (err) {
             throw err;
         }
@@ -208,17 +213,20 @@ export default class OutboundCommonHelpers {
      * @param {number} expectedConfParticipantSize Expected number of Participants in the Conference
      * @return {Promise<void>}
      */
-    async assertOnTransfereeAccepted(transfereeReservation, expectedConfStatus, expectedConfParticipantSize) {
+    async assertOnTransfereeAccepted(transfereeReservation, expectedConfStatus, expectedConfParticipantSize, directionOfInitialCall = 'outbound') {
         let participantPropertiesMap;
         let conference;
         try {
             await this.verifyConferenceProperties(transfereeReservation.task.sid, expectedConfStatus, expectedConfParticipantSize);
 
             // Verify customer is still on-hold
-
             conference = await this.envTwilio.fetchConferenceByName(transfereeReservation.task.sid);
             participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
-            assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+            if (directionOfInitialCall === 'inbound') {
+                assert.strictEqual(participantPropertiesMap.get(credentials.flexCCNumber).hold, true, 'Customer put on-hold value');
+            } else {
+                assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, true, 'Customer put on-hold value');
+            }
 
             // Un-hold customer to bring him/her back into the conference
             await transfereeReservation.task.updateParticipant({ hold: false });
@@ -227,7 +235,11 @@ export default class OutboundCommonHelpers {
             await pauseTestExecution(STATUS_CHECK_DELAY);
             conference = await this.envTwilio.fetchConferenceByName(transfereeReservation.task.sid);
             participantPropertiesMap = await this.envTwilio.fetchParticipantProperties(conference.sid);
-            assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, false, 'Customer put on-hold value');
+            if (directionOfInitialCall === 'inbound') {
+                assert.strictEqual(participantPropertiesMap.get(credentials.flexCCNumber).hold, false, 'Customer put on-hold value');
+            } else {
+                assert.strictEqual(participantPropertiesMap.get(credentials.customerNumber).hold, false, 'Customer put on-hold value');
+            }
         } catch (err) {
             throw err;
         }
