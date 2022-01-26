@@ -1,3 +1,9 @@
+0.5.7
+==========
+Maintenance
+----------
+- Export TaskRouterEventHandler for web
+
 0.5.6
 ==========
 Maintenance
