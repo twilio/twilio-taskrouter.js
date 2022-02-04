@@ -101,6 +101,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationAccepted));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.accept().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
         it('should return an error if unable to accept the reservation', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
@@ -133,6 +145,18 @@ describe('Reservation', () => {
             return pendingReservation.complete().then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('completed');
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationCompleted));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.complete().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
             });
         });
 
@@ -171,6 +195,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationWrapping));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.wrap().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
         it('should return an error if unable to wrap the reservation', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
@@ -206,6 +242,18 @@ describe('Reservation', () => {
             return pendingReservation.reject().then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('rejected');
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationRejected));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.reject().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
             });
         });
 
@@ -297,6 +345,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationCalled));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.call('+12345678901', twimlCallUrl).then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
         it('should return an error if the optional params fail type check', () => {
             (() => {
                 const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
@@ -362,6 +422,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationCalled));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.dequeue().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
         it('should return an error if the optional params fail type check', () => {
             (() => {
                 const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
@@ -419,6 +491,18 @@ describe('Reservation', () => {
             return pendingReservation.redirect('CA8d7a41c9c98d9ff2c16e1ae93bff381e', twimlCallUrl).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
                 expect(err.message).to.equal('Failed to parse JSON.');
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
+            stub.returns(Promise.resolve(reservationRedirected));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            return reservation.redirect('CA8d7a41c9c98d9ff2c16e1ae93bff381e', twimlCallUrl).then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
             });
         });
 
