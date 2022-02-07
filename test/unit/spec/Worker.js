@@ -325,6 +325,7 @@ describe('Worker', () => {
 
     beforeEach(() => {
       worker = new Worker(initialToken, WorkerConfig);
+      worker.version = 1;
       sinon.stub(worker, 'getRoutes').returns(routes);
 
       const activities = new Map();
@@ -351,7 +352,8 @@ describe('Worker', () => {
     });
 
     it('should update the activity of the Worker', () => {
-      sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(updateWorkerActivityToIdle));
+      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, worker.version);
+      stub.returns(Promise.resolve(updateWorkerActivityToIdle));
 
       worker.activities.forEach((activity) => {
         if (activity.name === 'Offline') {
@@ -369,6 +371,7 @@ describe('Worker', () => {
       return worker._updateWorkerActivity('WAxx2').then(updatedWorker => {
         expect(worker).to.equal(updatedWorker);
         expect(worker.activity.sid).to.equal('WAxx2');
+        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, worker.version);
 
         worker.activities.forEach(activity => {
           if (activity.name === 'Idle') {
