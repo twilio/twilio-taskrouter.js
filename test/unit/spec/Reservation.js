@@ -589,13 +589,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationConferenced));
 
             return reservation.conference().then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -644,13 +644,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, version);
             stub.returns(Promise.resolve(reservation));
 
             return reservation.updateParticipant({ endConferenceOnExit: true }).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, version);
             });
         });
 
