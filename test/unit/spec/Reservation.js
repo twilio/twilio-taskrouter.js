@@ -579,13 +579,26 @@ describe('Reservation', () => {
         it('should set the requestParams using the options provided', () => {
             const params = Object.assign({}, requestParams, { MaxParticipants: 10 });
 
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, params, API_V1).returns(Promise.resolve(reservationDequeued));
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, params, API_V1).returns(Promise.resolve(reservationConferenced));
             const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
             return pendingReservation.conference({ maxParticipants: 10 }).then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('pending');
             });
         });
+
+        it('should pass the object version to API request', () => {
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            stub.returns(Promise.resolve(reservationConferenced));
+
+            return reservation.conference().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
 
         it('should not override reservation status received from Taskrouter', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(reservationAccepted));
