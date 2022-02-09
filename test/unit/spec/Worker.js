@@ -161,13 +161,14 @@ describe('Worker', () => {
     });
 
     it('should pass the object version to API request', () => {
-      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, worker.version);
+      const version = worker.version;
+      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
       stub.returns(Promise.resolve(updateWorkerAttributes));
 
       worker.attributes = '{"languages":["es"]}';
 
       return worker.setAttributes({ languages: ['en'] }).then(() => {
-        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, worker.version);
+        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
       });
     });
   });
@@ -352,7 +353,8 @@ describe('Worker', () => {
     });
 
     it('should update the activity of the Worker', () => {
-      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, worker.version);
+      const version = worker.version;
+      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
       stub.returns(Promise.resolve(updateWorkerActivityToIdle));
 
       worker.activities.forEach((activity) => {
@@ -371,7 +373,7 @@ describe('Worker', () => {
       return worker._updateWorkerActivity('WAxx2').then(updatedWorker => {
         expect(worker).to.equal(updatedWorker);
         expect(worker.activity.sid).to.equal('WAxx2');
-        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, worker.version);
+        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
 
         worker.activities.forEach(activity => {
           if (activity.name === 'Idle') {

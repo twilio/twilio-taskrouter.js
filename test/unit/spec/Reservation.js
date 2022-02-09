@@ -103,13 +103,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationAccepted));
 
             return reservation.accept().then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -150,13 +150,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationCompleted));
 
             return reservation.complete().then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -197,13 +197,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationWrapping));
 
             return reservation.wrap().then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -247,13 +247,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationRejected));
 
             return reservation.reject().then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -347,13 +347,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationCalled));
 
             return reservation.call('+12345678901', twimlCallUrl).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -424,13 +424,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationDequeued));
 
             return reservation.dequeue().then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 
@@ -496,13 +496,13 @@ describe('Reservation', () => {
 
         it('should pass the object version to API request', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            reservation.version = 1;
+            const version = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(reservationRejected));
 
             return reservation.redirect('CA8d7a41c9c98d9ff2c16e1ae93bff381e', twimlCallUrl).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
 

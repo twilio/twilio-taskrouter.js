@@ -159,13 +159,13 @@ describe('Task', () => {
 
         it('should pass the object version to API request', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            task.version = 1;
+            const version = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, task.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(taskCompleted));
 
             return task.complete('Task is completed.').then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, task.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
     });
@@ -251,13 +251,13 @@ describe('Task', () => {
 
         it('should pass the object version to API request', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            task.version = 1;
+            const version = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, task.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(taskWrapping));
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, task.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
     });
@@ -386,13 +386,13 @@ describe('Task', () => {
 
         it('should pass the object version to API request', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            task.version = 1;
+            const version = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, task.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
             stub.returns(Promise.resolve(updatedTaskAttributes));
 
             return task.setAttributes({ languages: ['en'] }).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, task.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
     });
@@ -458,13 +458,13 @@ describe('Task', () => {
 
         it('should pass the object version to API request', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            task.version = 1;
+            const version = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, task.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, version);
             stub.returns(Promise.resolve(taskHoldUnhold));
 
             return task.updateParticipant({ hold: false }).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, task.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, version);
             });
         });
     });
@@ -531,13 +531,13 @@ describe('Task', () => {
 
         it('should pass the object version to API request', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            task.version = 1;
+            const version = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, task.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, version);
             stub.returns(Promise.resolve(taskHoldUnhold));
 
             return task.hold('WKxxB', true).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, task.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, version);
             });
         });
     });
@@ -626,13 +626,13 @@ describe('Task', () => {
 
         it('should pass the object version to API request', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            task.version = 1;
+            const version = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, task.version);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, version);
             stub.returns(Promise.resolve(taskHoldUnhold));
 
             return task.kick('WKxx2').then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, task.version);
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, version);
             });
         });
         
