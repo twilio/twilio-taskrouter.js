@@ -101,6 +101,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            stub.returns(Promise.resolve(reservationAccepted));
+
+            return reservation.accept().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
         it('should return an error if unable to accept the reservation', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
@@ -133,6 +145,18 @@ describe('Reservation', () => {
             return pendingReservation.complete().then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('completed');
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            stub.returns(Promise.resolve(reservationCompleted));
+
+            return reservation.complete().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
             });
         });
 
@@ -171,6 +195,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            stub.returns(Promise.resolve(reservationWrapping));
+
+            return reservation.wrap().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
+            });
+        });
+
         it('should return an error if unable to wrap the reservation', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
@@ -206,6 +242,18 @@ describe('Reservation', () => {
             return pendingReservation.reject().then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('rejected');
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            reservation.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, reservation.version);
+            stub.returns(Promise.resolve(reservationRejected));
+
+            return reservation.reject().then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, reservation.version);
             });
         });
 
@@ -495,7 +543,7 @@ describe('Reservation', () => {
         it('should set the requestParams using the options provided', () => {
             const params = Object.assign({}, requestParams, { MaxParticipants: 10 });
 
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, params, API_V1).returns(Promise.resolve(reservationDequeued));
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, params, API_V1).returns(Promise.resolve(reservationConferenced));
             const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
             return pendingReservation.conference({ maxParticipants: 10 }).then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);

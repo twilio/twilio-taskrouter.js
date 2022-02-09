@@ -156,6 +156,18 @@ describe('Task', () => {
                 expect(task.routingTarget).to.equal(null);
             });
         });
+
+        it('should pass the object version to API request', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            task.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, task.version);
+            stub.returns(Promise.resolve(taskCompleted));
+
+            return task.complete('Task is completed.').then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, task.version);
+            });
+        });
     });
 
     describe('#wrapUp(options)', () => {
@@ -234,6 +246,18 @@ describe('Task', () => {
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
                 expect(task.routingTarget).to.equal(null);
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            task.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, task.version);
+            stub.returns(Promise.resolve(taskWrapping));
+
+            return task.wrapUp({ reason: 'Task is wrapping.' }).then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, task.version);
             });
         });
     });
@@ -357,6 +381,18 @@ describe('Task', () => {
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
                 expect(task.routingTarget).to.equal(null);
+            });
+        });
+
+        it('should pass the object version to API request', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            task.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, task.version);
+            stub.returns(Promise.resolve(updatedTaskAttributes));
+
+            return task.setAttributes({ languages: ['en'] }).then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, task.version);
             });
         });
     });

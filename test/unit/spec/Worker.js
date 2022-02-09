@@ -71,6 +71,7 @@ describe('Worker', () => {
 
     beforeEach(() => {
       worker = new Worker(initialToken, WorkerConfig);
+      worker.version = 1;
       sinon.stub(worker, 'getRoutes').returns(routes);
 
       setAttributesSpy = sinon.spy(worker, 'setAttributes');
@@ -156,6 +157,17 @@ describe('Worker', () => {
         expect(setAttributesSpy.withArgs({ 'languages': ['en'] }).calledOnce).to.be.true;
         expect(s).to.have.been.calledOnce;
         expect(s.withArgs(requestURL, requestParams).calledOnce).to.be.true;
+      });
+    });
+
+    it('should pass the object version to API request', () => {
+      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, worker.version);
+      stub.returns(Promise.resolve(updateWorkerAttributes));
+
+      worker.attributes = '{"languages":["es"]}';
+
+      return worker.setAttributes({ languages: ['en'] }).then(() => {
+        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, worker.version);
       });
     });
   });
@@ -313,6 +325,7 @@ describe('Worker', () => {
 
     beforeEach(() => {
       worker = new Worker(initialToken, WorkerConfig);
+      worker.version = 1;
       sinon.stub(worker, 'getRoutes').returns(routes);
 
       const activities = new Map();
@@ -339,7 +352,8 @@ describe('Worker', () => {
     });
 
     it('should update the activity of the Worker', () => {
-      sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(updateWorkerActivityToIdle));
+      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, worker.version);
+      stub.returns(Promise.resolve(updateWorkerActivityToIdle));
 
       worker.activities.forEach((activity) => {
         if (activity.name === 'Offline') {
@@ -357,6 +371,7 @@ describe('Worker', () => {
       return worker._updateWorkerActivity('WAxx2').then(updatedWorker => {
         expect(worker).to.equal(updatedWorker);
         expect(worker.activity.sid).to.equal('WAxx2');
+        expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, worker.version);
 
         worker.activities.forEach(activity => {
           if (activity.name === 'Idle') {
@@ -446,10 +461,10 @@ describe('Worker', () => {
 
       worker.on('disconnected', event => {
         expect(workerUnsubscribeSpy.calledOnce).to.be.true;
-        expect(event).to.equal("worker got disconnected message");
+        expect(event).to.equal('worker got disconnected message');
         done();
       });
-      worker._signaling.emit('disconnected', "worker got disconnected message");
+      worker._signaling.emit('disconnected', 'worker got disconnected message');
 
     }).timeout(5000);
 
