@@ -693,5 +693,15 @@ describe('Task', () => {
             task._emitEventForOutgoingTransfer('transfer-failed', mockEvents.task.transferFailed);
             assert.isFalse(spy.called);
         });
+
+        it('should emit Event:on(transferInitiated) if the outgoing transfer is initially null, but populated after 3 seconds', async() => {
+            task.transfers.outgoing = null;
+            task.on('transferInitiated', spy);
+            task._emitEventForOutgoingTransfer('transfer-initiated', mockEvents.task.transferInitiated);
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            task.transfers.outgoing = new OutgoingTransfer(worker, new Request(config), assignedTaskDescriptor.sid, new TransferDescriptor(mockEvents.task.transferInitiated));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            assert.isTrue(spy.called);
+        }).timeout(5000);
     });
 });
