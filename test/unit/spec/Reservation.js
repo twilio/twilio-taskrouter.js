@@ -642,6 +642,18 @@ describe('Reservation', () => {
             });
         });
 
+        it('should pass the object version to API request', () => {
+            const reservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
+            reservation.version = 1;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2, reservation.version);
+            stub.returns(Promise.resolve(reservation));
+
+            return reservation.updateParticipant({ endConferenceOnExit: true }).then(() => {
+                expect(stub).have.been.calledWith(requestURL, requestParams, API_V2, reservation.version);
+            });
+        });
+
         it('should return an error if updating the worker leg failed', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
