@@ -1,3 +1,9 @@
+0.5.8
+==========
+Bug Fixes
+----------
+- Fixed race condition when initiating task transfer
+
 0.5.7
 ==========
 Maintenance
