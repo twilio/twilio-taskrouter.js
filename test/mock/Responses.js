@@ -320,5 +320,6 @@ export const initWorkerAttributes = {
     available: true,
     activity_sid: "WAxx2",
     activity_name: "Idle",
-    date_status_changed: 1519414077
+    date_status_changed: 1519414077,
+    version: 3
 };
