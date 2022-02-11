@@ -171,6 +171,18 @@ describe('Worker', () => {
         expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
       });
     });
+
+    it('should update the object version', () => {
+      const version = worker.version;
+      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
+      stub.returns(Promise.resolve(updateWorkerAttributes));
+
+      worker.attributes = '{"languages":["es"]}';
+
+      return worker.setAttributes({ languages: ['en'] }).then((updatedWorker) => {
+        expect(worker.version).to.equal(updatedWorker.version);
+      });
+    });
   });
 
   describe('#createTask(to, from, workflowSid, taskQueueSid, options={})', () => {
@@ -374,6 +386,7 @@ describe('Worker', () => {
         expect(worker).to.equal(updatedWorker);
         expect(worker.activity.sid).to.equal('WAxx2');
         expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
+        expect(worker.version).to.equal(updatedWorker.version);
 
         worker.activities.forEach(activity => {
           if (activity.name === 'Idle') {
