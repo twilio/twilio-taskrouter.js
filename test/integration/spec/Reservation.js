@@ -96,4 +96,22 @@ describe('Reservation', () => {
     }).timeout(5000);
   });
 
+  describe('Reservation versioning', () => {
+    it('should update the version of the reservation', done => {
+      envTwilio.createTask(
+        credentials.multiTaskWorkspaceSid,
+        credentials.multiTaskWorkflowSid,
+        '{ "selected_language": "es" }'
+      );
+      worker.on('reservationCreated', reservation => {
+        const oldVersion = reservation.version;
+
+        reservation.accept().then(updatedReservation => {
+          expect(updatedReservation.version).to.be.greaterThan(oldVersion);
+          done();
+        }).catch(done);
+      });
+    }).timeout(5000);
+  });
+
 });
