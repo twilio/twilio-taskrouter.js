@@ -168,6 +168,19 @@ describe('Task', () => {
                 expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
+
+
+        it('should update the object version', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            const version = task.version;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
+            stub.returns(Promise.resolve(taskCompleted));
+
+            return task.complete('Task is completed.').then((updatedTask) => {
+                expect(task.version).to.equal(updatedTask.version);
+            });
+        });
     });
 
     describe('#wrapUp(options)', () => {
@@ -258,6 +271,18 @@ describe('Task', () => {
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).then(() => {
                 expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
+            });
+        });
+
+        it('should update the object version', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            const version = task.version;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
+            stub.returns(Promise.resolve(taskWrapping));
+
+            return task.wrapUp({ reason: 'Task is wrapping.' }).then((updatedTask) => {
+                expect(task.version).to.equal(updatedTask.version);
             });
         });
     });
@@ -395,6 +420,18 @@ describe('Task', () => {
                 expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
             });
         });
+
+        it('should update the object version', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            const version = task.version;
+
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
+            stub.returns(Promise.resolve(updatedTaskAttributes));
+
+            return task.setAttributes({ languages: ['en'] }).then((updatedTask) => {
+                expect(task.version).to.equal(updatedTask.version);
+            });
+        });
     });
 
     describe('#updateParticipant(options)', () => {
@@ -455,6 +492,16 @@ describe('Task', () => {
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
+
+        it('should update the object version', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2);
+            stub.returns(Promise.resolve(taskHoldUnhold));
+
+            return task.updateParticipant({ hold: false }).then((updatedTask) => {
+                expect(task.version).to.equal(updatedTask.version);
+            });
+        });
     });
 
     describe('#hold(targetWorkerSid, onHold, options)', () => {
@@ -503,6 +550,16 @@ describe('Task', () => {
 
             return task.hold('WKxxB', true).then(() => {
                 expect(task.sid).to.equal(taskHoldUnhold.sid);
+            });
+        });
+
+        it('should update the object version', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2);
+            stub.returns(Promise.resolve(taskHoldUnhold));
+
+            return task.hold('WKxxB', true).then((updatedTask) => {
+                expect(task.version).to.equal(updatedTask.version);
             });
         });
 
@@ -586,6 +643,16 @@ describe('Task', () => {
 
             return task.kick('WKxx2').then(() => {
                 expect(task.sid).to.equal(taskHoldUnhold.sid);
+            });
+        });
+
+        it('should update the object version', () => {
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2);
+            stub.returns(Promise.resolve(taskHoldUnhold));
+
+            return task.kick('WKxx2').then((updatedTask) => {
+                expect(task.version).to.equal(updatedTask.version);
             });
         });
 
