@@ -180,8 +180,8 @@ describe('TaskEvents', () => {
                     languages: ['en']
                 };
                 return task.setAttributes(newAttributes)
-                    .then(() => {
-                        expect(task.version).to.be.greaterThan(oldVersion);
+                    .then(updatedTask => {
+                        expect(updatedTask.version).to.be.greaterThan(oldVersion);
                         done();
                     });
             }).catch(done);
