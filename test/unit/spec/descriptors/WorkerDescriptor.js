@@ -40,6 +40,7 @@ describe('WorkerDescriptor', () => {
             assert.deepEqual(workerDescriptor.dateUpdated, new Date(instance.date_updated * 1000));
             assert.deepEqual(workerDescriptor.dateStatusChanged, new Date(instance.date_status_changed * 1000));
             assert.equal(workerDescriptor.name, instance.friendly_name);
+            assert.equal(workerDescriptor.version, instance.version);
         });
 
         it('should throw an error if unable to parse attributes JSON', () => {
