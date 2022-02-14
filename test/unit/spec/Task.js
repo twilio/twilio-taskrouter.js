@@ -172,13 +172,17 @@ describe('Task', () => {
 
         it('should update the object version', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const version = task.version;
+            const initialVersion = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(taskCompleted));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(taskCompleted));
 
             return task.complete('Task is completed.').then((updatedTask) => {
-                expect(task.version).to.equal(updatedTask.version);
+                const updatedVersion = updatedTask.version;
+
+                expect(task.version).to.equal(updatedVersion);
+                expect(task.version).to.not.equal(initialVersion);
             });
         });
     });
@@ -276,13 +280,17 @@ describe('Task', () => {
 
         it('should update the object version', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const version = task.version;
+            const initialVersion = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(taskWrapping));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(taskWrapping));
 
             return task.wrapUp({ reason: 'Task is wrapping.' }).then((updatedTask) => {
-                expect(task.version).to.equal(updatedTask.version);
+                const updatedVersion = updatedTask.version;
+
+                expect(task.version).to.equal(updatedVersion);
+                expect(task.version).to.not.equal(initialVersion);
             });
         });
     });
@@ -423,13 +431,17 @@ describe('Task', () => {
 
         it('should update the object version', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const version = task.version;
+            const initialVersion = task.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(updatedTaskAttributes));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(updatedTaskAttributes));
 
             return task.setAttributes({ languages: ['en'] }).then((updatedTask) => {
-                expect(task.version).to.equal(updatedTask.version);
+                const updatedVersion = updatedTask.version;
+
+                expect(task.version).to.equal(updatedVersion);
+                expect(task.version).to.not.equal(initialVersion);
             });
         });
     });
@@ -495,11 +507,17 @@ describe('Task', () => {
 
         it('should update the object version', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2);
-            stub.returns(Promise.resolve(taskHoldUnhold));
+            const initialVersion = task.version;
+
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V2)
+                .returns(Promise.resolve(taskHoldUnhold));
 
             return task.updateParticipant({ hold: false }).then((updatedTask) => {
-                expect(task.version).to.equal(updatedTask.version);
+                const updatedVersion = updatedTask.version;
+
+                expect(task.version).to.equal(updatedVersion);
+                expect(task.version).to.not.equal(initialVersion);
             });
         });
     });
@@ -555,11 +573,17 @@ describe('Task', () => {
 
         it('should update the object version', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2);
-            stub.returns(Promise.resolve(taskHoldUnhold));
+            const initialVersion = task.version;
+
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V2)
+                .returns(Promise.resolve(taskHoldUnhold));
 
             return task.hold('WKxxB', true).then((updatedTask) => {
-                expect(task.version).to.equal(updatedTask.version);
+                const updatedVersion = updatedTask.version;
+
+                expect(task.version).to.equal(updatedVersion);
+                expect(task.version).to.not.equal(initialVersion);
             });
         });
 
@@ -648,11 +672,17 @@ describe('Task', () => {
 
         it('should update the object version', () => {
             const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2);
-            stub.returns(Promise.resolve(taskHoldUnhold));
+            const initialVersion = task.version;
+
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V2)
+                .returns(Promise.resolve(taskHoldUnhold));
 
             return task.kick('WKxx2').then((updatedTask) => {
-                expect(task.version).to.equal(updatedTask.version);
+                const updatedVersion = updatedTask.version;
+
+                expect(task.version).to.equal(updatedVersion);
+                expect(task.version).to.not.equal(initialVersion);
             });
         });
 
