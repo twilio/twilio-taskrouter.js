@@ -146,7 +146,7 @@ describe('WorkerEvents', () => {
             expect(spy.getCall(0).args[0]).to.equal(mockEvents.reservation.failed);
         });
 
-        it('should update version field after receiving reservation update event', () => {
+        it('should update version field after receiving reservation accepted event', () => {
             const oldVersion = 1;
             const newVersion = 2;
 
