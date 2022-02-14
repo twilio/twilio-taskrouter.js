@@ -115,13 +115,17 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            const version = reservation.version;
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(reservationAccepted));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(reservationAccepted));
 
             return reservation.accept().then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -174,13 +178,17 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            const version = reservation.version;
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(reservationCompleted));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(reservationCompleted));
 
             return reservation.complete().then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -233,13 +241,18 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            const version = reservation.version;
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(reservationWrapping));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(reservationWrapping));
+
 
             return reservation.wrap().then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -295,13 +308,17 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            const version = reservation.version;
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(reservationRejected));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1, initialVersion)
+                .returns(Promise.resolve(reservationRejected));
 
             return reservation.reject().then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -395,12 +412,17 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
-            stub.returns(Promise.resolve(reservationCalled));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1)
+                .returns(Promise.resolve(reservationCalled));
 
             return reservation.call('+12345678901', twimlCallUrl).then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -471,12 +493,17 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
-            stub.returns(Promise.resolve(reservationDequeued));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1)
+                .returns(Promise.resolve(reservationDequeued));
 
             return reservation.dequeue().then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -552,12 +579,17 @@ describe('Reservation', () => {
 
         it('should update the object version', () => {
             const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            const initialVersion = reservation.version;
 
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
-            stub.returns(Promise.resolve(reservationRedirected));
+            sandbox.stub(Request.prototype, 'post')
+                .withArgs(requestURL, requestParams, API_V1)
+                .returns(Promise.resolve(reservationRedirected));
 
             return reservation.redirect('CA8d7a41c9c98d9ff2c16e1ae93bff381e', twimlCallUrl).then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
+                const updatedVersion = updatedReservation.version;
+
+                expect(reservation.version).to.equal(updatedVersion);
+                expect(reservation.version).to.not.equal(initialVersion);
             });
         });
 
@@ -611,17 +643,6 @@ describe('Reservation', () => {
             return pendingReservation.conference().then(updatedReservation => {
                 expect(updatedReservation).to.equal(pendingReservation);
                 expect(pendingReservation.status).to.equal('pending');
-            });
-        });
-
-        it('should update the object version', () => {
-            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1);
-            stub.returns(Promise.resolve(reservationConferenced));
-
-            return reservation.conference().then((updatedReservation) => {
-                expect(reservation.version).to.equal(updatedReservation.version);
             });
         });
 

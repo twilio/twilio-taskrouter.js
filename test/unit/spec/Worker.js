@@ -173,14 +173,19 @@ describe('Worker', () => {
     });
 
     it('should update the object version', () => {
-      const version = worker.version;
-      const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-      stub.returns(Promise.resolve(updateWorkerAttributes));
+      const initialVersion = worker.version;
+
+      sandbox.stub(Request.prototype, 'post')
+        .withArgs(requestURL, requestParams, API_V1, initialVersion)
+        .returns(Promise.resolve(updateWorkerAttributes));
 
       worker.attributes = '{"languages":["es"]}';
 
       return worker.setAttributes({ languages: ['en'] }).then((updatedWorker) => {
-        expect(worker.version).to.equal(updatedWorker.version);
+        const updatedVersion = updatedWorker.version;
+
+        expect(worker.version).to.equal(updatedVersion);
+        expect(worker.version).to.not.equal(initialVersion);
       });
     });
   });
