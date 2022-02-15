@@ -195,7 +195,7 @@ export interface RejectOptions {
     activitySid: string;
 }
 
-export interface TrasnferOptions {
+export interface TransferOptions {
     attributes: Object;
     mode: "COLD" | "WARM";
     priority: number;
