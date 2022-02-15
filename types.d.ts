@@ -79,7 +79,7 @@ export interface Task extends NodeJS.EventEmitter {
     setAttributes(attributes: Object): Promise<Task>;
     async transfer(to: string, options: TransferOptions): Promise<Task>;
     wrapUp({reason: string}): Promise<Task>;
-    updateParticipant(options: ParticipantOptions): Promise<Task>;
+    updateParticipant(options: TaskParticipantOptions): Promise<Task>;
     kick(workerSid: string): Promise<Task>;
     hold(targetWorkerSid: string, onHold: boolean, options: HoldOptions): Promise<Task>;
 }
