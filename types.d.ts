@@ -96,6 +96,7 @@ export interface Reservation extends NodeJS.EventEmitter {
     readonly workerSid: string;
     readonly workspaceSid: string;
     readonly task: Task;
+    readonly canceledReasonCode?: int;
 
     accept(): Promise<Reservation>;
     complete(): Promise<Reservation>;
