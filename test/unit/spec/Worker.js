@@ -188,6 +188,19 @@ describe('Worker', () => {
         expect(worker.version).to.not.equal(initialVersion);
       });
     });
+
+    it('should update version field after receiving worker attribute update event', () => {
+
+      const oldVersion = 1;
+      const newVersion = 2;
+      worker._subscribeToTaskRouterEvents();
+
+      worker.version = oldVersion;
+
+      worker._signaling.emit('worker.attributes.update', Object.assign({}, mockEvents.worker.attributesUpdated, { version: newVersion }), 'worker.attributes.update');
+
+      assert.equal(worker.version, newVersion);
+    });
   });
 
   describe('#createTask(to, from, workflowSid, taskQueueSid, options={})', () => {
@@ -412,6 +425,23 @@ describe('Worker', () => {
         expect(err.name).to.equal('TASKROUTER_ERROR');
         expect(err.message).to.equal('Failed to parse JSON.');
       });
+    });
+
+
+    it('should update version field after receiving worker activity update event', () => {
+
+      const oldVersion = 1;
+      const newVersion = 2;
+      worker._subscribeToTaskRouterEvents();
+
+      const activitySid = 'WAxx4';
+      worker.activity = worker.activities.get(activitySid);
+      worker.version = oldVersion;
+
+      // eslint-disable-next-line camelcase
+      worker._signaling.emit('worker.activity.update', Object.assign({}, mockEvents.worker.activityUpdated, { version: newVersion, activity_sid: activitySid }), 'worker.activity.update');
+
+      assert.equal(worker.version, newVersion);
     });
   });
 
