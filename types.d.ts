@@ -18,6 +18,7 @@ export class Worker extends EventEmitter {
     readonly reservations: Map<string, Reservation>;
     readonly sid: string;
     readonly workspaceSid: string;
+    readonly version: number;
 
     createTask(to: string, from: string, workflowSid: string, taskQueueSid: string, options: Object): Promise<string>
     disconnect();
@@ -74,6 +75,7 @@ export interface Task extends NodeJS.EventEmitter {
     readonly workflowName: string;
     readonly workflowSid: string;
     readonly routingTarget: string;
+    readonly version: number;
 
     complete(reason: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;
@@ -97,6 +99,7 @@ export interface Reservation extends NodeJS.EventEmitter {
     readonly workspaceSid: string;
     readonly task: Task;
     readonly canceledReasonCode?: int;
+    readonly version: number;
 
     accept(): Promise<Reservation>;
     complete(): Promise<Reservation>;

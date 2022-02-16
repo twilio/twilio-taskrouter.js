@@ -26,6 +26,7 @@ require('./spec/util/Configuration');
 require('./spec/util/Logger');
 require('./spec/util/Paginator');
 require('./spec/util/Tools');
+require('./spec/util/Request');
 require('./spec/util/TwilioError');
 require('./spec/data/Activities');
 require('./spec/data/Channels');
