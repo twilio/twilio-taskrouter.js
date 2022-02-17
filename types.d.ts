@@ -7,7 +7,7 @@ export class Worker extends EventEmitter {
     readonly accountSid: string;
     readonly activities: Map<string, Activity>;
     readonly activity: Activity;
-    readonly attributes: any;
+    readonly attributes: Object;
     readonly channels: Map<string, Channel>;
     readonly connectActivitySid: string;
     readonly dateCreated: Date;
@@ -24,6 +24,10 @@ export class Worker extends EventEmitter {
     disconnect();
     setAttributes(attributes: any): Promise<Worker>;
     updateToken(newToken: string);
+}
+
+export class Supervisor extends Worker {
+    monitor(taskSid: string, reservationSid: string, extraParams: Object): Promise<void>;
 }
 
 export interface Activity {
@@ -51,15 +55,12 @@ export interface Channel {
     readonly taskChannelUniqueName: string;
     readonly workerSid: string;
     readonly workspaceSid: string;
-
-    setAvailability(isAvailable: boolean): Promise<Channel>;
-    setCapacity(capacity: number): Promise<Channel>;
 }
 
 export interface Task extends NodeJS.EventEmitter {
     readonly addOns: Object;
     readonly age: number;
-    readonly attributes: any;
+    readonly attributes: Object;
     readonly dateCreated: Date;
     readonly dateUpdated: Date;
     readonly priority: number;
@@ -78,7 +79,11 @@ export interface Task extends NodeJS.EventEmitter {
 
     complete(reason: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;
+    async transfer(to: string, options: TransferOptions): Promise<Task>;
     wrapUp({reason: string}): Promise<Task>;
+    updateParticipant(options: TaskParticipantOptions): Promise<Task>;
+    kick(workerSid: string): Promise<Task>;
+    hold(targetWorkerSid: string, onHold: boolean, options: HoldOptions): Promise<Task>;
 }
 
 export interface Reservation extends NodeJS.EventEmitter {
@@ -93,6 +98,7 @@ export interface Reservation extends NodeJS.EventEmitter {
     readonly workerSid: string;
     readonly workspaceSid: string;
     readonly task: Task;
+    readonly canceledReasonCode?: int;
     readonly version: number;
 
     accept(): Promise<Reservation>;
@@ -103,11 +109,35 @@ export interface Reservation extends NodeJS.EventEmitter {
     conference(options?: ConferenceOptions): Promise<Reservation>;
     redirect(callSid: string, url: string, options?: RedirectOptions);
     reject(options?: RejectOptions): Promise<Reservation>;
+    updateParticipant(options: ReservationParticipantOptions): Promise<Reservation>;
+}
+
+export interface TaskQueue {
+    sid: string;
+    accountSid: string;
+    workspaceSid: string;
+    name: string;
+    assignmentActivityName: string;
+    reservationActivityName: string;
+    assignmentActivitySid: string;
+    reservationActivitySid: string;
+    targetWorkers: string;
+    maxReservedWorkers: number;
+    taskOrder: string;
+    dateCreated: Date;
+    dateUpdated: Date;
 }
 
 export class TaskRouterEventHandler {
     constructor(worker: Worker, options?: Object);
     getTREventsToHandlerMapping(): {[key: string]: string};
+}
+
+export class Workspace {
+    constructor(jwt: string, options?: Object);
+
+    fetchWorkers(): Promise<Map<string, Worker>>;
+    fetchTaskQueues(): Promise<Map<string, TaskQueue>>;
 }
 
 export interface CallOptions {
@@ -168,3 +198,25 @@ export interface RedirectOptions {
 export interface RejectOptions {
     activitySid: string;
 }
+
+export interface TransferOptions {
+    attributes: Object;
+    mode: "COLD" | "WARM";
+    priority: number;
+}
+
+export interface HoldOptions {
+    holdUrl: string;
+    holdMethod: "GET"
+}
+
+export interface TaskParticipantOptions extends HoldOptions {
+    hold: boolean;
+}
+
+export interface ReservationParticipantOptions {
+    endConferenceOnExit: boolean;
+    mute: boolean;
+    beepOnExit: boolean;
+}
+
