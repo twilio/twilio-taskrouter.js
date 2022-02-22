@@ -119,5 +119,21 @@ describe('EventBridgeSignaling', () => {
       assert.isTrue(worker._signaling.webSocket.readyState !== WebSocket.CLOSED && worker._signaling.webSocket.readyState !== WebSocket.CLOSING);
       expect(connectedSpy).to.have.been.calledTwice;
     });
+
+    it('should not be closed by missing heartbeat if closed manually', async() => {
+      const worker = new Worker(initialToken, WorkerConfig);
+      const websocketCloseSpy = sinon.spy(worker._signaling.webSocket, 'close');
+
+      await sleep(500);
+      assert.isTrue(worker._signaling.webSocket.readyState === WebSocket.OPEN);
+
+      // webSocket.close() called after disconnect
+      worker._signaling.disconnect();
+      expect(websocketCloseSpy).to.have.been.calledOnce;
+
+      // webSocket.close() cannot be called by missing heartbeat anymore
+      worker._signaling._heartbeat.onsleep();
+      expect(websocketCloseSpy).to.have.been.calledOnce;
+    });
   });
 });
