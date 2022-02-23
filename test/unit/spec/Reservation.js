@@ -4,7 +4,7 @@ import Configuration from '../../../lib/util/Configuration';
 import Logger from '../../../lib/util/Logger';
 const mockEvents = require('../../mock/Events').events;
 import { pendingReservationInstance, assignedReservationInstance, acceptedReservationWithActiveOutgoingTransfer, acceptedReservationWithIncomingAndActiveOutgoingTransfer, pendingReservationIncomingTransfer } from '../../mock/Reservations';
-import { reservationAccepted, reservationCalled, reservationDequeued, reservationRedirected, reservationRejected, reservationConferenced, reservationCompleted, reservationWrapping } from '../../mock/Responses';
+import { reservationAccepted, reservationCalled, reservationDequeued, reservationRedirected, reservationRejected, reservationConferenced, reservationCompleted, reservationWrapping, latestReservation } from '../../mock/Responses';
 import Reservation from '../../../lib/Reservation';
 import ReservationDescriptor from '../../../lib/descriptors/ReservationDescriptor';
 import Request from '../../../lib/util/Request';
@@ -715,6 +715,31 @@ describe('Reservation', () => {
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
+    });
+
+    describe('#fetchLatestVersion', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Workers/WKxxx/Reservations/WRxx1';
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => sandbox.restore());
+
+        it('updates the reservation attributes with the latest data', () => {
+            sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1).returns(Promise.resolve(latestReservation));
+
+            const reservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            const initialVersion = reservation.version;
+
+            reservation.fetchLatestVersion().then(updatedReservation => {
+                expect(reservation).to.equal(updatedReservation);
+                expect(reservation.version).to.not.equal(initialVersion);
+            });
+        });
+
     });
 
     describe('#_emitEvent(eventType, rawEventData)', () => {

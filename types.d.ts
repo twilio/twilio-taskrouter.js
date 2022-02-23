@@ -24,6 +24,7 @@ export class Worker extends EventEmitter {
     disconnect();
     setAttributes(attributes: any): Promise<Worker>;
     updateToken(newToken: string);
+    fetchLatestVersion(): Promise<Worker>;
 }
 
 export class Supervisor extends Worker {
@@ -84,6 +85,7 @@ export interface Task extends NodeJS.EventEmitter {
     updateParticipant(options: TaskParticipantOptions): Promise<Task>;
     kick(workerSid: string): Promise<Task>;
     hold(targetWorkerSid: string, onHold: boolean, options: HoldOptions): Promise<Task>;
+    fetchLatestVersion(): Promise<Task>;
 }
 
 export interface Reservation extends NodeJS.EventEmitter {
@@ -110,6 +112,7 @@ export interface Reservation extends NodeJS.EventEmitter {
     redirect(callSid: string, url: string, options?: RedirectOptions);
     reject(options?: RejectOptions): Promise<Reservation>;
     updateParticipant(options: ReservationParticipantOptions): Promise<Reservation>;
+    fetchLatestVersion(): Promise<Reservation>;
 }
 
 export interface TaskQueue {

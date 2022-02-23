@@ -14,7 +14,7 @@ const mockEvents = require('../../mock/Events').events;
 import OutgoingTransfer from '../../../lib/core/transfer/OutgoingTransfer';
 import Request from '../../../lib/util/Request';
 import Task from '../../../lib/Task';
-import { taskCompleted, taskWrapping, updatedTaskAttributes, updatedTaskAttributesForOutbound, taskHoldUnhold } from '../../mock/Responses';
+import { taskCompleted, taskWrapping, updatedTaskAttributes, updatedTaskAttributesForOutbound, taskHoldUnhold, latestTask } from '../../mock/Responses';
 import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 import { token } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
@@ -697,6 +697,32 @@ describe('Task', () => {
             });
         });
     });
+
+    describe('#fetchLatestVersion', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1';
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => sandbox.restore());
+
+        it('updates the task attributes with the latest data', () => {
+            sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1).returns(Promise.resolve(latestTask));
+
+            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
+            const initialVersion = task.version;
+
+            task.fetchLatestVersion().then(updatedTask => {
+                expect(task).to.equal(updatedTask);
+                expect(task.version).to.not.equal(initialVersion);
+            });
+        });
+
+    });
+
 
     describe('#_emitEvent(eventType, payload)', () => {
         it('should emit Event:on(canceled)', () => {

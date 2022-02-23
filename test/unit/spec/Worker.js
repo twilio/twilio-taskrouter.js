@@ -16,7 +16,7 @@ import Logger from '../../../lib/util/Logger';
 import { list as mockList } from '../../mock/Activities';
 import { pageSize1000 } from '../../mock/Channels';
 import { reservations } from '../../mock/Reservations';
-import { updateWorkerAttributes, updateWorkerActivityToIdle, createTask, initWorkerAttributes } from '../../mock/Responses';
+import { updateWorkerAttributes, updateWorkerActivityToIdle, createTask, initWorkerAttributes, latestWorker } from '../../mock/Responses';
 import Request from '../../../lib/util/Request';
 import EventBridgeSignaling from '../../../lib/signaling/EventBridgeSignaling';
 import { token as initialToken, updatedToken } from '../../mock/Token';
@@ -345,6 +345,33 @@ describe('Worker', () => {
 
     });
   });
+
+  describe('#fetchLatestVersion', () => {
+    let sandbox;
+    let worker;
+
+    const requestURL = 'Workspaces/WSxxx/Workers/WKxxx';
+
+    beforeEach(() => {
+        worker = new Worker(initialToken, WorkerConfig);
+        sandbox = sinon.sandbox.create();
+        sinon.stub(worker, 'getRoutes').returns(routes);
+    });
+
+    afterEach(() => sandbox.restore());
+
+    it('updates the worker attributes with the latest data', () => {
+        sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1).returns(Promise.resolve(latestWorker));
+
+        const initialVersion = worker.version;
+
+        worker.fetchLatestVersion().then(updatedWorker => {
+            expect(worker).to.equal(updatedWorker);
+            expect(worker.version).to.not.equal(initialVersion);
+        });
+    });
+
+});
 
   describe('#_updateWorkerActivity(activitySid)', () => {
     let worker;

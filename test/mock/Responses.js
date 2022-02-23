@@ -30,6 +30,21 @@ export const updateWorkerAttributes = {
   version: 10
 };
 
+export const latestWorker = {
+  account_sid: "ACxxx",
+  workspace_sid: "WSxxx",
+  sid: "WKxxx",
+  date_created: 1510257438,
+  date_updated: 1519537599,
+  attributes: "{\"selected_language\":\"et\"}",
+  friendly_name: "Alice",
+  available: true,
+  activity_sid: "WAxxx",
+  activity_name: "Idle",
+  date_status_changed: 1519414077,
+  version: 30
+};
+
 export const acceptedReservation = {
   account_sid: "ACxxx",
   workspace_sid: "WSxxx",
@@ -139,6 +154,30 @@ export const updatedTaskAttributes = {
     addons: "{}",
     routing_target: null,
     version: 15
+};
+
+export const latestTask = {
+  account_sid: "ACxxx",
+  workspace_sid: "WSxxx",
+  sid: "WTxx1",
+  date_created: 1518809969,
+  date_updated: 1519408987,
+  attributes: "{\"languages\":[\"es\"]}",
+  assignment_status: "completed",
+  workflow_sid: "WWxxx",
+  workflow_name: "Default Fifo Workflow",
+  queue_sid: "WQxxx",
+  queue_name: "Sample Queue",
+  priority: 0,
+  reason: "Task is completed.",
+  timeout: 86400,
+  task_channel_sid: "TCxxx",
+  task_channel_unique_name: "default",
+  counter: 2,
+  age: 291,
+  addons: "{}",
+  routing_target: null,
+  version: 30
 };
 
 export const updatedTaskAttributesForOutbound = {
@@ -268,6 +307,21 @@ export const reservationCompleted = {
   task_channel_sid: "TCxxx",
   worker_previous_activity_sid: "WAxxx",
   version: 3
+};
+
+export const latestReservation = {
+  account_sid: "ACxxx",
+  workspace_sid: "WSxxx",
+  sid: "WRxx1",
+  date_created: 1519413824,
+  date_updated: 1519413847,
+  task_sid: "WTxx1",
+  worker_sid: "WKxxx",
+  worker_name: "Alice",
+  reservation_status: "pending",
+  task_channel_sid: "TCxxx",
+  worker_previous_activity_sid: "WAxxx",
+  version: 10
 };
 
 export const reservationWrapping = {
