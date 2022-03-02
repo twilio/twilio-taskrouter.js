@@ -181,7 +181,7 @@ describe('TaskEvents', () => {
                 };
                 return task.setAttributes(newAttributes)
                     .then(updatedTask => {
-                        expect(updatedTask.version).to.be.greaterThan(oldVersion);
+                        expect(updatedTask.version).to.not.be.equal(oldVersion);
                         done();
                     });
             }).catch(done);

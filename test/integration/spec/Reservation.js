@@ -107,7 +107,7 @@ describe('Reservation', () => {
         const oldVersion = reservation.version;
 
         reservation.accept().then(updatedReservation => {
-          expect(updatedReservation.version).to.be.greaterThan(oldVersion);
+          expect(updatedReservation.version).to.not.be.equal(oldVersion);
           done();
         }).catch(done);
       });
