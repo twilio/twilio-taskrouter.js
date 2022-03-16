@@ -4,6 +4,7 @@ import { getAccessToken } from '../../util/MakeAccessToken';
 
 const chai = require('chai');
 const expect = chai.expect;
+const assert = chai.assert;
 
 const credentials = require('../../env');
 
@@ -110,6 +111,30 @@ describe('Reservation', () => {
           expect(updatedReservation.version).to.not.be.equal(oldVersion);
           done();
         }).catch(done);
+      });
+    }).timeout(5000);
+
+    it('should have the version field in list response', (done) => {
+      new Promise(resolve => {
+        worker.on('ready', resolve);
+      }).then(()=> {
+        envTwilio.createTask(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskWorkflowSid,
+            '{ "selected_language": "es" }'
+        );
+
+        const reservationsEntity = worker._dataServices.reservationsEntity;
+
+        worker.on('reservationCreated', ()=> {
+          reservationsEntity.fetchReservations().then(()=> {
+            reservationsEntity.reservations.forEach(reservation => {
+              assert.isDefined(reservation.version);
+              assert.isDefined(reservation.task.version);
+            });
+            done();
+          });
+        });
       });
     }).timeout(5000);
   });
