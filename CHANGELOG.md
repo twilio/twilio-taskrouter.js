@@ -1,3 +1,9 @@
+0.6.0
+==========
+New Features
+----------
+- Add `version` field to TaskRouter resources (Task, Reservation and Worker)
+
 0.5.9
 ==========
 Bug Fixes
