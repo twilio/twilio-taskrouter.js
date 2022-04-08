@@ -381,7 +381,11 @@ export default class OutboundCommonHelpers {
         const participants = await this.envTwilio.fetchConferenceParticipants(conference.sid);
 
         if (typeof expectedConfStatus !== 'undefined') {
-            assert.strictEqual(conference.status, expectedConfStatus, 'Conference Status');
+            if (typeof expectedConfStatus === 'string') {
+                assert.strictEqual(conference.status, expectedConfStatus, 'Conference Status');
+            } else {
+                assert.include(expectedConfStatus, conference.status, 'Conference Status');
+            }
         }
 
         if (typeof expectedConfParticipantsSize !== 'undefined') {
