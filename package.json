@@ -29,7 +29,7 @@
     "clean": "rm -rf ./coverage ./dist ./node_modules",
     "lint": "eslint ./lib ./test/integration",
     "test:unit": "mocha --full-trace --check-leaks --require babel-core/register ./test/unit/index.js --exit",
-    "test:integration": "mocha --full-trace --check-leaks --require babel-core/register ./test/integration/index.js --exit",
+    "test:integration": "mocha --full-trace --check-leaks --require babel-core/register ./test/integration/index.js --timeout 40000 --exit",
     "test:integration:voice": "mocha --full-trace --check-leaks --require babel-core/register ./test/voice/index.js --timeout 40000 --exit",
     "test:integration:media": "mocha --full-trace --check-leaks --require babel-core/register ./test/media/index.js --timeout 40000 --exit",
     "test": "run-s test:unit test:integration",
