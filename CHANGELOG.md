@@ -4,6 +4,16 @@ New Features
 ----------
 - Add `version` field to TaskRouter resources (Task, Reservation and Worker)
 
+0.5.10
+==========
+Bug Fixes
+----------
+- Fixed heartbeat attempting to close websocket after it was already closed
+
+Maintenance
+----------
+- Add missing type declarations
+
 0.5.9
 ==========
 Bug Fixes
