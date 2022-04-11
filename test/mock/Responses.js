@@ -11,8 +11,7 @@ export const updateWorkerActivityToIdle = {
   available: true,
   activity_sid: "WAxx2",
   activity_name: "Idle",
-  date_status_changed: 1519259389,
-  version: 15
+  date_status_changed: 1519259389
 };
 
 export const updateWorkerAttributes = {
@@ -26,23 +25,7 @@ export const updateWorkerAttributes = {
   available: true,
   activity_sid: "WAxxx",
   activity_name: "Idle",
-  date_status_changed: 1519414077,
-  version: 10
-};
-
-export const latestWorker = {
-  account_sid: "ACxxx",
-  workspace_sid: "WSxxx",
-  sid: "WKxxx",
-  date_created: 1510257438,
-  date_updated: 1519537599,
-  attributes: "{\"selected_language\":\"et\"}",
-  friendly_name: "Alice",
-  available: true,
-  activity_sid: "WAxxx",
-  activity_name: "Idle",
-  date_status_changed: 1519414077,
-  version: 30
+  date_status_changed: 1519414077
 };
 
 export const acceptedReservation = {
@@ -56,8 +39,7 @@ export const acceptedReservation = {
   worker_name: "Alice",
   reservation_status: "accepted",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 20
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const taskCompleted = {
@@ -80,8 +62,7 @@ export const taskCompleted = {
   counter: 2,
   age: 291,
   addons: "{}",
-  routing_target: null,
-  version: 20
+  routing_target: null
 };
 
 export const taskWrapping = {
@@ -104,8 +85,7 @@ export const taskWrapping = {
   counter: 2,
   age: 211,
   addons: "{}",
-  routing_target: null,
-  version: 10
+  routing_target: null
 };
 
 export const taskHoldUnhold = {
@@ -128,8 +108,7 @@ export const taskHoldUnhold = {
     counter: 2,
     age: 291,
     addons: "{}",
-    routing_target: null,
-    version: 10
+    routing_target: null
 };
 
 export const updatedTaskAttributes = {
@@ -152,32 +131,7 @@ export const updatedTaskAttributes = {
     counter: 2,
     age: 291,
     addons: "{}",
-    routing_target: null,
-    version: 15
-};
-
-export const latestTask = {
-  account_sid: "ACxxx",
-  workspace_sid: "WSxxx",
-  sid: "WTxx1",
-  date_created: 1518809969,
-  date_updated: 1519408987,
-  attributes: "{\"languages\":[\"es\"]}",
-  assignment_status: "completed",
-  workflow_sid: "WWxxx",
-  workflow_name: "Default Fifo Workflow",
-  queue_sid: "WQxxx",
-  queue_name: "Sample Queue",
-  priority: 0,
-  reason: "Task is completed.",
-  timeout: 86400,
-  task_channel_sid: "TCxxx",
-  task_channel_unique_name: "default",
-  counter: 2,
-  age: 291,
-  addons: "{}",
-  routing_target: null,
-  version: 30
+    routing_target: null
 };
 
 export const updatedTaskAttributesForOutbound = {
@@ -200,8 +154,7 @@ export const updatedTaskAttributesForOutbound = {
     counter: 2,
     age: 291,
     addons: "{}",
-    routing_target: 'WKxxx',
-    version: 23
+    routing_target: 'WKxxx'
 };
 
 export const reservationAccepted = {
@@ -215,8 +168,7 @@ export const reservationAccepted = {
   worker_name: "Alice",
   reservation_status: "accepted",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 30
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationRejected = {
@@ -230,8 +182,7 @@ export const reservationRejected = {
   worker_name: "Alice",
   reservation_status: "rejected",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 10
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationDequeued = {
@@ -245,8 +196,7 @@ export const reservationDequeued = {
   worker_name: "Alice",
   reservation_status: "pending",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 40
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationRedirected = {
@@ -260,8 +210,7 @@ export const reservationRedirected = {
   worker_name: "Alice",
   reservation_status: "pending",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 40
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationCalled = {
@@ -275,8 +224,7 @@ export const reservationCalled = {
   worker_name: "Alice",
   reservation_status: "pending",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 30
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationConferenced = {
@@ -290,8 +238,7 @@ export const reservationConferenced = {
   worker_name: "Alice",
   reservation_status: "pending",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 50
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationCompleted = {
@@ -305,23 +252,7 @@ export const reservationCompleted = {
   worker_name: "Alice",
   reservation_status: "completed",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 3
-};
-
-export const latestReservation = {
-  account_sid: "ACxxx",
-  workspace_sid: "WSxxx",
-  sid: "WRxx1",
-  date_created: 1519413824,
-  date_updated: 1519413847,
-  task_sid: "WTxx1",
-  worker_sid: "WKxxx",
-  worker_name: "Alice",
-  reservation_status: "pending",
-  task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 10
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const reservationWrapping = {
@@ -335,8 +266,7 @@ export const reservationWrapping = {
   worker_name: "Alice",
   reservation_status: "wrapping",
   task_channel_sid: "TCxxx",
-  worker_previous_activity_sid: "WAxxx",
-  version: 5
+  worker_previous_activity_sid: "WAxxx"
 };
 
 export const createTask = {
@@ -374,6 +304,5 @@ export const initWorkerAttributes = {
     available: true,
     activity_sid: "WAxx2",
     activity_name: "Idle",
-    date_status_changed: 1519414077,
-    version: 3
+    date_status_changed: 1519414077
 };

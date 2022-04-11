@@ -36,8 +36,6 @@ describe('TaskDescriptor', () => {
             assert.equal(taskDescriptor.timeout, instance.task.timeout);
             assert.equal(taskDescriptor.workflowSid, instance.task.workflow_sid);
             assert.equal(taskDescriptor.workflowName, instance.task.workflow_name);
-            assert.equal(taskDescriptor.version, instance.task.version);
-            assert.equal(typeof taskDescriptor.version, 'string');
             assert.isNull(instance.task.routing_target);
         });
 

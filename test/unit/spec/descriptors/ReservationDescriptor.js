@@ -39,8 +39,6 @@ describe('ReservationDescriptor', () => {
             assert.equal(reservationDescriptor.workerSid, instance.worker_sid);
             assert.equal(reservationDescriptor.status, instance.reservation_status);
             assert.equal(reservationDescriptor.timeout, instance.reservation_timeout);
-            assert.equal(reservationDescriptor.version, instance.version);
-            assert.equal(typeof reservationDescriptor.version, 'string');
             assert.deepEqual(reservationDescriptor.dateCreated, new Date(instance.date_created * 1000));
             assert.deepEqual(reservationDescriptor.dateUpdated, new Date(instance.date_updated * 1000));
             assert.isFalse(reservationDescriptor.hasOwnProperty('canceledReasonCode'));

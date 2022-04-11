@@ -14,7 +14,7 @@ const mockEvents = require('../../mock/Events').events;
 import OutgoingTransfer from '../../../lib/core/transfer/OutgoingTransfer';
 import Request from '../../../lib/util/Request';
 import Task from '../../../lib/Task';
-import { taskCompleted, taskWrapping, updatedTaskAttributes, updatedTaskAttributesForOutbound, taskHoldUnhold, latestTask } from '../../mock/Responses';
+import { taskCompleted, taskWrapping, updatedTaskAttributes, updatedTaskAttributesForOutbound, taskHoldUnhold } from '../../mock/Responses';
 import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 import { token } from '../../mock/Token';
 import Worker from '../../../lib/Worker';
@@ -156,35 +156,6 @@ describe('Task', () => {
                 expect(task.routingTarget).to.equal(null);
             });
         });
-
-        it('should pass the object version to API request', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const version = task.version;
-
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(taskCompleted));
-
-            return task.complete('Task is completed.').then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
-            });
-        });
-
-
-        it('should update the object version', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            sandbox.stub(Request.prototype, 'post')
-                .withArgs(requestURL, requestParams, API_V1, initialVersion)
-                .returns(Promise.resolve(taskCompleted));
-
-            return task.complete('Task is completed.').then((updatedTask) => {
-                const updatedVersion = updatedTask.version;
-
-                expect(task.version).to.equal(updatedVersion);
-                expect(task.version).to.not.equal(initialVersion);
-            });
-        });
     });
 
     describe('#wrapUp(options)', () => {
@@ -263,34 +234,6 @@ describe('Task', () => {
                 expect(task.workflowSid).to.equal(assignedTaskDescriptor.workflowSid);
                 expect(task.workspaceSid).to.equal(assignedTaskDescriptor.workspaceSid);
                 expect(task.routingTarget).to.equal(null);
-            });
-        });
-
-        it('should pass the object version to API request', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const version = task.version;
-
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(taskWrapping));
-
-            return task.wrapUp({ reason: 'Task is wrapping.' }).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
-            });
-        });
-
-        it('should update the object version', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            sandbox.stub(Request.prototype, 'post')
-                .withArgs(requestURL, requestParams, API_V1, initialVersion)
-                .returns(Promise.resolve(taskWrapping));
-
-            return task.wrapUp({ reason: 'Task is wrapping.' }).then((updatedTask) => {
-                const updatedVersion = updatedTask.version;
-
-                expect(task.version).to.equal(updatedVersion);
-                expect(task.version).to.not.equal(initialVersion);
             });
         });
     });
@@ -416,34 +359,6 @@ describe('Task', () => {
                 expect(task.routingTarget).to.equal(null);
             });
         });
-
-        it('should pass the object version to API request', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const version = task.version;
-
-            const stub = sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1, version);
-            stub.returns(Promise.resolve(updatedTaskAttributes));
-
-            return task.setAttributes({ languages: ['en'] }).then(() => {
-                expect(stub).have.been.calledWith(requestURL, requestParams, API_V1, version);
-            });
-        });
-
-        it('should update the object version', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            sandbox.stub(Request.prototype, 'post')
-                .withArgs(requestURL, requestParams, API_V1, initialVersion)
-                .returns(Promise.resolve(updatedTaskAttributes));
-
-            return task.setAttributes({ languages: ['en'] }).then((updatedTask) => {
-                const updatedVersion = updatedTask.version;
-
-                expect(task.version).to.equal(updatedVersion);
-                expect(task.version).to.not.equal(initialVersion);
-            });
-        });
     });
 
     describe('#updateParticipant(options)', () => {
@@ -504,22 +419,6 @@ describe('Task', () => {
                 expect(err.message).to.equal('Failed to parse JSON.');
             });
         });
-
-        it('should update the object version', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            sandbox.stub(Request.prototype, 'post')
-                .withArgs(requestURL, requestParams, API_V2)
-                .returns(Promise.resolve(taskHoldUnhold));
-
-            return task.updateParticipant({ hold: false }).then((updatedTask) => {
-                const updatedVersion = updatedTask.version;
-
-                expect(task.version).to.equal(updatedVersion);
-                expect(task.version).to.not.equal(initialVersion);
-            });
-        });
     });
 
     describe('#hold(targetWorkerSid, onHold, options)', () => {
@@ -568,22 +467,6 @@ describe('Task', () => {
 
             return task.hold('WKxxB', true).then(() => {
                 expect(task.sid).to.equal(taskHoldUnhold.sid);
-            });
-        });
-
-        it('should update the object version', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            sandbox.stub(Request.prototype, 'post')
-                .withArgs(requestURL, requestParams, API_V2)
-                .returns(Promise.resolve(taskHoldUnhold));
-
-            return task.hold('WKxxB', true).then((updatedTask) => {
-                const updatedVersion = updatedTask.version;
-
-                expect(task.version).to.equal(updatedVersion);
-                expect(task.version).to.not.equal(initialVersion);
             });
         });
 
@@ -670,22 +553,6 @@ describe('Task', () => {
             });
         });
 
-        it('should update the object version', () => {
-            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            sandbox.stub(Request.prototype, 'post')
-                .withArgs(requestURL, requestParams, API_V2)
-                .returns(Promise.resolve(taskHoldUnhold));
-
-            return task.kick('WKxx2').then((updatedTask) => {
-                const updatedVersion = updatedTask.version;
-
-                expect(task.version).to.equal(updatedVersion);
-                expect(task.version).to.not.equal(initialVersion);
-            });
-        });
-
         it('should return an error if hold/unhold failed', () => {
             sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V2).returns(Promise.reject(Errors.TASKROUTER_ERROR.clone('Failed to parse JSON.')));
 
@@ -697,32 +564,6 @@ describe('Task', () => {
             });
         });
     });
-
-    describe('#fetchLatestVersion', () => {
-        let sandbox;
-
-        const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1';
-
-        beforeEach(() => {
-            sandbox = sinon.sandbox.create();
-        });
-
-        afterEach(() => sandbox.restore());
-
-        it('updates the task attributes with the latest data', () => {
-            sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1).returns(Promise.resolve(latestTask));
-
-            const task = new Task(worker, new Request(config), 'WR123', assignedTaskDescriptor);
-            const initialVersion = task.version;
-
-            task.fetchLatestVersion().then(updatedTask => {
-                expect(task).to.equal(updatedTask);
-                expect(task.version).to.not.equal(initialVersion);
-            });
-        });
-
-    });
-
 
     describe('#_emitEvent(eventType, payload)', () => {
         it('should emit Event:on(canceled)', () => {

@@ -109,21 +109,4 @@ describe('Common Worker Client', () => {
             });
         });
     });
-
-    describe('Worker Versioning', () => {
-        it('should update the version of the worker', (done) => {
-            new Promise(resolve => {
-                alice.on('ready', resolve);
-            }).then(()=> {
-                const oldVersion = alice.version;
-
-                return alice.setAttributes({ languages: ['en'] }).then(updatedWorker => {
-                    // version will stay the same if the worker already has the given attributes
-                    assert.isTrue(oldVersion <= updatedWorker.version);
-                    done();
-                });
-
-            });
-        }).timeout(5000);
-    });
 });

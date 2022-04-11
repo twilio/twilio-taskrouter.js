@@ -13,7 +13,6 @@ export default class AssertionUtils {
         assert.equal(actual.workerSid, responseObj.worker_sid);
         assert.equal(actual.status, responseObj.reservation_status);
         assert.equal(actual.timeout, responseObj.reservation_timeout);
-        assert.equal(actual.version, responseObj.version);
         assert.deepEqual(actual.dateCreated, new Date(responseObj.date_created * 1000));
         assert.deepEqual(actual.dateUpdated, new Date(responseObj.date_updated * 1000));
         assert.isTrue(typeof actual.taskDescriptor === 'undefined');
@@ -35,7 +34,6 @@ export default class AssertionUtils {
         assert.equal(actual.task.workflowSid, responseObj.task.workflow_sid);
         assert.equal(actual.task.workflowName, responseObj.task.workflow_name);
         assert.equal(actual.task.routingTarget, responseObj.task.routing_target);
-        assert.equal(actual.task.version, responseObj.task.version);
         if (responseObj.task_transfer) {
             assert.exists(actual.transfer);
             AssertionUtils.assertTransfer(actual.transfer, responseObj.task_transfer);

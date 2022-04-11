@@ -168,26 +168,6 @@ describe('TaskEvents', () => {
         }).timeout(5000);
     });
 
-    describe('Task versioning', () => {
-        it('should update the version of the task', done => {
-            new Promise(resolve => {
-                alice.on('reservationCreated', reservation => {
-                    resolve(reservation.task);
-                });
-            }).then(task => {
-                const oldVersion = task.version;
-                const newAttributes = {
-                    languages: ['en']
-                };
-                return task.setAttributes(newAttributes)
-                    .then(updatedTask => {
-                        expect(updatedTask.version).to.not.be.equal(oldVersion);
-                        done();
-                    });
-            }).catch(done);
-        }).timeout(5000);
-    });
-
     describe.skip('#Task Completed', () => {
         // ORCH-1784 filed for unreliable test
         it.skip('should get the completed event on the task.', done => {
