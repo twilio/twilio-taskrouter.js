@@ -1,0 +1,47 @@
+{
+  "accountSid":"AC21a67e18187196ee402be736ef8688e6",
+  "authToken":"a345a11a50d5ac205e70487b2910401f",
+  "signingKeySid":"SK47a4535d1ac1c80af998546b98eece51",
+  "signingKeySecret":"MxuYXmUXZjBq1lODTr873QIU5f613khu",
+
+  "nonMultiTaskWorkspaceSid":"WSbe2ed5242e2e9e44eb03cd9f8abe8f2c",
+  "nonMultiTaskWorkflowSid":"WW9406fc8469d4f114f565c0a65aa6731e",
+  "nonMultiTaskAliceSid":"WK0d10df120f7e383d99d349552c011142",
+  "nonMultiTaskBobSid":"WKbff4c3572face14b8670c8d957d5c3ae",
+  "nonMultiTaskConnectActivitySid":"WA8ed45353198ab069b0c29da59e2ada46",
+  "nonMultiTaskUpdateActivitySid":"WAd06dbf95b6d9119d206bf2d2351e2d11",
+  "nonMultiTaskNumActivities":4,
+
+  "multiTaskWorkspaceSid":"WSa023c1ece8bb7b5d9f9d06bcb40bf5d8",
+  "multiTaskQueueSid":"WQ3ce6891e11fe046e36b29262fe563b3a",
+  "multiTaskWorkflowSid":"WW1cb8e324db340bfb9048dd0c3db8a148",
+  "multiTaskAliceSid":"WKba7a80bdf7401008c9d5a422055cc12b",
+  "multiTaskBobSid":"WK7b3c1cdf1e02a83d505d74bdb4fe8203",
+  "multiTaskConnectActivitySid":"WA889603741e5d56e1415b1bdf76f3a717",
+  "multiTaskUpdateActivitySid":"WA479c2fcfe5f207a6ac406edb375dc2d4",
+  "multiTaskNumActivities":4,
+  "multiTaskNumChannels":5,
+
+  "ebServer":"https://event-bridge.stage-us1.twilio.com",
+  "wsServer":"wss://event-bridge.stage-us1.twilio.com",
+  "hasSingleTasking":false,
+  "supervisorNumber":"+12018999503",
+  "customerNumber":"+12018999060",
+  "flexCCNumber":"+12019044469",
+  "workerNumber":"+12018998094",
+  "region":"stage-us1",
+  "env":"stage"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
