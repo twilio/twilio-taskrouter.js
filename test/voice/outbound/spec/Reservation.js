@@ -155,7 +155,7 @@ describe('Reservation with Outbound Voice Task', () => {
             return new Promise(async(resolve, reject) => {
                 const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
 
-                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'in-progress', options).then(() => {
+                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, ['in-progress', 'completed'], options).then(() => {
                     resolve('Outbound cancel reservation after cancel task test finished ');
                 }).catch(err => {
                     reject(`Failed to validate wraup & completed event for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
