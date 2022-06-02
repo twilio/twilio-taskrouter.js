@@ -42,7 +42,7 @@ describe('Reservation with Outbound Voice Task', () => {
         });
     });
 
-    describe.skip('#conference reservation', () => {
+    describe('#conference reservation', () => {
         it('should issue a conference instruction on the Reservation', () => {
             return new Promise(async(resolve, reject) => {
                 const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker);
@@ -173,7 +173,7 @@ describe('Reservation with Outbound Voice Task', () => {
             });
         });
 
-        it.skip('should cancel reservation if customer number is invalid', () => {
+        it('should cancel reservation if customer number is invalid', () => {
             const options = {
                 customerNumber: INVALID_NUMBER,
                 reasonCode: RESERVATION_CANCELED_REASON,
@@ -197,7 +197,7 @@ describe('Reservation with Outbound Voice Task', () => {
             });
         });
 
-        it.skip('should cancel reservation if customer number is not allowed for geo permission', () => {
+        it('should cancel reservation if customer number is not allowed for geo permission', () => {
             const options = {
                 customerNumber: GEO_NOT_ALLOW_NUMBER,
                 reasonCode: CONNECTING_PARTICIPANT_ERROR_CODE,
