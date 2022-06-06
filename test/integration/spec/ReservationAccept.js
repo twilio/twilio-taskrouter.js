@@ -43,10 +43,10 @@ describe('Reservation Accept', () => {
             );
         });
     });
-
-    describe.skip('#accept reservation, wrapup and complete the task', () => {
+//yash -pending test case
+    describe('#accept reservation, wrapup and complete the task', () => {
         // ORCH-1796 file for unreliable test
-        it.skip('should accept the reservation, wrapup and complete the task', done => {
+        it('should accept the reservation, wrapup and complete the task', done => {
             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
@@ -90,7 +90,7 @@ describe('Reservation Accept', () => {
                     done();
                 }).catch(done);
             });
-        }).timeout(5000);
+        }).timeout(15000);
     });
 
     describe('#receive a reservationCompleted event after deleting an accepted task', () => {
