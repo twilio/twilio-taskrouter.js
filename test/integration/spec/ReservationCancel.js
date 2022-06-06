@@ -36,9 +36,10 @@ describe('Reservation Canceled', () => {
         });
     });
 
-    describe.skip('#create reservation, cancel the task and cancel reservation', () => {
+    describe('#create reservation, cancel the task and cancel reservation', () => {
         // ORCH-1775 filed for unreliable test
-        it.skip('should accept the reservation', () => {
+        //Yash
+        it('should accept the reservation', () => {
             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
@@ -53,7 +54,7 @@ describe('Reservation Canceled', () => {
                     expect(reservation.task.sid.substring(0, 2)).to.equal('WT');
                     expect(reservation.task.taskChannelUniqueName).to.equal('default');
                     resolve(reservation);
-                });
+                }).timeout(15000);
             }).then(reservation => {
                 return Promise.all([
                     reservation.on('canceled', canceledRes => {
@@ -68,6 +69,6 @@ describe('Reservation Canceled', () => {
                         .update({ assignmentStatus: 'canceled' })
                 ]);
             });
-        }).timeout(10000);
+        }).timeout(50000);
     });
 });
