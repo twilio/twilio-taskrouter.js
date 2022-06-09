@@ -1,3 +1,4 @@
+require('../messaging/spec/Reservation');
 require('../voice/inbound/spec/Reservation');
 require('../voice/inbound/spec/Supervisor');
 require('../voice/outbound/spec/Reservation');

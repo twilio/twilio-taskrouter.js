@@ -6,28 +6,6 @@ const client = require('twilio')(ACCOUNT_SID, AUTH_TOKEN, { region: 'stage' });
 const fs = require('fs');
 
 async function createWorkspaces() {
-    // Create a nonMultiTaskWorkSpace
-    const nonMultiTaskWorkspace = await client.taskrouter.workspaces
-                                            .create({
-                                                template: 'FIFO',
-                                                friendlyName: 'js-sdk e2e tester - Single Tasking',
-                                                multiTaskEnabled: 'false'
-                                            });
-
-    // Create nonMultiTaskWorkers
-    const nonMultiTaskAlice = await client.taskrouter.workspaces(nonMultiTaskWorkspace.sid)
-                                        .workers
-                                        .create({ attributes: JSON.stringify({
-                                            languages: ['en'], name: 'Ms. Alice'
-                                        }), friendlyName: 'Alice'
-                                        });
-
-    const nonMultiTaskBob = await client.taskrouter.workspaces(nonMultiTaskWorkspace.sid)
-                                      .workers
-                                      .create({ attributes: JSON.stringify({
-                                          somethingRandom: 0.5873040664007263
-                                      }), friendlyName: 'Bob'
-                                      });
 
     // Create a multiTaskWorkspace
     const multiTaskWorkspace = await client.taskrouter.workspaces
@@ -90,16 +68,6 @@ async function createWorkspaces() {
                                    });
 
     // Write required variables to json file
-    const nonMultiTaskWorkflows = await client.taskrouter.workspaces(nonMultiTaskWorkspace.sid)
-                                            .workflows
-                                            .list();
-    const nonMultiTaskWorkflow = await nonMultiTaskWorkflows[0];
-
-    const nonMultiTaskActivities = await client.taskrouter.workspaces(nonMultiTaskWorkspace.sid)
-                                             .activities
-                                             .list();
-    const nonMultiTaskOffline = await nonMultiTaskActivities[0];
-    const nonMultiTaskIdle = await nonMultiTaskActivities[1];
 
     const multiTaskWorkflows = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
                                          .workflows
@@ -110,13 +78,6 @@ async function createWorkspaces() {
                 authToken: AUTH_TOKEN,
                 signingKeySid: SIGNING_KEY_SID,
                 signingKeySecret: SIGNING_KEY_SECRET,
-                nonMultiTaskWorkspaceSid: nonMultiTaskWorkspace.sid,
-                nonMultiTaskWorkflowSid: nonMultiTaskWorkflow.sid,
-                nonMultiTaskAliceSid: nonMultiTaskAlice.sid,
-                nonMultiTaskBobSid: nonMultiTaskBob.sid,
-                nonMultiTaskConnectActivitySid: nonMultiTaskIdle.sid,
-                nonMultiTaskUpdateActivitySid: nonMultiTaskOffline.sid,
-                nonMultiTaskNumActivities: 4,
                 multiTaskWorkspaceSid: multiTaskWorkspace.sid,
                 multiTaskQueueSid: multiTaskqueue.sid,
                 multiTaskWorkflowSid: multiTaskWorkflow.sid,

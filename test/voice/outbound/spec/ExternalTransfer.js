@@ -10,7 +10,7 @@ const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 
-describe('External Transfer for Outbound Voice Task', () => {
+describe.skip('External Transfer for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                       credentials.multiTaskAliceSid);
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
