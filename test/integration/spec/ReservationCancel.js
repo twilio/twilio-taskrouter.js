@@ -47,6 +47,7 @@ describe('Reservation Canceled', () => {
             );
 
             return new Promise(resolve => {
+                // Registering 'reservationCreated' listener for worker
                 worker.on('reservationCreated', reservation => {
                     expect(worker.reservations.size).to.equal(1);
                     expect(reservation.status).to.equal('pending');
@@ -54,21 +55,22 @@ describe('Reservation Canceled', () => {
                     expect(reservation.task.sid.substring(0, 2)).to.equal('WT');
                     expect(reservation.task.taskChannelUniqueName).to.equal('default');
                     resolve(reservation);
-                }).timeout(15000);
+                });
             }).then(reservation => {
-                return Promise.all([
+                return Promise.resolve().then([
+                     // Calling the 'canceled' event for the created reservation
                     reservation.on('canceled', canceledRes => {
                         expect(canceledRes.task.status).equal('canceled');
                         expect(canceledRes.status).equal('canceled');
                         assert.isFalse(canceledRes.hasOwnProperty('canceledReasonCode'),
-                            envTwilio.getErrorMessage('Reservation state mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
-
+                        );
                     }),
                     client.taskrouter.workspaces(credentials.multiTaskWorkspaceSid)
                         .tasks(reservation.task.sid)
                         .update({ assignmentStatus: 'canceled' })
                 ]);
+                
             });
-        }).timeout(50000);
+        }).timeout(30000);
     });
 });
