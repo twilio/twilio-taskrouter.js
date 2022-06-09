@@ -10,21 +10,21 @@ const JWT = require('../../util/MakeAccessToken');
 
 describe('Activity', () => {
 
-    const token = JWT.getAccessToken(credentials.accountSid, credentials.nonMultiTaskWorkspaceSid, credentials.nonMultiTaskAliceSid);
+    const token = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
     let worker;
 
     beforeEach(() => {
-        return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid);
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
     });
 
     afterEach(() => {
         worker.removeAllListeners();
-        return envTwilio.deleteAllTasks(credentials.nonMultiTaskWorkspaceSid).then(() => {
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             return envTwilio.updateWorkerActivity(
-                credentials.nonMultiTaskWorkspaceSid,
-                credentials.nonMultiTaskAliceSid,
-                credentials.nonMultiTaskUpdateActivitySid
+                credentials.multiTaskWorkspaceSid,
+                credentials.multiTaskAliceSid,
+                credentials.multiTaskUpdateActivitySid
             );
         });
     });
@@ -34,23 +34,23 @@ describe('Activity', () => {
             worker = new Worker(token, {
                 ebServer: `${credentials.ebServer}/v1/wschannels`,
                 wsServer: `${credentials.wsServer}/v1/wschannels`,
-                connectActivitySid: credentials.nonMultiTaskConnectActivitySid
+                connectActivitySid: credentials.multiTaskConnectActivitySid
             });
 
             let connectActivity;
             let updateActivity;
             worker.on('activityUpdated', async connectWorker => {
                 assert.isNotNull(worker.activities,
-                    envTwilio.getErrorMessage('Worker activities list is null', credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Worker activities list is null', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.equal(worker.activities.size, 4,
-                    envTwilio.getErrorMessage('Worker activities count mismatch', credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Worker activities count mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                     worker.activities.forEach(activity => {
-                        if (activity.sid === credentials.nonMultiTaskConnectActivitySid) {
+                        if (activity.sid === credentials.multiTaskConnectActivitySid) {
                             connectActivity = activity;
                         }
-                        if (activity.sid === credentials.nonMultiTaskUpdateActivitySid) {
+                        if (activity.sid === credentials.multiTaskUpdateActivitySid) {
                             updateActivity = activity;
                         }
                     });
@@ -61,10 +61,10 @@ describe('Activity', () => {
                 expect(worker.activity).to.deep.equal(updateActivity);
                 expect(worker.activity).to.deep.equal(updatedActivity);
                 assert.isTrue(updateActivity.isCurrent,
-                    envTwilio.getErrorMessage('Worker update activity state mismatch', credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Worker update activity state mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 assert.isFalse(connectActivity.isCurrent,
-                    envTwilio.getErrorMessage('Worker connect activity state mismatch', credentials.accountSid, credentials.nonMultiTaskConnectActivitySid));
+                    envTwilio.getErrorMessage('Worker connect activity state mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                 done();
             });

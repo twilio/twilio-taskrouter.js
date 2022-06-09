@@ -45,6 +45,108 @@ describe('TaskEvents', () => {
         });
     });
 
+    describe('#Task Updated', () => {
+        it.skip('should get the updated event on the task.', done => {
+            new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation);
+                });
+            }).then(reservation => {
+                assert.equal(alice.reservations.size, 1);
+
+                // Update the task
+                return envTwilio.updateTask(credentials.multiTaskWorkspaceSid, reservation.task.sid, '{"selected_language": "en"}').then(() => {
+                    // Expect the update event on the task
+                    return new Promise(resolve => {
+                        reservation.task.on('updated', updatedTask => {
+                            resolve([updatedTask, reservation]);
+                        });
+                    });
+                });
+            }).then(taskResArr => {
+                assert.equal(taskResArr[0], taskResArr[1].task);
+                assert.equal(taskResArr[0].sid.substring(0, 2), 'WT');
+                assert.equal(taskResArr[0].taskChannelUniqueName, 'default');
+                assert.equal(taskResArr[0].status, 'reserved');
+                assert.equal(taskResArr[0].queueSid.substring(0, 2), 'WQ');
+                expect(taskResArr[0].attributes).to.deep.equal({
+                    'selected_language': 'en'
+                });
+                assert.equal(taskResArr[0].workflowSid, credentials.multiTaskWorkflowSid);
+                // Make sure the task update does not remove the reservation from the worker's reservation list
+                assert.equal(alice.reservations.size, 1);
+                assert.isNull(taskResArr[0].routingTarget);
+                done();
+            }).catch(done);
+        }).timeout(20000);
+    });
+
+    describe('#OutboundTask Updated', () => {
+        beforeEach(() => {
+
+            return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+                alice = new Worker(multiTaskAliceToken, {
+                    connectActivitySid: credentials.multiTaskConnectActivitySid,
+                    ebServer: `${credentials.ebServer}/v1/wschannels`,
+                    wsServer: `${credentials.wsServer}/v1/wschannels`
+                });
+                // Make sure Bob remains offline before creating a task
+                return envTwilio.updateWorkerActivity(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskBobSid,
+                    credentials.multiTaskUpdateActivitySid
+                );
+            }).then(() => new Promise(resolve => alice.on('ready', resolve)))
+                .then(() => alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid));
+        });
+
+        afterEach(() => {
+
+            alice.removeAllListeners();
+            return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+                return envTwilio.updateWorkerActivity(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskAliceSid,
+                    credentials.multiTaskUpdateActivitySid
+                );
+            });
+        });
+
+        it.skip('should get the updated event on the outbound task.', done => {
+            new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation);
+                });
+            }).then(reservation => {
+                assert.equal(alice.reservations.size, 1);
+
+                // Update the task
+                return envTwilio.updateTask(credentials.multiTaskWorkspaceSid, reservation.task.sid, '{"selected_language": "en"}').then(() => {
+                    // Expect the update event on the task
+                    return new Promise(resolve => {
+                        reservation.task.on('updated', updatedTask => {
+                            resolve([updatedTask, reservation]);
+                        });
+                    });
+                });
+            }).then(taskResArr => {
+                assert.equal(taskResArr[0], taskResArr[1].task);
+                assert.equal(taskResArr[0].sid.substring(0, 2), 'WT');
+                assert.equal(taskResArr[0].taskChannelUniqueName, 'default');
+                assert.equal(taskResArr[0].status, 'reserved');
+                assert.equal(taskResArr[0].queueSid.substring(0, 2), 'WQ');
+                assert.equal(taskResArr[0].routingTarget, alice.sid);
+                expect(taskResArr[0].attributes).to.deep.equal({
+                    'selected_language': 'en'
+                });
+                assert.equal(taskResArr[0].workflowSid, credentials.multiTaskWorkflowSid);
+                // Make sure the task update does not remove the reservation from the worker's reservation list
+                assert.equal(alice.reservations.size, 1);
+                done();
+            }).catch(done);
+        }).timeout(20000);
+    });
+
     describe('#Task Canceled', () => {
         it('should get the canceled event on the task.', done => {
             new Promise(resolve => alice.on('reservationCreated', reservation => resolve(reservation)))
@@ -62,12 +164,14 @@ describe('TaskEvents', () => {
                 })
                 .then(taskResArr => {
                     assert.equal(taskResArr[0], taskResArr[1].task);
+                    assert.equal(taskResArr[0].sid.substring(0, 2), 'WT');
                     assert.equal(taskResArr[0].taskChannelUniqueName, 'default',
                         envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
                     assert.equal(taskResArr[0].status, 'canceled',
                         envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
+                    assert.equal(taskResArr[0].queueSid.substring(0, 2), 'WQ');
                     assert.equal(taskResArr[0].reason, 'Time to go home',
                         envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
