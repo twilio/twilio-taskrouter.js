@@ -9,6 +9,7 @@ require('./spec/ReservationCancel');
 require('./spec/Reservation');
 require('./spec/Supervisor');
 require('./spec/TaskEvents');
+require('./spec/TaskUpdated');
 require('./spec/TaskTransfer');
 require('./spec/WorkerCommon');
 require('./spec/WorkerMultiTask');
