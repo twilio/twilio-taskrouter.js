@@ -43,7 +43,7 @@ describe('Reservation Accept', () => {
             );
         });
     });
-//yash -pending test case
+
     describe('#accept reservation, wrapup and complete the task', () => {
         // ORCH-1796 file for unreliable test
         it('should accept the reservation, wrapup and complete the task', done => {

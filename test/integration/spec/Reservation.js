@@ -57,7 +57,7 @@ describe('Reservation', () => {
           done();
         }).catch(done);
       });
-    }).timeout(5000);
+    }).timeout(15000);
   });
 
   describe.skip('#complete outbound task reservation', () => {
