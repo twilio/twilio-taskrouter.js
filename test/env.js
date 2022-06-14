@@ -6,16 +6,6 @@ try {
   // Do nothing.
 }
 
-const singleTaskingKeys = [
-  'nonMultiTaskWorkspaceSid',
-  'nonMultiTaskWorkflowSid',
-  'nonMultiTaskAliceSid',
-  'nonMultiTaskBobSid',
-  'nonMultiTaskConnectActivitySid',
-  'nonMultiTaskUpdateActivitySid',
-  'nonMultiTaskNumActivities'
-];
-
 const voiceE2EKeys = [
   'supervisorNumber',
   'customerNumber',
@@ -48,24 +38,11 @@ requiredKeys.forEach(key => {
   if (!(key in env)) {
     throw new Error('Missing ' + key);
   }
+});
 
-  // e2e tester -- no voice
-  if (key === 'hasSingleTasking') {
-    if (env[key]) {
-      // check for single tasking
-      singleTaskingKeys.forEach(singleTaskingKey => {
-        if (!(singleTaskingKey in env)) {
-          throw new Error('Missing Single Tasking Key: ' + singleTaskingKey);
-        }
-      });
-    } else {
-      // check for voice
-      voiceE2EKeys.forEach(voiceKey => {
-        if (!(voiceKey in env)) {
-          throw new Error('Missing Voice Integration Key: ' + voiceKey);
-        }
-      });
-    }
+voiceE2EKeys.forEach(voiceKey => {
+  if (!(voiceKey in env)) {
+    throw new Error('Missing Voice Integration Key: ' + voiceKey);
   }
 });
 
