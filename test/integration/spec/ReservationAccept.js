@@ -195,6 +195,7 @@ describe('Reservation Accept', () => {
                                     .then(results => {
                                         assert.equal(results.length, 2,
                                             envTwilio.getErrorMessage('Completed results count mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
                                         let reservation = results[0];
                                         expect(reservation.task.reason).to.equal('Work is done');
                                         expect(reservation.task.status).to.equal('completed');
@@ -202,4 +203,4 @@ describe('Reservation Accept', () => {
                                     });
         }).timeout(5000);
     });
-}); 
+});
