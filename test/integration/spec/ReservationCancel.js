@@ -38,7 +38,6 @@ describe('Reservation Canceled', () => {
 
     describe('#create reservation, cancel the task and cancel reservation', () => {
         // ORCH-1775 filed for unreliable test
-        
         it('should accept the reservation', () => {
             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
@@ -69,7 +68,6 @@ describe('Reservation Canceled', () => {
                         .tasks(reservation.task.sid)
                         .update({ assignmentStatus: 'canceled' })
                 ]);
-                
             });
         }).timeout(30000);
     });
