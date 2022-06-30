@@ -61,8 +61,7 @@ describe('Reservation Canceled', () => {
                     reservation.on('canceled', canceledRes => {
                         expect(canceledRes.task.status).equal('canceled');
                         expect(canceledRes.status).equal('canceled');
-                        assert.isFalse(canceledRes.hasOwnProperty('canceledReasonCode'),
-                        );
+                        assert.isFalse(Object.prototype.hasOwnProperty.call(canceledRes, 'canceledReasonCode'));
                     }),
                     client.taskrouter.workspaces(credentials.multiTaskWorkspaceSid)
                         .tasks(reservation.task.sid)

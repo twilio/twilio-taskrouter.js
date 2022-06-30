@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
         with:
-          node-version: 8.x
+          node-version: 12.x
           registry-url: 'https://registry.npmjs.org'      
       - name : Bump to release version
         run: |
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
         with:
-          node-version: 8.x
+          node-version: 12.x
       - name: Bump version
         id: bump_version
         run: |

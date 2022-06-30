@@ -4,8 +4,7 @@
 const cheerio = require('cheerio');
 const path = require('path');
 const spawnSync = require('child_process').spawnSync;
-const stream = require('stream');
-const vfs = require('vinyl-fs');
+const fs = require('fs');
 
 const docs = process.argv[2];
 
@@ -48,14 +47,22 @@ spawnSync('node', [
   stdio: 'inherit'
 });
 
-vfs.src(path.join(docs, '*.html'))
-  .pipe(map(transform))
-  .pipe(vfs.dest(docs));
+fs.readdir(docs, (err, files) => {
+  if (err)
+    // eslint-disable-next-line no-console
+    console.log(err);
+  else {
+    const htmlFileNames = files.filter(filename => path.extname(filename) === '.html');
+    htmlFileNames.forEach(filename => {
+      const fileContent = fs.readFileSync(path.join(docs, filename), 'utf8');
+      transform(filename, fileContent);
+    });
+  }
+});
 
-function transform(file) {
-  var $ = cheerio.load(file.contents.toString());
+function transform(filename, fileContent) {
+  var $ = cheerio.load(fileContent);
 
-  var filename = file.path.slice(file.base.length);
   var className = filename.split('.html')[0].replace(/\//g, '');
   var div;
 
@@ -76,15 +83,14 @@ function transform(file) {
     $('table.params', div).remove();
   }
 
-  file.contents = new Buffer($.html());
-  return file;
-}
-
-function map(f) {
-  return new stream.Transform({
-    objectMode: true,
-    transform: function transform(file, encoding, callback) {
-      callback(null, f(file));
+  const modifiedFileContent = Buffer.from($.html());
+  fs.writeFile(path.join(docs, filename), modifiedFileContent, err => {
+    if (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return;
     }
   });
+
+  return;
 }

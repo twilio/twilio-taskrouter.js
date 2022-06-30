@@ -4,6 +4,11 @@ New Features
 ----------
 - Add `version` field to TaskRouter resources (Task, Reservation and Worker)
 
+Maintenance
+----------
+- Upgraded several dependencies to more recents versions
+- Upgraded node engine requirement from 6 to >=12.17.0
+
 0.5.10
 ==========
 Bug Fixes

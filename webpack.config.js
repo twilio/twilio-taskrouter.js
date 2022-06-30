@@ -1,7 +1,11 @@
 const CopyPlugin = require('copy-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const WebpackAutoInject = require('webpack-auto-inject-version');
+const TerserPlugin = require('terser-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
+const pkg = require('./package.json');
+
+const fileVersion = `${pkg.name}.js ${pkg.version}`;
+const banner = `${fileVersion}`;
 
 const createConfig = libraryTarget => {
     const config = {
@@ -10,72 +14,77 @@ const createConfig = libraryTarget => {
             filename: 'index.' + libraryTarget + '.js'
         },
         plugins: [
-            new WebpackAutoInject({
-                components: {
-                    AutoIncreaseVersion: false
-                },
-                InjectAsComment: {
-                    tag: 'Version: {version} - {date}',
-                    dateFormat: 'h:MM:ss TT'
-                },
-            }),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
             }),
-            new CopyPlugin(['types.d.ts']),
+            new CopyPlugin({
+                patterns: [
+                    { from: 'types.d.ts' }
+                ]
+            }),
+            new webpack.BannerPlugin({
+                banner,
+                include: /\.js$/
+            })
         ],
+        externals: [nodeExternals()],
         module: {},
         optimization: {
+            minimize: true,
             minimizer: [
-                new UglifyJsPlugin({
-                    uglifyOptions: {
-                        parallel: true,
-                        output: {
+                new TerserPlugin({
+                    parallel: true,
+                    terserOptions: {
+                        format: {
                             comments: /^\**!|@preserve|@license|@cc_on/
                         }
-                    }
+                    },
+                    extractComments: true
                 })
-            ]
+            ],
         }
     };
 
     if (libraryTarget === 'window') {
-        config.node = {
-            fs: 'empty',
-            net: 'empty',
-            tls: 'empty',
-            process: false
+        config.resolve = {
+            fallback: {
+                fs: 'empty',
+                net: 'empty',
+                tls: 'empty',
+                process: false,
+                path: require.resolve('path-browserify'),
+                util: require.resolve('util/')
+            },
         };
-        config.entry = { main: './lib/web.js' }
+        config.entry = { main: './lib/web.js' };
         config.output.library = 'TaskRouter';
         config.output.libraryTarget = 'umd';
-    } else if (libraryTarget == 'test') {
+    } else if (libraryTarget === 'test') {
         config.node = {
             fs: 'empty',
             net: 'empty',
             tls: 'empty',
             process: false
         };
-        config.entry = { main: './test/unit/index.js'},
+        config.entry = { main: './test/unit/index.js' };
         config.output.libraryTarget = 'umd';
     } else {
-        config.entry = { main: './lib/index.js' }
+        config.entry = { main: './lib/index.js' };
         config.target = 'node';
     }
 
     return config;
 };
 
-module.exports = function(env, argv) {
+module.exports = function(env) {
   if (env && env.NODE_ENV === 'test') {
     return [
       createConfig('window'),
       createConfig('test')
-    ]
-  } else {
-    return [
+    ];
+  }
+  return [
       createConfig('commonjs2'),
       createConfig('window')
-    ]
-  }
-}
+  ];
+};
