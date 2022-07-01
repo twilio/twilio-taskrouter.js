@@ -32,7 +32,7 @@
     "test:integration": "mocha --full-trace --check-leaks --require @babel/register ./test/integration/index.js --timeout 40000 --exit",
     "test:integration:voice": "mocha --full-trace --check-leaks --require @babel/register ./test/voice/index.js --timeout 40000 --exit",
     "test:integration:media": "mocha --full-trace --check-leaks --require @babel/register ./test/media/index.js --timeout 40000 --exit",
-    "test": "run-s test:unit test:integration",
+    "test": "npm run test:unit && npm run test:integration",
     "build:dev": "npm run webpack development",
     "build:prod": "npm run webpack production",
     "prebuild": "npm run clean && yarn install",
