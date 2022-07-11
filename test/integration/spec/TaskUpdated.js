@@ -17,8 +17,8 @@ describe('TaskEvents', () => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: credentials.region,
+                edge: credentials.edge,
                 logLevel: 'error'
             });
             // Make sure Bob remains offline before creating a task

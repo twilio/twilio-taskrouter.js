@@ -10,8 +10,7 @@ const voiceE2EKeys = [
   'supervisorNumber',
   'customerNumber',
   'flexCCNumber',
-  'workerNumber',
-  'region'
+  'workerNumber'
 ];
 
 // Ensure required variables are present
@@ -29,9 +28,7 @@ const requiredKeys = [
   'multiTaskConnectActivitySid',
   'multiTaskUpdateActivitySid',
   'multiTaskNumActivities',
-  'multiTaskNumChannels',
-  'ebServer',
-  'wsServer'
+  'multiTaskNumChannels'
 ];
 
 requiredKeys.forEach(key => {
@@ -45,10 +42,5 @@ voiceE2EKeys.forEach(voiceKey => {
     throw new Error('Missing Voice Integration Key: ' + voiceKey);
   }
 });
-
-if (env.hasOwnProperty('env') && env.env &&
-    !env.env.includes('dev') && !env.env.includes('stage')) {
-    env.env = env.env.concat('.us1');
-}
 
 module.exports = env;

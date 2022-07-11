@@ -34,8 +34,8 @@ describe('Reservation with Inbound Voice Task', () => {
         it('should issue an inbound conference instruction on the Reservation', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(async(resolve, reject) => {

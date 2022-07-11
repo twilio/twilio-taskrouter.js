@@ -46,14 +46,14 @@ describe('Supervisor with Inbound Voice Task', () => {
         it('should allow a Supervisor to monitor an inbound conference/task successfully', () => {
             // supervisor stays offline
             supervisor = new Supervisor(supervisorToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(async(resolve, reject) => {

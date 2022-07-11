@@ -32,14 +32,14 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             // make worker and supervisor available
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             supervisor = new Supervisor(supervisorToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return Promise.all([outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(worker),

@@ -57,21 +57,18 @@ async function createWorkspaces() {
         'multiTaskUpdateActivitySid': multiTaskOffline.sid,
         'multiTaskNumActivities': 4,
         'multiTaskNumChannels': 5,
-        'ebServer': `https://${eventBridgeUrl}`,
-        'wsServer': `wss://${eventBridgeUrl}`,
         'hasSingleTasking': false,
         'supervisorNumber': '',
         'customerNumber': '',
         'flexCCNumber': '',
         'workerNumber': '',
-        'region': 'us1'
+        region: 'stage-us1',
+        edge: ''
     };
 
-    if (ENV === 'stage' || ENV === 'dev') {
-        obj.env = ENV;
-    }
+    const data = JSON.stringify(obj, null, 2);
 
-    const data = JSON.stringify(obj);
+    // Write required variables to json file
     fs.writeFileSync('test.json', data);
 }
 

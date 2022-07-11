@@ -8,7 +8,7 @@ class WS extends MockWebSocket {
     }
 }
 
-const mockServer = new Server('wss://127.0.0.1'); // eslint-disable-line
+const mockServer = new Server('wss://event-bridge.twilio.com/v1/wschannels'); // eslint-disable-line
 global.WebSocket = WS;
 
 require('./spec/Activity');
