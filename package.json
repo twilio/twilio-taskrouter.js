@@ -48,6 +48,7 @@
   "dependencies": {
     "@types/express": "^4.17.7",
     "@types/qs": "6.9.4",
+    "https-browserify": "1.0.0",
     "lodash": "^4.17.5",
     "loglevel": "^1.4.1",
     "path-browserify": "^1.0.1",

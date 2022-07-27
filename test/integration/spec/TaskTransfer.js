@@ -64,7 +64,7 @@ describe('Task Transfer', function() {
     });
 
     describe('Cancel Transfer for Worker B', () => {
-        it('should cancel the transfer and cause the reservation to cancel', done => {
+        it.skip('should cancel the transfer and cause the reservation to cancel', done => {
             alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(

@@ -53,7 +53,10 @@ const createConfig = libraryTarget => {
                 tls: 'empty',
                 process: false,
                 path: require.resolve('path-browserify'),
-                util: require.resolve('util/')
+                util: require.resolve('util/'),
+                https: require.resolve('https-browserify'),
+                http: false,
+                url: false,
             },
         };
         config.entry = { main: './lib/web.js' };
