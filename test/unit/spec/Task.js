@@ -663,6 +663,18 @@ describe('Task', () => {
             task.on('transferInitiated', spy);
             task._emitEventForOutgoingTransfer('transfer-initiated', mockEvents.task.transferInitiated);
             await new Promise((resolve) => setTimeout(resolve, 3000));
+            assert.isFalse(spy.called);
+            task.transfers.outgoing = new OutgoingTransfer(worker, new Request(config), assignedTaskDescriptor.sid, new TransferDescriptor(mockEvents.task.transferInitiated));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            assert.isTrue(spy.called);
+        }).timeout(5000);
+
+        it('should emit Event:on(transferInitiated) if the outgoing transfer is initially different, but populated after 3 seconds', async() => {
+            task.transfers.outgoing = 'TT123';
+            task.on('transferInitiated', spy);
+            task._emitEventForOutgoingTransfer('transfer-initiated', mockEvents.task.transferInitiated);
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            assert.isFalse(spy.called);
             task.transfers.outgoing = new OutgoingTransfer(worker, new Request(config), assignedTaskDescriptor.sid, new TransferDescriptor(mockEvents.task.transferInitiated));
             await new Promise((resolve) => setTimeout(resolve, 1000));
             assert.isTrue(spy.called);
