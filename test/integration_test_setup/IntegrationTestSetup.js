@@ -1,98 +1,78 @@
-const ACCOUNT_SID = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-const AUTH_TOKEN = 'bXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-const SIGNING_KEY_SID = 'SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-const SIGNING_KEY_SECRET = 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-const client = require('twilio')(ACCOUNT_SID, AUTH_TOKEN, { region: 'stage' });
+/* eslint-disable */
+
+require('dotenv').config({ path: `${__dirname}/.env` });
+const { updateActivitiesInTaskQueue, createActivities, getEventBridgeUrl, createWorkspace, createWorkers } = require('./IntegrationTestSetupUtils');
+
+
+const ACCOUNT_SID = process.env.ACCOUNT_SID;
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
+const SIGNING_KEY_SID = process.env.SIGNING_KEY_SID;
+const SIGNING_KEY_SECRET = process.env.SIGNING_KEY_SECRET;
+const WORKSPACE_FRIENDLY_NAME = process.env.WORKSPACE_FRIENDLY_NAME;
+const ENV = process.env.ENV || 'stage';
+const clientOptions = ENV === 'stage' || ENV === 'dev' ? { region: ENV } : undefined;
+const client = require('twilio')(ACCOUNT_SID, AUTH_TOKEN, clientOptions);
 const fs = require('fs');
 
 async function createWorkspaces() {
 
     // Create a multiTaskWorkspace
-    const multiTaskWorkspace = await client.taskrouter.workspaces
-                                         .create({
-                                             template: 'FIFO',
-                                             friendlyName: 'js-sdk e2e tester - Multi Tasking',
-                                             multiTaskEnabled: 'true'
-                                         });
+    const multiTaskWorkspace = await createWorkspace(WORKSPACE_FRIENDLY_NAME, "true")
 
     // Update multiTaskActivities
-    const multiTaskActivities = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                          .activities
-                                          .list();
-
-    const multiTaskOffline = await multiTaskActivities[0];
-    const multiTaskAvailable = await multiTaskActivities[1];
-    const multiTaskUnavailable = await multiTaskActivities[2];
-
-    client.taskrouter.workspaces(multiTaskWorkspace.sid)
-          .activities(multiTaskAvailable.sid)
-          .update({ friendlyName: 'Idle'
-          });
-
-    const multiTaskBusy = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                    .activities(multiTaskUnavailable.sid)
-                                    .update({ friendlyName: 'Busy'
-                                    });
-
-    const multiTaskReserved = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                        .activities
-                                        .create({
-                                            available: false,
-                                            friendlyName: 'Reserved'
-                                        });
+    const { multiTaskOffline, multiTaskAvailable, multiTaskBusy, multiTaskReserved } = await createActivities(
+        multiTaskWorkspace.sid
+    );
 
     // Update multiTaskqueues
-    const multiTaskqueues = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                      .taskQueues
-                                      .list();
-    const multiTaskqueue = await multiTaskqueues[0];
+    const multiTaskqueue = await updateActivitiesInTaskQueue(multiTaskWorkspace, multiTaskBusy, multiTaskReserved);
 
-    client.taskrouter.workspaces(multiTaskWorkspace.sid)
-          .taskQueues(multiTaskqueue.sid)
-          .update({ assignmentActivitySid: multiTaskBusy.sid, reservationActivitySid: multiTaskReserved.sid
-          });
+    await client.taskrouter.workspaces(multiTaskWorkspace.sid)
+        .taskQueues(multiTaskqueue.sid)
+        .update({
+            assignmentActivitySid: multiTaskBusy.sid, reservationActivitySid: multiTaskReserved.sid
+        });
 
     // Create multiTaskWorkers
-    const multiTaskAlice = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                     .workers
-                                     .create({ attributes: JSON.stringify({
-                                         'contact_uri': 'client:charlie'
-                                     }), friendlyName: 'Alice'
-                                     });
-
-    const multiTaskBob = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                   .workers
-                                   .create({ attributes: JSON.stringify({
-                                       'contact_uri': 'client:bob'
-                                   }), friendlyName: 'Bob'
-                                   });
-
-    // Write required variables to json file
+    const { multiTaskAlice, multiTaskBob } = await createWorkers(multiTaskWorkspace);
 
     const multiTaskWorkflows = await client.taskrouter.workspaces(multiTaskWorkspace.sid)
-                                         .workflows
-                                         .list();
+        .workflows
+        .list();
     const multiTaskWorkflow = await multiTaskWorkflows[0];
 
-    const obj = { accountSid: ACCOUNT_SID,
-                authToken: AUTH_TOKEN,
-                signingKeySid: SIGNING_KEY_SID,
-                signingKeySecret: SIGNING_KEY_SECRET,
-                multiTaskWorkspaceSid: multiTaskWorkspace.sid,
-                multiTaskQueueSid: multiTaskqueue.sid,
-                multiTaskWorkflowSid: multiTaskWorkflow.sid,
-                multiTaskAliceSid: multiTaskAlice.sid,
-                multiTaskBobSid: multiTaskBob.sid,
-                multiTaskConnectActivitySid: multiTaskAvailable.sid,
-                multiTaskUpdateActivitySid: multiTaskOffline.sid,
-                multiTaskNumActivities: 4,
-                multiTaskNumChannels: 5,
-                ebServer: 'https://event-bridge.twilio.com',
-                wsServer: 'wss://event-bridge.twilio.com'
-             };
+    const eventBridgeUrl = getEventBridgeUrl();
+    // Write required variables to json file
+    const obj = {
+        'accountSid': ACCOUNT_SID,
+        'authToken': AUTH_TOKEN,
+        'signingKeySid': SIGNING_KEY_SID,
+        'signingKeySecret': SIGNING_KEY_SECRET,
+        'multiTaskWorkspaceSid': multiTaskWorkspace.sid,
+        'multiTaskQueueSid': multiTaskqueue.sid,
+        'multiTaskWorkflowSid': multiTaskWorkflow.sid,
+        'multiTaskAliceSid': multiTaskAlice.sid,
+        'multiTaskBobSid': multiTaskBob.sid,
+        'multiTaskConnectActivitySid': multiTaskAvailable.sid,
+        'multiTaskUpdateActivitySid': multiTaskOffline.sid,
+        'multiTaskNumActivities': 4,
+        'multiTaskNumChannels': 5,
+        'ebServer': `https://${eventBridgeUrl}`,
+        'wsServer': `wss://${eventBridgeUrl}`,
+        'hasSingleTasking': false,
+        'supervisorNumber': '',
+        'customerNumber': '',
+        'flexCCNumber': '',
+        'workerNumber': ''
+    };
+
+    if (ENV === 'stage' || ENV === 'dev') {
+        obj.region = 'us1';
+        obj.env = ENV;
+    }
 
     const data = JSON.stringify(obj);
-    fs.writeFileSync(path, data);
+    fs.writeFileSync('test.json', data);
 }
 
 createWorkspaces();
