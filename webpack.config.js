@@ -54,7 +54,7 @@ const createConfig = libraryTarget => {
                 process: false,
                 path: require.resolve('path-browserify'),
                 util: require.resolve('util/'),
-                https: require.resolve('https-browserify'),
+                https: require.resolve('./utils/https-browserify'),
                 http: false,
                 url: false,
             },
