@@ -4,10 +4,18 @@ New Features
 ----------
 - Add `version` field to TaskRouter resources (Task, Reservation and Worker)
 
+
+0.5.11
+==========
+Bug Fixes
+----------
+- Improved the fix for race condition when initiating task transfer
+
 Maintenance
 ----------
 - Upgraded several dependencies to more recents versions
 - Upgraded node engine requirement from 6 to >=12.17.0
+
 
 0.5.10
 ==========
