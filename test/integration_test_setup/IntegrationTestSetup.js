@@ -63,11 +63,11 @@ async function createWorkspaces() {
         'supervisorNumber': '',
         'customerNumber': '',
         'flexCCNumber': '',
-        'workerNumber': ''
+        'workerNumber': '',
+        'region': 'us1'
     };
 
     if (ENV === 'stage' || ENV === 'dev') {
-        obj.region = 'us1';
         obj.env = ENV;
     }
 
