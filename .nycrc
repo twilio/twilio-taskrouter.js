@@ -10,9 +10,7 @@
   ],
   "exclude": [
     "coverage/**",
-    "node_modules/**",
-    "**/*.d.js",
-    "**/*.test.js"
+    "node_modules/**"
   ],
   "sourceMap": true,
   "reporter": [
