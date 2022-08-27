@@ -46,8 +46,8 @@ describe('ActivityRejectReservations', () => {
         it('should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge,
             });
 
             let connectActivity;
@@ -122,8 +122,8 @@ describe('ActivityRejectReservations', () => {
         it.skip('should not reject the pending reservations for the Worker when the flag is set to true, and the activity is unavailable', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge,
             });
 
             const createdReservations = [];

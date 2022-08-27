@@ -39,7 +39,8 @@
     "build": "npm run lint && npm run build:prod",
     "postbuild": "npm run docs && npm run coverage",
     "docs": "node ./scripts/docs.js ./dist/docs",
-    "coverage": "nyc --report-dir coverage --reporter html --reporter text-summary yarn test:unit"
+    "coverage": "nyc --report-dir coverage --reporter html --reporter text-summary yarn test:unit",
+    "test:setup": "node test/integration_test_setup/IntegrationTestSetup.js"
   },
   "repository": {
     "type": "git",

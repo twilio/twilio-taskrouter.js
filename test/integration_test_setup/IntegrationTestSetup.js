@@ -42,6 +42,16 @@ async function createWorkspaces() {
     const multiTaskWorkflow = await multiTaskWorkflows[0];
 
     const eventBridgeUrl = getEventBridgeUrl();
+
+
+    let  REGION= process.env.REGION;
+
+    if (['stage', 'dev'].includes(ENV)) {
+        REGION = `${ENV}-us1`
+    }
+
+    const EDGE = process.env.EDGE
+
     // Write required variables to json file
     const obj = {
         'accountSid': ACCOUNT_SID,
@@ -57,21 +67,19 @@ async function createWorkspaces() {
         'multiTaskUpdateActivitySid': multiTaskOffline.sid,
         'multiTaskNumActivities': 4,
         'multiTaskNumChannels': 5,
-        'ebServer': `https://${eventBridgeUrl}`,
-        'wsServer': `wss://${eventBridgeUrl}`,
         'hasSingleTasking': false,
         'supervisorNumber': '',
         'customerNumber': '',
         'flexCCNumber': '',
         'workerNumber': '',
-        'region': 'us1'
+        'env': ENV,
+        'region': REGION,
+        'edge': EDGE
     };
 
-    if (ENV === 'stage' || ENV === 'dev') {
-        obj.env = ENV;
-    }
+    const data = JSON.stringify(obj, null, 2);
 
-    const data = JSON.stringify(obj);
+    // Write required variables to json file
     fs.writeFileSync('test.json', data);
 }
 

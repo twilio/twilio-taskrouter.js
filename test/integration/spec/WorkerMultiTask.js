@@ -29,8 +29,8 @@ describe('MultiTask Worker Client', () => {
     describe('initialization of Multi Task Worker', () => {
         it('should populate .activities', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -47,8 +47,8 @@ describe('MultiTask Worker Client', () => {
 
         it('should populate .channels', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -75,8 +75,8 @@ describe('MultiTask Worker Client', () => {
         it('should set the activity on connect if provided', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise((resolve) => {
@@ -102,8 +102,8 @@ describe('MultiTask Worker Client', () => {
         it('should populate .reservations with 0 Reservations when none currently pending', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -141,8 +141,8 @@ describe('MultiTask Worker Client', () => {
         it('should populate pending .reservations', async() => {
             await new Promise(r => setTimeout(r, 2000));
             multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -165,8 +165,8 @@ describe('MultiTask Worker Client', () => {
     describe('Multi Task Worker creates Task', () => {
         it('should be able to create a Task for self', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {

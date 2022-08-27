@@ -20,8 +20,8 @@ describe('Common Worker Client', () => {
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: credentials.region,
+                edge: credentials.edge,
                 logLevel: 'error'
             });
         });
@@ -98,8 +98,8 @@ describe('Common Worker Client', () => {
   describe('Two Worker clients in the same browser', () => {
         it('should not allow log levels across unique workers to be affected', () => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: credentials.region,
+                edge: credentials.edge,
                 logLevel: 'info'
             });
 
@@ -114,8 +114,8 @@ describe('Common Worker Client', () => {
     describe('should disconnect', () => {
         it('should fire a disconnect event', done => {
             const bob = new Worker(bobToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: credentials.region,
+                edge: credentials.edge,
                 logLevel: 'info'
             });
 
