@@ -42,6 +42,16 @@ async function createWorkspaces() {
     const multiTaskWorkflow = await multiTaskWorkflows[0];
 
     const eventBridgeUrl = getEventBridgeUrl();
+
+
+    let  REGION= process.env.REGION;
+
+    if (['stage', 'dev'].includes(ENV)) {
+        REGION = `${ENV}-us1`
+    }
+
+    const EDGE = process.env.EDGE
+
     // Write required variables to json file
     const obj = {
         'accountSid': ACCOUNT_SID,
@@ -62,8 +72,9 @@ async function createWorkspaces() {
         'customerNumber': '',
         'flexCCNumber': '',
         'workerNumber': '',
-        region: 'stage-us1',
-        edge: ''
+        'env': ENV,
+        'region': REGION,
+        'edge': EDGE
     };
 
     const data = JSON.stringify(obj, null, 2);
