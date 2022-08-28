@@ -4,6 +4,11 @@ New Features
 ----------
 - Add `version` field to TaskRouter resources (Task, Reservation and Worker)
 
+0.5.13
+==========
+New Features
+----------
+- TR SDK Now starts supporting edge & region parameter
 
 0.5.11
 ==========
