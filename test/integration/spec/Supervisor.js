@@ -23,15 +23,15 @@ describe('Supervisor Client', function() {
   beforeEach(done => {
     envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
       worker = new Worker(workerToken, {
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`,
+        region: credentials.region,
+        edge: credentials.edge,
         logLevel: 'error',
         connectActivitySid: credentials.multiTaskConnectActivitySid
       });
 
       supervisor = new Supervisor(superToken, {
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`,
+        region: credentials.region,
+        edge: credentials.edge,
         logLevel: 'error'
       });
       const createTask = envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid,

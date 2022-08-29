@@ -16,8 +16,8 @@ describe('Reservation', () => {
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
       worker = new Worker(multiTaskAliceToken, {
         connectActivitySid: credentials.multiTaskConnectActivitySid,
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`
+        region: credentials.region,
+        edge: credentials.edge
       });
 
       return envTwilio.updateWorkerActivity(

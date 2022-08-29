@@ -16,8 +16,8 @@ describe('EventBridgeSignaling', () => {
             const token = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 8);
             alice = new Worker(token, {
                 closeExistingSessions: true,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: credentials.region,
+                edge: credentials.edge,
                 logLevel: 'error',
             });
         });

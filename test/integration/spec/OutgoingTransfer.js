@@ -11,8 +11,8 @@ describe('OutgoingTransfer', () => {
     const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
     const conferenceSid = 'CF11111111111111111111111111111111';
-    const ebServerUrl = `${credentials.ebServer}/v1/wschannels`;
-    const wsServerUrl = `${credentials.wsServer}/v1/wschannels`;
+    const region = credentials.region;
+    const edge = credentials.edge;
     let alice;
     let bob;
 
@@ -36,15 +36,15 @@ describe('OutgoingTransfer', () => {
     beforeEach(() => {
         alice = new Worker(aliceToken, {
             connectActivitySid: credentials.multiTaskConnectActivitySid,
-            ebServer: ebServerUrl,
-            wsServer: wsServerUrl,
+            region,
+            edge,
             logLevel: 'error'
         });
 
         // bob stays offline
         bob = new Worker(bobToken, {
-            ebServer: ebServerUrl,
-            wsServer: wsServerUrl,
+            region,
+            edge,
             logLevel: 'error'
         });
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(createTaskForAlicePromise);

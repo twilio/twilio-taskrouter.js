@@ -26,8 +26,8 @@ describe('Channel', () => {
     describe('constructor', () => {
         it('should create specific channels in MultiTask mode', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: credentials.region,
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {

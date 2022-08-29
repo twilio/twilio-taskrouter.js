@@ -32,8 +32,8 @@ describe('Activity', () => {
     describe('#setAsCurrent', done => {
         it('should set this connect activity on the Worker, and then update it', () => {
             worker = new Worker(token, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: credentials.region,
+                edge: credentials.edge,
                 connectActivitySid: credentials.multiTaskConnectActivitySid
             });
 
