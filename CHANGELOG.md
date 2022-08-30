@@ -1,3 +1,10 @@
+0.6.1
+==========
+Bug Fixes
+----------
+- Handle version mismatch in Worker after creating or completing reservations
+
+
 0.6.0
 ==========
 New Features

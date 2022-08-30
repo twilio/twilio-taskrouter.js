@@ -4,6 +4,7 @@ import { getAccessToken } from '../../util/MakeAccessToken';
 
 const chai = require('chai');
 const expect = chai.expect;
+const assert = chai.assert;
 
 const credentials = require('../../env');
 
@@ -92,6 +93,48 @@ describe('Reservation', () => {
           expect(updatedReservation.status).equal('wrapping');
           done();
         }).catch(done);
+      });
+    }).timeout(5000);
+  });
+
+  describe('Reservation versioning', () => {
+    it('should update the version of the reservation', done => {
+      envTwilio.createTask(
+        credentials.multiTaskWorkspaceSid,
+        credentials.multiTaskWorkflowSid,
+        '{ "selected_language": "es" }'
+      );
+      worker.on('reservationCreated', reservation => {
+        const oldVersion = reservation.version;
+
+        reservation.accept().then(updatedReservation => {
+          expect(Number(updatedReservation.version)).to.equal(Number(oldVersion) + 1);
+          done();
+        }).catch(done);
+      });
+    }).timeout(5000);
+
+    it('should have the version field in list response', (done) => {
+      new Promise(resolve => {
+        worker.on('ready', resolve);
+      }).then(()=> {
+        envTwilio.createTask(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskWorkflowSid,
+            '{ "selected_language": "es" }'
+        );
+
+        const reservationsEntity = worker._dataServices.reservationsEntity;
+
+        worker.on('reservationCreated', ()=> {
+          reservationsEntity.fetchReservations().then(()=> {
+            reservationsEntity.reservations.forEach(reservation => {
+              assert.isDefined(reservation.version);
+              assert.isDefined(reservation.task.version);
+            });
+            done();
+          });
+        });
       });
     }).timeout(5000);
   });

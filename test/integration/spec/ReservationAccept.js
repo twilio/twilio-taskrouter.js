@@ -59,7 +59,7 @@ describe('Reservation Accept', () => {
                 expect(reservation.task.sid.substring(0, 2)).to.equal('WT');
                 expect(reservation.task.taskChannelUniqueName).to.equal('default');
 
-                reservation.accept().then(updatedReservation => {
+                reservation.accept().then(async updatedReservation => {
                     expect(reservation).to.equal(updatedReservation);
                     expect(reservation.status).equal('accepted');
                     expect(updatedReservation.status).equal('accepted');
@@ -75,6 +75,13 @@ describe('Reservation Accept', () => {
                     expect(updatedReservation.task.attributes).to.deep.equal({
                         'selected_language': 'es'
                     });
+
+                    await new Promise(resolve => {
+                        reservation.on('accepted', acceptedReservation => {
+                            resolve(acceptedReservation);
+                        });
+                    });
+
 
                     return updatedReservation.task.wrapUp({
                         reason: 'Work is almost finished'
@@ -171,7 +178,15 @@ describe('Reservation Accept', () => {
                                         });
                             }
                         );
-            const completedReservation = reservation => {
+
+
+            const completedReservation = async reservation => {
+                await new Promise(resolve => {
+                    reservation.on('accepted', acceptedReservation => {
+                        resolve(acceptedReservation);
+                    });
+                });
+
                 const taskAndReservationCompleted = [];
 
                 taskAndReservationCompleted.push(new Promise(resolve => {

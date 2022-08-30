@@ -9,6 +9,7 @@ export const pendingReservationInstance = {
   worker_sid: 'WKxxx',
   reservation_status: 'pending',
   reservation_timeout: 120,
+  version: 0,
   task: {
     workflow_name: 'Default Fifo Workflow',
     queue_name: 'Sample Queue',
@@ -27,7 +28,8 @@ export const pendingReservationInstance = {
     routing_target: null,
     sid: 'WTxx1',
     date_created: 1518809969,
-    date_updated: 1518809969
+    date_updated: 1518809969,
+    version: 0
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -41,6 +43,7 @@ export const pendingReservationInstanceForOutbound = {
   worker_sid: 'WKxxx',
   reservation_status: 'pending',
   reservation_timeout: 120,
+  version: 0,
   task: {
     workflow_name: 'Default Fifo Workflow',
     queue_name: 'Sample Queue',
@@ -59,7 +62,8 @@ export const pendingReservationInstanceForOutbound = {
     routing_target: 'WKxxx',
     sid: 'WTxx1',
     date_created: 1518809969,
-    date_updated: 1518809969
+    date_updated: 1518809969,
+    version: 0
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -68,6 +72,7 @@ export const pendingReservationIncomingTransfer = {
   worker_sid:'WKxx2',
   date_updated:1554313056,
   reservation_status:'pending',
+  version: 0,
   task:{
     reason:null,
     date_updated:1554313056,
@@ -85,7 +90,8 @@ export const pendingReservationIncomingTransfer = {
     queue_sid:'WQxxx',
     attributes: '{}',
     age:11,
-    routing_target: null
+    routing_target: null,
+    version: 0
   },
   workspace_sid:'WSxxx',
   date_created:1554313056,
@@ -118,6 +124,7 @@ export const assignedReservationInstance = {
   worker_sid: 'WKxxx',
   reservation_status: 'accepted',
   reservation_timeout: 120,
+  version: 0,
   task: {
     workflow_name: 'Default Fifo Workflow',
     queue_name: 'Sample Queue',
@@ -136,7 +143,8 @@ export const assignedReservationInstance = {
     sid: 'WTxx1',
     routing_target: null,
     date_created: 1518809969,
-    date_updated: 1518809969
+    date_updated: 1518809969,
+    version: 0
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -151,6 +159,7 @@ export const acceptedReservationWithActiveOutgoingTransfer = {
   worker_name: 'Alice',
   reservation_status: 'accepted',
   reservation_timeout: 1000,
+  version: 0,
   task: {
     sid: 'WTxx8',
     date_created: 1553124517,
@@ -168,7 +177,8 @@ export const acceptedReservationWithActiveOutgoingTransfer = {
     timeout: 86400,
     age: 39,
     addons: '{}',
-    routing_target: null
+    routing_target: null,
+    version: 0
   },
   active_outgoing_task_transfer: {
     sid: 'TTxxx',
@@ -196,6 +206,7 @@ export const acceptedReservationWithIncomingAndActiveOutgoingTransfer = {
   worker_name: 'Bob',
   reservation_status: 'accepted',
   reservation_timeout: 1000,
+  version: 0,
   task: {
     sid: 'WTxx9',
     date_created: 1553189894,
@@ -213,7 +224,8 @@ export const acceptedReservationWithIncomingAndActiveOutgoingTransfer = {
     timeout: 86400,
     age: 271,
     addons: '{}',
-    routing_target: null
+    routing_target: null,
+    version: 0
   },
   task_transfer: {
     sid: 'TTxxx',
@@ -298,7 +310,8 @@ export const reservations = {
     date_updated: 1518809983,
     worker_sid: 'WKxxx',
     reservation_status: 'accepted',
-    reservation_timeout: 120,
+    reservation_timeout: 120, 
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -317,7 +330,8 @@ export const reservations = {
       sid: 'WTxx1',
       routing_target: null,
       date_created: 1518809969,
-      date_updated: 1518809969
+      date_updated: 1518809969,
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -329,6 +343,7 @@ export const reservations = {
     worker_sid: 'WKxxx',
     reservation_status: 'pending',
     reservation_timeout: 120,
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -347,7 +362,8 @@ export const reservations = {
       sid: 'WTxx2',
       routing_target: null,
       date_created: 1518809972,
-      date_updated: 1518809972
+      date_updated: 1518809972,
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -359,6 +375,7 @@ export const reservations = {
     worker_sid: 'WKxxx',
     reservation_status: 'accepted',
     reservation_timeout: 120,
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -377,7 +394,8 @@ export const reservations = {
       sid: 'WTxx3',
       routing_target: null,
       date_created: 1518809975,
-      date_updated: 1518809975
+      date_updated: 1518809975, 
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -389,6 +407,7 @@ export const reservations = {
     worker_sid: 'WKxxx',
     reservation_status: 'pending',
     reservation_timeout: 120,
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -407,7 +426,8 @@ export const reservations = {
       sid: 'WTxx4',
       routing_target: null,
       date_created: 1518809980,
-      date_updated: 1518809980
+      date_updated: 1518809980, 
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -419,6 +439,7 @@ export const reservations = {
     worker_sid: 'WKxxx',
     reservation_status: 'pending',
     reservation_timeout: 120,
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -437,7 +458,8 @@ export const reservations = {
       sid: 'WTxx5',
       routing_target: null,
       date_created: 1518809994,
-      date_updated: 1518809994
+      date_updated: 1518809994,
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -449,6 +471,7 @@ export const reservations = {
     worker_sid: 'WKxxx',
     reservation_status: 'pending',
     reservation_timeout: 120,
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -467,7 +490,8 @@ export const reservations = {
       sid: 'WTxx6',
       routing_target: null,
       date_created: 1518809997,
-      date_updated: 1518809997
+      date_updated: 1518809997, 
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -479,6 +503,7 @@ export const reservations = {
     worker_sid: 'WKxxx',
     reservation_status: 'accepted',
     reservation_timeout: 120,
+    version: 0,
     task: {
       workflow_name: 'Default Fifo Workflow',
       queue_name: 'Sample Queue',
@@ -497,7 +522,8 @@ export const reservations = {
       sid: 'WTxx7',
       routing_target: null,
       date_created: 1518810002,
-      date_updated: 1518810002
+      date_updated: 1518810002,
+      version: 0
     },
     worker_previous_activity_sid: 'WAxxx'
   }].concat(acceptedReservationWithActiveOutgoingTransfer, acceptedReservationWithIncomingAndActiveOutgoingTransfer),

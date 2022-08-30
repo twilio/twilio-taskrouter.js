@@ -128,4 +128,41 @@ describe('Common Worker Client', () => {
             });
         });
     });
+
+    describe('Worker Versioning', () => {
+        it('should update the version of the worker', (done) => {
+            new Promise(resolve => {
+                alice.on('ready', resolve);
+            }).then(()=> {
+                const oldVersion = alice.version;
+
+                return alice.setAttributes({ languages: ['en'] }).then(updatedWorker => {
+                    // version will stay the same if the worker already has the given attributes
+                    assert.isTrue(oldVersion <= updatedWorker.version);
+                    done();
+                });
+
+            });
+        }).timeout(5000);
+
+        it('should update worker version after creating reservation', async() => {
+            await new Promise(resolve => alice.on('ready', resolve));
+
+            await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+            const oldVersion = alice.version;
+            await new Promise(resolve => alice.on('reservationCreated', resolve));
+            expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
+        }).timeout(5000);
+
+        it('should update worker version after rejecting reservation', async() => {
+            await new Promise(resolve => alice.on('ready', resolve));
+            await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+
+            const reservation = await new Promise(resolve => alice.on('reservationCreated', resolve));
+            const oldVersion = alice.version;
+            await reservation.reject();
+            await new Promise(resolve => reservation.on('rejected', resolve));
+            expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
+        }).timeout(10000);
+    });
 });
