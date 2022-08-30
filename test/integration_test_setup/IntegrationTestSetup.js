@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 require('dotenv').config({ path: `${__dirname}/.env` });
-const { updateActivitiesInTaskQueue, createActivities, getEventBridgeUrl, createWorkspace, createWorkers } = require('./IntegrationTestSetupUtils');
+const { updateActivitiesInTaskQueue, createActivities, createWorkspace, createWorkers } = require('./IntegrationTestSetupUtils');
 
 
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
@@ -9,7 +9,7 @@ const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const SIGNING_KEY_SID = process.env.SIGNING_KEY_SID;
 const SIGNING_KEY_SECRET = process.env.SIGNING_KEY_SECRET;
 const WORKSPACE_FRIENDLY_NAME = process.env.WORKSPACE_FRIENDLY_NAME;
-const ENV = process.env.ENV || 'stage';
+const ENV = process.env.ENV;
 const clientOptions = ENV === 'stage' || ENV === 'dev' ? { region: ENV } : undefined;
 const client = require('twilio')(ACCOUNT_SID, AUTH_TOKEN, clientOptions);
 const fs = require('fs');
@@ -41,15 +41,7 @@ async function createWorkspaces() {
         .list();
     const multiTaskWorkflow = await multiTaskWorkflows[0];
 
-    const eventBridgeUrl = getEventBridgeUrl();
-
-
-    let  REGION= process.env.REGION;
-
-    if (['stage', 'dev'].includes(ENV)) {
-        REGION = `${ENV}-us1`
-    }
-
+    const  REGION = process.env.REGION || (['stage', 'dev'].includes(ENV) ? `${ENV}-us1` : '');
     const EDGE = process.env.EDGE
 
     // Write required variables to json file
@@ -72,10 +64,13 @@ async function createWorkspaces() {
         'customerNumber': '',
         'flexCCNumber': '',
         'workerNumber': '',
-        'env': ENV,
         'region': REGION,
         'edge': EDGE
     };
+
+    if (['stage', 'dev'].includes(ENV)) {
+        obj.env = ENV;
+    }
 
     const data = JSON.stringify(obj, null, 2);
 
