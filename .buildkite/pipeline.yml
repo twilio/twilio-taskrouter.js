@@ -1,0 +1,8 @@
+steps:
+  - label: "Run unit tests"
+    plugins:
+      - docker#v3.11.0:
+          image: node:12
+    commands:
+      - "yarn"
+      - "yarn build"
