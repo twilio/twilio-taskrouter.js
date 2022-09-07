@@ -58,7 +58,8 @@ const validateConfig = () => {
         // eslint-disable-next-line no-process-env
     } = process.env;
     const configValues = [JOB_START_MS, JOB_NAME, BUILD_NUMBER, PROJECT, DD_API_KEY, RUN_COUNT, RETRIES_COUNT];
-    const areConfigValuesPresent = configValues.every(value => value !== null && !value);
+    // eslint-disable-next-line no-undefined
+    const areConfigValuesPresent = configValues.every(value => value !== null && value !== undefined);
 
     if (!areConfigValuesPresent) {
         // eslint-disable-next-line no-console
