@@ -1,6 +1,6 @@
-import path from 'path';
-import { existsSync, readFileSync } from 'fs';
-import 'isomorphic-fetch';
+const path = require('path');
+const { existsSync, readFileSync } = require('fs');
+require('isomorphic-fetch');
 const Status = {
     'FAILED': 'failed',
     'PASSED': 'passed',
