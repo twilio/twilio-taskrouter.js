@@ -6,7 +6,7 @@ TEST_FILE="test.json"
 npm install
 
 if ! test -f "$TEST_FILE"; then
-    node test/integration_test_setup/IntegrationTestSetup.js || EXIT_CODE=$
+    node test/integration_test_setup/IntegrationTestSetup.js || EXIT_CODE=$?
 fi
 
 # If test setup failed, fail the job
@@ -20,7 +20,7 @@ fi
 # Used by Datadog reporter script to determine test duration
 export JOB_START_MS=$(date +%s000)
 
-npm run test:integration || EXIT_CODE=$
+npm run test:integration || EXIT_CODE=$?
 
 echo "Integration test exit code $EXIT_CODE"
 
