@@ -14,11 +14,14 @@ run_tests_in_docker() {
   echo "Run the docker tests"
   EXIT_CODE=0
   CONTAINER_NAME="tr_integration_${INSTANCE_RUNNING}_${RUN_COUNT}";
-  docker run --name "$CONTAINER_NAME" "$IMAGE_NAME_WITH_TAG" bash -c './test/integration_test_setup/RunIntegrationTest.sh' || EXIT_CODE=$?
+  docker run -e RUN_COUNT=$RUN_COUNT -e RETRIES_COUNT=$RETRIES_COUNT \
+   --name "$CONTAINER_NAME" "$IMAGE_NAME_WITH_TAG" bash -c './test/integration_test_setup/RunIntegrationTest.sh' || EXIT_CODE=$?
 }
 
 RUN_COUNT=0
-while [[ $RUN_COUNT -eq 0 || ( $EXIT_CODE -eq 137 && $RUN_COUNT -lt 3 ) || ( $EXIT_CODE -ne 0 && $RUN_COUNT -lt 3 )]]
+RETRIES_COUNT=3
+
+while [[ $RUN_COUNT -eq 0 || ( $EXIT_CODE -eq 137 && $RUN_COUNT -lt $RETRIES_COUNT ) || ( $EXIT_CODE -ne 0 && $RUN_COUNT -lt $RETRIES_COUNT )]]
 do
   RUN_COUNT=$((RUN_COUNT + 1))
   run_tests_in_docker
