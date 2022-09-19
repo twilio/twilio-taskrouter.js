@@ -27,7 +27,7 @@ describe('MultiTask Worker Client', () => {
     });
 
     describe('initialization of Multi Task Worker', () => {
-        it('should populate .activities', () => {
+        it('@SixSigma - should populate .activities', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: credentials.region,
                 edge: credentials.edge
@@ -45,7 +45,7 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should populate .channels', () => {
+        it('@SixSigma - should populate .channels', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: credentials.region,
                 edge: credentials.edge
@@ -72,7 +72,7 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should set the activity on connect if provided', () => {
+        it('@SixSigma - should set the activity on connect if provided', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: credentials.region,
@@ -99,7 +99,7 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should populate .reservations with 0 Reservations when none currently pending', () => {
+        it('@SixSigma - should populate .reservations with 0 Reservations when none currently pending', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: credentials.region,
@@ -138,7 +138,7 @@ describe('MultiTask Worker Client', () => {
             return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
         });
 
-        it('should populate pending .reservations', async() => {
+        it('@SixSigma - should populate pending .reservations', async() => {
             await new Promise(r => setTimeout(r, 2000));
             multiTaskAlice = new Worker(aliceMultiToken, {
                 region: credentials.region,
@@ -163,7 +163,7 @@ describe('MultiTask Worker Client', () => {
     });
 
     describe('Multi Task Worker creates Task', () => {
-        it('should be able to create a Task for self', () => {
+        it('@SixSigma - should be able to create a Task for self', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: credentials.region,
                 edge: credentials.edge

@@ -43,7 +43,7 @@ describe('ActivityRejectReservations', () => {
     });
 
     describe('successful update with reject pending reservations', () => {
-        it('should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
+        it('@SixSigma - should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
             // this test fails sometimes with 412 errors, because it tries to update the activity sid with an older version during initialization,
             // adding this delay before initializing the worker so all background updates are applied, it will make sense to refactor this test to properly wait for events
             await new Promise(resolve => setTimeout(resolve, 2000));

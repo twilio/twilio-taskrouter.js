@@ -148,7 +148,7 @@ describe('TaskEvents', () => {
     });
 
     describe('#Task Canceled', () => {
-        it('should get the canceled event on the task.', done => {
+        it('@SixSigma - should get the canceled event on the task.', done => {
             new Promise(resolve => alice.on('reservationCreated', reservation => resolve(reservation)))
                 .then(reservation => {
                     assert.equal(alice.reservations.size, 1,
@@ -240,7 +240,7 @@ describe('TaskEvents', () => {
     });
 
     describe('#setAttributes(newAttributes)', () => {
-        it('should set the attributes of the Task', done => {
+        it('@SixSigma - should set the attributes of the Task', done => {
             new Promise(resolve => {
                 alice.on('reservationCreated', reservation => {
                     resolve(reservation.task);
@@ -273,7 +273,7 @@ describe('TaskEvents', () => {
     });
 
     describe('Task versioning', () => {
-        it('should update the version of the task', done => {
+        it('@SixSigma - should update the version of the task', done => {
             new Promise(resolve => {
                 alice.on('reservationCreated', reservation => {
                     resolve(reservation.task);

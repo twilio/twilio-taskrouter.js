@@ -36,7 +36,7 @@ describe('Reservation Reject', () => {
 
 
     describe('#reject reservation', () => {
-        it('should reject the reservation', () => {
+        it('@SixSigma - should reject the reservation', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: credentials.region,

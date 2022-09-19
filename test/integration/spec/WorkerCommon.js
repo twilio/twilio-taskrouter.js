@@ -33,19 +33,19 @@ describe('Common Worker Client', () => {
     });
 
     describe('constructor', () => {
-        it('should create an instance of Client', () => {
+        it('@SixSigma - should create an instance of Client', () => {
             assert.instanceOf(alice, Worker,
                 envTwilio.getErrorMessage('Client is not an instance of worker', credentials.accountSid, credentials.multiTaskAliceSid));
 
         });
 
-        it('should set correct log level', () => {
+        it('@SixSigma - should set correct log level', () => {
             assert.equal(alice._log.getLevel(), 'error',
                 envTwilio.getErrorMessage('Client log level setting mismatch', credentials.accountSid, credentials.multiTaskAliceSid));
 
         });
 
-        it('should create an instance of Configuration', () => {
+        it('@SixSigma - should create an instance of Configuration', () => {
             assert.instanceOf(alice._config, Configuration,
                 envTwilio.getErrorMessage('Client configuration is not an instance of configuration', credentials.accountSid, credentials.multiTaskAliceSid));
 
@@ -53,7 +53,7 @@ describe('Common Worker Client', () => {
     });
 
     describe('#setAttributes(newAttributes)', () => {
-        it('should set the attributes of the worker', () => {
+        it('@SixSigma - should set the attributes of the worker', () => {
             const newAttributes = { languages: ['en'], name: 'Ms. Alice' };
 
             return new Promise(resolve => {
@@ -76,7 +76,7 @@ describe('Common Worker Client', () => {
     });
 
     describe('#updateToken(newToken)', () => {
-        it('should update the token on the Signaling instance', () => {
+        it('@SixSigma - should update the token on the Signaling instance', () => {
             const spy = sinon.spy();
             alice.on('tokenUpdated', spy);
 
@@ -130,7 +130,7 @@ describe('Common Worker Client', () => {
     });
 
     describe('Worker Versioning', () => {
-        it('should update the version of the worker', (done) => {
+        it('@SixSigma - should update the version of the worker', (done) => {
             new Promise(resolve => {
                 alice.on('ready', resolve);
             }).then(()=> {
@@ -145,7 +145,7 @@ describe('Common Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should update worker version after creating reservation', async() => {
+        it('@SixSigma - should update worker version after creating reservation', async() => {
             await new Promise(resolve => alice.on('ready', resolve));
 
             await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
@@ -154,7 +154,7 @@ describe('Common Worker Client', () => {
             expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
         }).timeout(5000);
 
-        it('should update worker version after rejecting reservation', async() => {
+        it('@SixSigma - should update worker version after rejecting reservation', async() => {
             await new Promise(resolve => alice.on('ready', resolve));
             await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
 

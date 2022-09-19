@@ -39,7 +39,7 @@ describe('EventBridgeSignaling', () => {
     });
 
     describe('Worker on token update after expiration and disconnect', () => {
-        it('should create a new websocket connection', done => {
+        it('@SixSigma - should create a new websocket connection', done => {
             let readyCount = 0;
 
             alice.on('tokenExpired', () => {

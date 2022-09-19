@@ -20,7 +20,13 @@ if [[ $EXIT_CODE -ne 0 ]]; then
   exit 1
 fi
 
-npm run test:integration || EXIT_CODE=$?
+RUN_SIX_SIGMA_SUITE=$(grep RUN_SIX_SIGMA_SUITE ./test/integration_test_setup/.env | cut -d '=' -f2)
+
+if [[ $RUN_SIX_SIGMA_SUITE == true ]]; then
+  time npm run test:integration-six-sigma || EXIT_CODE=$?
+else
+  time npm run test:integration || EXIT_CODE=$?
+fi
 
 echo "Integration test exit code $EXIT_CODE"
 

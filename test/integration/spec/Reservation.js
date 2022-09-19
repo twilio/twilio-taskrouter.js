@@ -44,7 +44,7 @@ describe('Reservation', () => {
   });
 
   describe('#complete reservation', () => {
-    it('should complete the reservation', done => {
+    it('@SixSigma - should complete the reservation', done => {
       envTwilio.createTask(
         credentials.multiTaskWorkspaceSid,
         credentials.multiTaskWorkflowSid,
@@ -81,7 +81,7 @@ describe('Reservation', () => {
   });
 
   describe('#wrap reservation', () => {
-    it('should wrap the reservation', done => {
+    it('@SixSigma - should wrap the reservation', done => {
       envTwilio.createTask(
         credentials.multiTaskWorkspaceSid,
         credentials.multiTaskWorkflowSid,
@@ -98,7 +98,7 @@ describe('Reservation', () => {
   });
 
   describe('Reservation versioning', () => {
-    it('should update the version of the reservation', done => {
+    it('@SixSigma - should update the version of the reservation', done => {
       envTwilio.createTask(
         credentials.multiTaskWorkspaceSid,
         credentials.multiTaskWorkflowSid,
@@ -114,7 +114,7 @@ describe('Reservation', () => {
       });
     }).timeout(5000);
 
-    it('should have the version field in list response', (done) => {
+    it('@SixSigma - should have the version field in list response', (done) => {
       new Promise(resolve => {
         worker.on('ready', resolve);
       }).then(()=> {

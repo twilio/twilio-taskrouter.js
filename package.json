@@ -30,6 +30,7 @@
     "lint": "eslint ./lib ./test/integration",
     "test:unit": "mocha --full-trace --check-leaks --require @babel/register ./test/unit/index.js --exit",
     "test:integration": "mocha --full-trace --check-leaks --require @babel/register -r ./test/mocha/no-unicode-reporter.js -r ./test/mocha/fetch.js ./test/integration/index.js --reporter mochawesome --reporter-options reportDir=reports,reportFilename=e2e-test-report --timeout 40000 --exit",
+    "test:integration-six-sigma": "mocha --full-trace --check-leaks --require @babel/register -r ./test/mocha/no-unicode-reporter.js -r ./test/mocha/fetch.js ./test/integration/index.js --reporter mochawesome --reporter-options reportDir=reports,reportFilename=e2e-test-report --timeout 40000 --exit -g '@SixSigma'",
     "test:integration:voice": "mocha --full-trace --check-leaks --require @babel/register ./test/voice/index.js --timeout 40000 --exit",
     "test:integration:media": "mocha --full-trace --check-leaks --require @babel/register ./test/media/index.js --timeout 40000 --exit",
     "test": "npm run test:unit && npm run test:integration",

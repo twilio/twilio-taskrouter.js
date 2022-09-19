@@ -24,7 +24,7 @@ describe('Channel', () => {
     });
 
     describe('constructor', () => {
-        it('should create specific channels in MultiTask mode', () => {
+        it('@SixSigma - should create specific channels in MultiTask mode', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: credentials.region,
                 edge: credentials.edge

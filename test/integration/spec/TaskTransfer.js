@@ -115,7 +115,7 @@ describe('Task Transfer', function() {
     });
 
     describe('#Failed Transfer to a worker', () => {
-        it('should accept reservation, transfer the task and reject the warm transfer to worker', done => {
+        it('@SixSigma - should accept reservation, transfer the task and reject the warm transfer to worker', done => {
             alice.on('reservationCreated', reservation => {
                 // Make Bob available
                 return envTwilio.updateWorkerActivity(

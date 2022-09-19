@@ -43,7 +43,7 @@ describe('TaskEvents', () => {
 
     describe('#Task Updated', () => {
 
-        it('should get the updated event on the task. #Task Updated', done => {
+        it('@SixSigma - should get the updated event on the task. #Task Updated', done => {
             Promise.resolve()
                 .then(() => new Promise(resolve =>
                     // Verify Alice ready
@@ -81,7 +81,7 @@ describe('TaskEvents', () => {
                 }).catch(done);
         }).timeout(10000);
 
-        it('should get the updated event on the outbound task. #OutboundTask Updated', done => {
+        it('@SixSigma - should get the updated event on the outbound task. #OutboundTask Updated', done => {
             Promise.resolve()
                 .then(() => new Promise(resolve =>
                     // Verify Alice ready

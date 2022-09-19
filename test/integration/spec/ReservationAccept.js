@@ -46,7 +46,7 @@ describe('Reservation Accept', () => {
 
     describe('#accept reservation, wrapup and complete the task', () => {
         // ORCH-1796 file for unreliable test
-        it('should accept the reservation, wrapup and complete the task', done => {
+        it('@SixSigma - should accept the reservation, wrapup and complete the task', done => {
             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
@@ -102,7 +102,7 @@ describe('Reservation Accept', () => {
 
     describe('#receive a reservationCompleted event after deleting an accepted task', () => {
         let acceptedReservation;
-        it('should accept the reservation', () => {
+        it('@SixSigma - should accept the reservation', () => {
             const promises = [];
             // Register Listener
             promises.push(new Promise(resolve => {
@@ -136,7 +136,7 @@ describe('Reservation Accept', () => {
                     });
         }).timeout(5000);
 
-        it('should delete the task and receive the completed event', done => {
+        it('@SixSigma - should delete the task and receive the completed event', done => {
             envTwilio.deleteTask(credentials.multiTaskWorkspaceSid, acceptedReservation.task.sid);
             acceptedReservation.on('completed', () => done());
             worker.removeAllListeners();
@@ -144,7 +144,7 @@ describe('Reservation Accept', () => {
     });
 
     describe('#accept reservation, complete task, wait for reservation completed', () => {
-        it('should accept the reservation, complete the task and receive a reservationCompleted event', () => {
+        it('@SixSigma - should accept the reservation, complete the task and receive a reservationCompleted event', () => {
             const taskAndReservationCreated = [];
             // Register listener for worker
             taskAndReservationCreated.push(new Promise(resolve => {
