@@ -13,3 +13,4 @@ require('./spec/TaskUpdated');
 require('./spec/TaskTransfer');
 require('./spec/WorkerCommon');
 require('./spec/WorkerMultiTask');
+require('./spec/Workspace');

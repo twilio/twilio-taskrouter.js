@@ -154,7 +154,7 @@ describe('Common Worker Client', () => {
             expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
         }).timeout(5000);
 
-        it('@SixSigma - should update worker version after rejecting reservation', async() => {
+        it('@SixSigma - should not update worker version after rejecting reservation', async() => {
             await new Promise(resolve => alice.on('ready', resolve));
             await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
 
@@ -162,7 +162,8 @@ describe('Common Worker Client', () => {
             const oldVersion = alice.version;
             await reservation.reject();
             await new Promise(resolve => reservation.on('rejected', resolve));
-            expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
+            await alice.fetchLatestVersion();
+            expect(Number(oldVersion)).to.equal(Number(alice.version));
         }).timeout(10000);
     });
 });

@@ -35,6 +35,30 @@ export default class EnvTwilio {
             });
     }
 
+    createTaskQueue(workspaceSid, attributes) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .taskQueues
+            .create(attributes)
+            .then(taskQueue => taskQueue);
+    }
+
+    deleteTaskQueues(workspaceSid, taskQueueSids = []) {
+        return Promise.all(
+            taskQueueSids
+                .map(taskQueueSid => this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+                .taskQueues(taskQueueSid)
+                    .remove()
+                )
+        );
+    }
+
+    deleteTaskQueueByName(workspaceSid, friendlyName) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .taskQueues
+            .list({ friendlyName })
+            .then(taskQueues => taskQueues.forEach(taskQueue => taskQueue.remove()));
+    }
+
     cancelTask(workspaceSid, taskSid, reason) {
         return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
             .tasks(taskSid)
@@ -120,7 +144,7 @@ export default class EnvTwilio {
      */
     async fetchConference(conferenceSid) {
         return this.twilioClient.conferences(conferenceSid).fetch();
-      }
+    }
 
     /**
      * Fetch the list of Participants for a particular Conference
@@ -138,7 +162,7 @@ export default class EnvTwilio {
         return this.twilioClient.conferences.list({
             friendlyName: conferenceName, limit: 1
         }).then(conferences => {
-             return conferences[0];
+            return conferences[0];
         });
     }
 

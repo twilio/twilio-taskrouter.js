@@ -1,3 +1,10 @@
+0.7.0
+==========
+New Features
+----------
+- Add `fetchTaskQueues` and `fetchWorkers` to `Workspace`
+- Add new fields to `Worker` and `TaskQueue` for Sync compatibility
+
 0.6.1
 ==========
 Bug Fixes
@@ -195,7 +202,7 @@ Add task.hold(targetWorkerSid, onHold) for holding/unholding specified target wo
 ============
 New Features
 ------------
-Workers can now kick another Worker's active call leg from a Conference by calling the `kick(workerSid)` method on a `Task` 
+Workers can now kick another Worker's active call leg from a Conference by calling the `kick(workerSid)` method on a `Task`
 
 Maintenance
 ------------

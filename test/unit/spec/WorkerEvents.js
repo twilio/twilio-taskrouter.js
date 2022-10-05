@@ -163,4 +163,5 @@ describe('WorkerEvents', () => {
             assert.equal(updatedReservation.version, newVersion);
         });
     });
+
 });
