@@ -97,6 +97,32 @@ describe('Configuration', () => {
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
     });
+
+    it('ebServer and wsServer values should be used if provided', () => {
+      const options = {
+        ebServer: 'https://event-bridge.dev-us1.twilio.com/v1/wschannels',
+        wsServer: 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels'
+      };
+
+      const config = new Configuration(token, options);
+
+      assert.equal(config.EB_SERVER, 'https://event-bridge.dev-us1.twilio.com/v1/wschannels');
+      assert.equal(config.WS_SERVER, 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels');
+    });
+
+    it('region and edge should not be used if ebServer and wsServer values are provided', () => {
+      const options = {
+        ebServer: 'https://event-bridge.dev-us1.twilio.com/v1/wschannels',
+        wsServer: 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels',
+        region: 'stage-us1',
+        edge: 'sydney'
+      };
+
+      const config = new Configuration(token, options);
+
+      assert.equal(config.EB_SERVER, 'https://event-bridge.dev-us1.twilio.com/v1/wschannels');
+      assert.equal(config.WS_SERVER, 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels');
+    });
   });
 
   describe('#updateToken', () => {

@@ -127,6 +127,22 @@ describe('Common Worker Client', () => {
                 done();
             });
         });
+
+        it('[backward compatibility] should fire a disconnect event', done => {
+            const bob = new Worker(bobToken, {
+                ebServer: credentials.ebServer,
+                wsServer: credentials.wsServer,
+                logLevel: 'info'
+            });
+
+            bob.on('ready', () => bob.disconnect());
+            bob.on('disconnected', event => {
+                assert.equal(event.message, 'SDK Disconnect',
+                    envTwilio.getErrorMessage('SDK disconnect message mismatch', credentials.accountSid, credentials.multiTaskBobSid));
+
+                done();
+            });
+        });
     });
 
     describe('Worker Versioning', () => {

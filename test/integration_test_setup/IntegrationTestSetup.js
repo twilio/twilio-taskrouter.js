@@ -1,7 +1,11 @@
 /* eslint-disable */
 
 require('dotenv').config({ path: `${__dirname}/.env` });
-const { updateActivitiesInTaskQueue, createActivities, createWorkspace, createWorkers } = require('./IntegrationTestSetupUtils');
+const { updateActivitiesInTaskQueue,
+    createActivities,
+    createWorkspace,
+    createWorkers,
+    getEventBridgeUrl } = require('./IntegrationTestSetupUtils');
 
 
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
@@ -41,9 +45,10 @@ async function createWorkspaces() {
         .list();
     const multiTaskWorkflow = await multiTaskWorkflows[0];
 
-    const  REGION = process.env.REGION || (['stage', 'dev'].includes(ENV) ? `${ENV}-us1` : '');
+    const REGION = process.env.REGION || (['stage', 'dev'].includes(ENV) ? `${ENV}-us1` : '');
     const EDGE = process.env.EDGE
 
+    const eventBridgeUrl = getEventBridgeUrl();
     // Write required variables to json file
     const obj = {
         'accountSid': ACCOUNT_SID,
@@ -59,6 +64,8 @@ async function createWorkspaces() {
         'multiTaskUpdateActivitySid': multiTaskOffline.sid,
         'multiTaskNumActivities': 4,
         'multiTaskNumChannels': 5,
+        'ebServer': `https://${eventBridgeUrl}/v1/wschannels`,
+        'wsServer': `wss://${eventBridgeUrl}/v1/wschannels`,
         'hasSingleTasking': false,
         'supervisorNumber': '',
         'customerNumber': '',
