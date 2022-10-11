@@ -1,3 +1,9 @@
+0.7.1
+==========
+Bug Fixes
+----------
+- Bringing back `ebServer` and `wsServer`
+
 0.7.0
 ==========
 New Features
