@@ -143,7 +143,7 @@ describe('Reservation with Outbound Voice Task', () => {
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskAliceSid,
                 'default',
-                1
+                2
             );
         });
 
