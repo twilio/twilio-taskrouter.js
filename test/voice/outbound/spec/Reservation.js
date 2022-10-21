@@ -143,7 +143,7 @@ describe('Reservation with Outbound Voice Task', () => {
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskAliceSid,
                 'default',
-                2
+                1
             );
         });
 
@@ -153,8 +153,14 @@ describe('Reservation with Outbound Voice Task', () => {
             };
 
             return new Promise(async(resolve, reject) => {
-                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
+                await envTwilio.updateWorkerCapacity(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskAliceSid,
+                    'default',
+                    2
+                );
 
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
                 outboundCommonHelpers.assertOnResCancelEvent(workerReservation, ['in-progress', 'completed'], options).then(() => {
                     resolve('Outbound cancel reservation after cancel task test finished ');
                 }).catch(err => {
