@@ -147,7 +147,7 @@ describe('Reservation with Outbound Voice Task', () => {
             );
         });
 
-        it('should cancel reservation after cancel the task', () => {
+        it.skip('should cancel reservation after cancel the task', () => {
             const options = {
                 reason: 'RoutingTarget not available',
             };

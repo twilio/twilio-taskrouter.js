@@ -67,7 +67,7 @@ describe('Task Transfer to Queue for Outbound Voice Task', () => {
     });
 
     describe('#Cold Transfer to a Queue', () => {
-        it('should transfer task to Worker B in queue successfully', () => {
+        it.skip('should transfer task to Worker B in queue successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
