@@ -55,7 +55,7 @@ describe('Outbound Voice Task', () => {
     });
 
     describe('#Outbound Task during Transfer', () => {
-        it('should let worker A put worker B or herself on hold/unhold successfully', () => {
+        it.skip('should let worker A put worker B or herself on hold/unhold successfully', () => {
             return new Promise(async(resolve, reject) => {
                 const aliceReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(alice);
 
