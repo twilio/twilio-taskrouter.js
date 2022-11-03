@@ -1,3 +1,9 @@
+0.7.2
+==========
+Bug Fixes
+----------
+- Decommissioning `edge` support
+
 0.7.1
 ==========
 Bug Fixes
