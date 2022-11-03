@@ -43,6 +43,7 @@ describe('Configuration', () => {
 
     it('region should not append to ebServer and wsServer if provided falsy', () => {
       const options = {
+        // eslint-disable-next-line no-undefined
         region: undefined
       };
 
@@ -59,12 +60,13 @@ describe('Configuration', () => {
 
       const config = new Configuration(token, options);
 
-      assert.equal(config.EB_SERVER, 'https://event-bridge.sydney.twilio.com/v1/wschannels');
-      assert.equal(config.WS_SERVER, 'wss://event-bridge.sydney.twilio.com/v1/wschannels');
+      assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
     });
 
     it('edge should not append to ebServer and wsServer if provided falsy', () => {
       const options = {
+        // eslint-disable-next-line no-undefined
         edge: undefined
       };
 
@@ -82,13 +84,15 @@ describe('Configuration', () => {
 
       const config = new Configuration(token, options);
 
-      assert.equal(config.EB_SERVER, 'https://event-bridge.sydney.stage-us1.twilio.com/v1/wschannels');
-      assert.equal(config.WS_SERVER, 'wss://event-bridge.sydney.stage-us1.twilio.com/v1/wschannels');
+      assert.equal(config.EB_SERVER, 'https://event-bridge.stage-us1.twilio.com/v1/wschannels');
+      assert.equal(config.WS_SERVER, 'wss://event-bridge.stage-us1.twilio.com/v1/wschannels');
     });
 
     it('region and edge should not append to ebServer and wsServer if provided falsy', () => {
       const options = {
+        // eslint-disable-next-line no-undefined
         region: undefined,
+        // eslint-disable-next-line no-undefined
         edge: undefined
       };
 
