@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -10,7 +11,7 @@ const JWT = require('../../util/MakeAccessToken');
 
 describe('ActivityRejectReservations', () => {
     const multiTaskToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let multiTaskWorker;
     let defaultChannelName = 'default';
     let defaultChannelCapacity = 3;
@@ -50,7 +51,7 @@ describe('ActivityRejectReservations', () => {
 
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
             });
 
@@ -126,7 +127,7 @@ describe('ActivityRejectReservations', () => {
         it.skip('should not reject the pending reservations for the Worker when the flag is set to true, and the activity is unavailable', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
             });
 

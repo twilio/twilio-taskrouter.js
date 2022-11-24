@@ -2,7 +2,7 @@ import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import { getAccessToken } from '../../util/MakeAccessToken';
 import MessagingHelpers from '../../util/MessagingHelpers';
-
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const credentials = require('../../env');
 
@@ -11,7 +11,7 @@ describe('Reservation with Messaging Task', () => {
         credentials.multiTaskAliceSid);
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
       credentials.multiTaskBobSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const messagingHelpers = new MessagingHelpers(envTwilio);
     let alice;
     let bob;
@@ -23,14 +23,14 @@ describe('Reservation with Messaging Task', () => {
             // make worker available
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 
             // bob stays offline
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 

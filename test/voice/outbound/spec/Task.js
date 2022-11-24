@@ -3,6 +3,7 @@ import Worker from '../../../../lib/Worker';
 import { getAccessToken } from '../../../util/MakeAccessToken';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import { pauseTestExecution } from '../../VoiceBase';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const STATUS_CHECK_DELAY = 1000;
 const credentials = require('../../../env');
@@ -13,7 +14,7 @@ const assert = chai.assert;
 describe('Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let alice;
     let bob;
@@ -23,14 +24,14 @@ describe('Outbound Voice Task', () => {
             // Make Alice available
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 
             // bob stays offline
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 

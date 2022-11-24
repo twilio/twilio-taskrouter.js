@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -11,7 +12,7 @@ const JWT = require('../../util/MakeAccessToken');
 describe('Activity', () => {
 
     const token = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let worker;
 
     beforeEach(() => {
@@ -32,7 +33,7 @@ describe('Activity', () => {
     describe('#setAsCurrent', done => {
         it('@SixSigma - should set this connect activity on the Worker, and then update it', () => {
             worker = new Worker(token, {
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 connectActivitySid: credentials.multiTaskConnectActivitySid
             });

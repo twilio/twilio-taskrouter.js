@@ -2,6 +2,7 @@ import EnvTwilio from '../../util/EnvTwilio';
 import { Workspace } from '../../../lib';
 import TaskQueue from '../../../lib/TaskQueue';
 import WorkerContainer from '../../../lib/WorkerContainer';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -13,12 +14,12 @@ const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
 describe('Workspace', () => {
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     // eslint-disable-next-line no-undefined
     const adminToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, undefined, 300, 'admin');
     let workspace;
     const options =  {
-        region: credentials.region,
+        region: buildRegionForEventBridge(credentials.region),
         edge: credentials.edge,
         logLevel: 'error'
     };

@@ -1,6 +1,7 @@
 import Configuration from '../../../lib/util/Configuration';
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -14,13 +15,13 @@ const JWT = require('../../util/MakeAccessToken');
 describe('Common Worker Client', () => {
     const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
 
     let alice;
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 logLevel: 'error'
             });
@@ -98,7 +99,7 @@ describe('Common Worker Client', () => {
   describe('Two Worker clients in the same browser', () => {
         it('should not allow log levels across unique workers to be affected', () => {
             const bob = new Worker(bobToken, {
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 logLevel: 'info'
             });
@@ -114,7 +115,7 @@ describe('Common Worker Client', () => {
     describe('should disconnect', () => {
         it('should fire a disconnect event', done => {
             const bob = new Worker(bobToken, {
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 logLevel: 'info'
             });

@@ -1,3 +1,5 @@
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
+
 const chai = require('chai');
 chai.should();
 const assert = chai.assert;
@@ -10,14 +12,14 @@ import Worker from '../../../lib/Worker';
 
 describe('TaskEvents', () => {
     const multiTaskAliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let alice;
 
     beforeEach(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 logLevel: 'error'
             });

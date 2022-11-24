@@ -1,6 +1,7 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import { getAccessToken } from '../../util/MakeAccessToken';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -11,7 +12,7 @@ const Twilio = require('twilio');
 
 describe('Reservation Canceled', () => {
     const multiTaskAliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const client = new Twilio(credentials.accountSid, credentials.authToken);
     let worker;
 
@@ -19,7 +20,7 @@ describe('Reservation Canceled', () => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             worker = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
         });

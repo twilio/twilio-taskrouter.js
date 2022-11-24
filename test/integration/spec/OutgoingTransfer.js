@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -7,11 +8,11 @@ const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
 describe('OutgoingTransfer', () => {
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
     const conferenceSid = 'CF11111111111111111111111111111111';
-    const region = credentials.region;
+    const region = buildRegionForEventBridge(credentials.region);
     const edge = credentials.edge;
     let alice;
     let bob;

@@ -1,12 +1,12 @@
 import { pauseTestExecution } from '../voice/VoiceBase';
-
+import { buildRegionForTwilioSdk } from '../integration_test_setup/IntegrationTestSetupUtils';
 const Twilio = require('twilio');
 const credentials = require('../../test/env');
 
 export default class EnvTwilio {
-    constructor(accountSid, authToken, environment) {
+    constructor(accountSid, authToken, region) {
         this.twilioClient = new Twilio(accountSid, authToken, {
-            region: environment
+            region: buildRegionForTwilioSdk(region)
         });
     }
 

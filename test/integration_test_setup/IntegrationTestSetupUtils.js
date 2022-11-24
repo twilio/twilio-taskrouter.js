@@ -2,19 +2,25 @@
 require('dotenv').config({ path: `${__dirname}/.env` });
 
 const { Twilio } = require('twilio');
-const ENV = process.env.ENV;
+const REGION = process.env.REGION || process.env.ENV;
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
 const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
-const clientOptions = ENV === 'stage' || ENV === 'dev' ? { region: ENV } : undefined;
-const client = new Twilio(ACCOUNT_SID, AUTH_TOKEN, clientOptions);
+const client = new Twilio(ACCOUNT_SID, AUTH_TOKEN, {region: buildRegionForTwilioSdk(REGION)});
 
+console.log(`Using REGION/ENV for twilio sdk: '${buildRegionForTwilioSdk(REGION)}'`);
+console.log(`Using REGION/ENV for event bridge: '${buildRegionForEventBridge(REGION)}'`);
+
+const getTwilioClient = () => client;
 
 function getEventBridgeUrl() {
-    if (ENV === 'stage' || ENV === 'dev') {
-        return `event-bridge.${ENV}-us1.twilio.com`;
+    // For backward compatibility it's ENV. Valid values are: prod|stage|dev
+    if (REGION === 'stage' || REGION === 'dev') {
+        return `event-bridge.${REGION}-us1.twilio.com`;
+    }else if (REGION === 'prod' || REGION === 'us1'){
+        return'event-bridge.twilio.com';
     }
-    return 'event-bridge.twilio.com';
+    return `event-bridge.${REGION}.twilio.com`;
 }
 
 
@@ -132,10 +138,41 @@ async function createWorkers(multiTaskWorkspace) {
     return { multiTaskAlice, multiTaskBob };
 }
 
+function buildRegionForTwilioSdk(region) {
+    switch (region) {
+        case 'prod':
+        case 'us1':
+            return '';
+        case 'stage-us1':
+            return 'stage';
+        case 'dev-us1':
+            return 'dev';
+        default:
+            return region;
+    }
+}
+
+function buildRegionForEventBridge(region) {
+    switch (region) {
+        case 'prod':
+        case 'us1':
+            return '';
+        case 'stage':
+            return 'stage-us1';
+        case 'dev':
+            return 'dev-us1';
+        default:
+            return region;
+    }
+}
+
 module.exports = {
     createWorkspace,
     updateActivitiesInTaskQueue,
     createActivities,
     getEventBridgeUrl,
-    createWorkers
+    createWorkers,
+    getTwilioClient,
+    buildRegionForTwilioSdk,
+    buildRegionForEventBridge
 };

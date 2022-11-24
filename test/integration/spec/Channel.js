@@ -1,6 +1,7 @@
 import Worker from '../../../lib/Worker';
 import { WorkerChannelCapacities } from '../../mock/WorkerChannelCapacities';
 import EnvTwilio from '../../util/EnvTwilio';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -9,7 +10,7 @@ const JWT = require('../../util/MakeAccessToken');
 
 describe('Channel', () => {
     const aliceMultiToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
 
     before(() => {
         return Promise.all([
@@ -26,7 +27,7 @@ describe('Channel', () => {
     describe('constructor', () => {
         it('@SixSigma - should create specific channels in MultiTask mode', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 

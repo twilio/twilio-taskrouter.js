@@ -1,6 +1,7 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import AssertionUtils from '../../util/AssertionUtils';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -14,7 +15,7 @@ describe('Task Transfer', function() {
   this.timeout(5000);
   /* eslint-enable */
 
-  const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+  const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
   const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
   const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
   let alice;
@@ -24,14 +25,14 @@ describe('Task Transfer', function() {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 logLevel: 'error',
             });
             // bob stays offline
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge,
                 logLevel: 'error',
             });

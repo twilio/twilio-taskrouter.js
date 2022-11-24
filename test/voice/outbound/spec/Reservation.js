@@ -9,12 +9,13 @@ import {
     GEO_NOT_ALLOW_NUMBER,
     TASK_CANCELED_REASON,
 } from '../../../util/Constants';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const credentials = require('../../../env');
 
 describe('Reservation with Outbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let worker;
 
@@ -23,7 +24,7 @@ describe('Reservation with Outbound Voice Task', () => {
             // make worker available
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 

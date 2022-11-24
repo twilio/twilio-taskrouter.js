@@ -2,6 +2,7 @@ import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import Task from '../../../lib/Task';
 import { getAccessToken } from '../../util/MakeAccessToken';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -11,14 +12,14 @@ const credentials = require('../../env');
 
 describe('Reservation Accept', () => {
     const multiTaskAliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let worker;
 
     before(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             worker = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                region: credentials.region,
+                region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
 
