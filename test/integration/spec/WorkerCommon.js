@@ -167,20 +167,23 @@ describe('Common Worker Client', () => {
 
             await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
             const oldVersion = alice.version;
-            await new Promise(resolve => alice.on('reservationCreated', resolve));
-            expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
+            alice.on('reservationCreated', ()=>{
+                expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
+            });
+            await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
         }).timeout(5000);
 
         it('@SixSigma - should not update worker version after rejecting reservation', async() => {
             await new Promise(resolve => alice.on('ready', resolve));
-            await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
-
-            const reservation = await new Promise(resolve => alice.on('reservationCreated', resolve));
             const oldVersion = alice.version;
-            await reservation.reject();
-            await new Promise(resolve => reservation.on('rejected', resolve));
-            await alice.fetchLatestVersion();
-            expect(Number(oldVersion)).to.equal(Number(alice.version));
+            alice.on('reservationCreated', async(reservation)=>{
+                alice.on('rejected', async() => {
+                    await alice.fetchLatestVersion();
+                    expect(Number(oldVersion)).to.equal(Number(alice.version));
+                });
+                await reservation.reject();
+            });
+            await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
         }).timeout(10000);
     });
 });

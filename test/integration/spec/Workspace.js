@@ -16,7 +16,7 @@ const JWT = require('../../util/MakeAccessToken');
 describe('Workspace', () => {
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     // eslint-disable-next-line no-undefined
-    const adminToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, undefined, 300, 'admin');
+    const adminToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, undefined, 1200, 'admin');
     let workspace;
     const options =  {
         region: buildRegionForEventBridge(credentials.region),

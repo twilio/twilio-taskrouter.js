@@ -12,6 +12,10 @@ if ! test -f "$TEST_FILE"; then
     node test/integration_test_setup/IntegrationTestSetup.js || EXIT_CODE=$?
 fi
 
+# Showcasing test.json
+echo "Print test.json for debugging"
+cat test.json
+
 # If test setup failed, fail the job
 if [[ $EXIT_CODE -ne 0 ]]; then
   echo "Test setup failed"

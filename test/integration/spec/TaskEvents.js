@@ -28,11 +28,15 @@ describe('TaskEvents', () => {
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskBobSid,
                 credentials.multiTaskUpdateActivitySid
-            ).then(() => envTwilio.createTask(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskWorkflowSid,
-                '{ "selected_language": "es" }'
-            ));
+            ).then(() => {
+                setTimeout(()=>{
+                    envTwilio.createTask(
+                        credentials.multiTaskWorkspaceSid,
+                        credentials.multiTaskWorkflowSid,
+                        '{ "selected_language": "es" }'
+                    );
+                }, 2000);
+            });
         });
     });
 
@@ -151,40 +155,38 @@ describe('TaskEvents', () => {
 
     describe('#Task Canceled', () => {
         it('@SixSigma - should get the canceled event on the task.', done => {
-            new Promise(resolve => alice.on('reservationCreated', reservation => resolve(reservation)))
-                .then(reservation => {
+            new Promise(() => {
+                alice.on('reservationCreated', reservation => {
                     assert.equal(alice.reservations.size, 1,
                         envTwilio.getErrorMessage('Reservation size count mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
-                    const cancelTaskEventListener = new Promise(resolve => {
-                        reservation.task.on('canceled', canceledTask => {
-                            resolve(canceledTask);
+                    reservation.task.on('canceled', canceledTask => {
+                        const taskResArr = [canceledTask, reservation];
+                        assert.equal(taskResArr[0], taskResArr[1].task);
+                        assert.equal(taskResArr[0].sid.substring(0, 2), 'WT');
+                        assert.equal(taskResArr[0].taskChannelUniqueName, 'default',
+                            envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                        assert.equal(taskResArr[0].status, 'canceled',
+                            envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                        assert.equal(taskResArr[0].queueSid.substring(0, 2), 'WQ');
+                        assert.equal(taskResArr[0].reason, 'Time to go home',
+                            envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                        expect(taskResArr[0].attributes).to.deep.equal({
+                            'selected_language': 'es'
                         });
+                        assert.equal(taskResArr[0].workflowSid, credentials.multiTaskWorkflowSid,
+                            envTwilio.getErrorMessage('Workflow sid mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
+
+                        done();
                     });
 
-                    return envTwilio.cancelTask(credentials.multiTaskWorkspaceSid, reservation.task.sid, 'Time to go home').then(() => Promise.all([cancelTaskEventListener, reservation]));
-                })
-                .then(taskResArr => {
-                    assert.equal(taskResArr[0], taskResArr[1].task);
-                    assert.equal(taskResArr[0].sid.substring(0, 2), 'WT');
-                    assert.equal(taskResArr[0].taskChannelUniqueName, 'default',
-                        envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} channel unique name mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
+                    envTwilio.cancelTask(credentials.multiTaskWorkspaceSid, reservation.task.sid, 'Time to go home');
 
-                    assert.equal(taskResArr[0].status, 'canceled',
-                        envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} status  mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
-
-                    assert.equal(taskResArr[0].queueSid.substring(0, 2), 'WQ');
-                    assert.equal(taskResArr[0].reason, 'Time to go home',
-                        envTwilio.getErrorMessage(`Task ${taskResArr[0].sid} reason for status change mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
-
-                    expect(taskResArr[0].attributes).to.deep.equal({
-                        'selected_language': 'es'
-                    });
-                    assert.equal(taskResArr[0].workflowSid, credentials.multiTaskWorkflowSid,
-                        envTwilio.getErrorMessage('Workflow sid mismatch', credentials.accountSid, credentials.multiTaskConnectActivitySid));
-
-                    done();
-                }).catch(done);
+                });
+            });
         }).timeout(10000);
     });
 

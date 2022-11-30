@@ -46,19 +46,14 @@ describe('TaskEvents', () => {
     describe('#Task Updated', () => {
 
         it('@SixSigma - should get the updated event on the task. #Task Updated', done => {
-            Promise.resolve()
-                .then(() => new Promise(resolve =>
-                    // Verify Alice ready
-                    alice.on('ready', readyAlice => {
-                        resolve(readyAlice);
-                    })))
-                // Create task
-                .then(() => alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid))
-                .then(() => new Promise(resolve =>
+            new Promise(resolve => alice.on('ready', readyAlice => resolve(readyAlice)))
+                .then(() => new Promise(resolve => {
                     // Update the task
                     alice.on('reservationCreated', reservation => {
                         resolve(reservation);
-                    })))
+                    });
+                    alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+                }))
                 .then((reservation) => new Promise(resolve => {
                     // Update task>reservation attr
                     reservation.task.on('updated', updatedTask => {
@@ -84,18 +79,18 @@ describe('TaskEvents', () => {
         }).timeout(10000);
 
         it('@SixSigma - should get the updated event on the outbound task. #OutboundTask Updated', done => {
-            Promise.resolve()
-                .then(() => new Promise(resolve =>
+            new Promise(resolve =>
                     // Verify Alice ready
                     alice.on('ready', readyAlice => {
                         resolve(readyAlice);
-                    })))
-                .then(() => alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid))
-                .then(() => new Promise(resolve =>
+                    }))
+                .then(() => new Promise(resolve => {
                     // Update the task
                     alice.on('reservationCreated', reservation => {
                         resolve(reservation);
-                    })))
+                    });
+                    alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+                }))
                 .then((reservation) => new Promise(resolve => {
                     reservation.task.on('updated', updatedTask => {
                         resolve([updatedTask, reservation]);

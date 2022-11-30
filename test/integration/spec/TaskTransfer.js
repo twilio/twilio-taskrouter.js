@@ -22,7 +22,7 @@ describe('Task Transfer', function() {
   let bob;
 
     beforeEach(() => {
-        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => new Promise( resolve => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
@@ -36,8 +36,7 @@ describe('Task Transfer', function() {
                 edge: credentials.edge,
                 logLevel: 'error',
             });
-
-            return envTwilio.createTask(
+             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
                 JSON.stringify({
@@ -45,23 +44,18 @@ describe('Task Transfer', function() {
                                    conference: { sid: 'CF11111111111111111111111111111111' }
                                })
             );
-        });
+             resolve();
+        }));
     });
 
     afterEach(() => {
         alice.removeAllListeners();
         bob.removeAllListeners();
-        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-            return Promise.all([
-                envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskBobSid,
-                credentials.multiTaskUpdateActivitySid),
-                envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskAliceSid,
-                credentials.multiTaskUpdateActivitySid)]);
-        });
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(new Promise(resolve => {
+                envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, credentials.multiTaskUpdateActivitySid);
+                envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid);
+                resolve();
+        }));
     });
 
     describe('Cancel Transfer for Worker B', () => {
@@ -149,15 +143,14 @@ describe('Task Transfer', function() {
                                         // expect task assignment is reserved before reject
                                         expect(transferReservation.task.status).equals('reserved');
 
+                                        // verify that on rejecting the transfer reservation, the transfer object
+                                        // is updated as well with the failed status
+                                        transferReservation.once('rejected', rejectedReservation => {
+                                            AssertionUtils.verifyTransferProperties(rejectedReservation.transfer,
+                                                alice.sid, bob.sid, 'WARM', 'WORKER', 'failed',
+                                                `Transfer (account ${credentials.accountSid}, task ${rejectedReservation.task.sid})`);
+                                        });
                                         transferReservation.reject().then(() => {
-                                            // verify that on rejecting the transfer reservation, the transfer object
-                                            // is updated as well with the failed status
-                                            transferReservation.once('rejected', rejectedReservation => {
-                                                AssertionUtils.verifyTransferProperties(rejectedReservation.transfer,
-                                                    alice.sid, bob.sid, 'WARM', 'WORKER', 'failed',
-                                                    `Transfer (account ${credentials.accountSid}, task ${rejectedReservation.task.sid})`);
-                                            });
-                                        }).then(() => {
                                             acceptedReservation.task.once('updated', updatedTask => {
                                                 expect(updatedTask.status).equals('assigned');
                                                 resolve();

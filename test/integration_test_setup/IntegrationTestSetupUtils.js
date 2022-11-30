@@ -8,19 +8,21 @@ const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
 const client = new Twilio(ACCOUNT_SID, AUTH_TOKEN, {region: buildRegionForTwilioSdk(REGION)});
 
-console.log(`Using REGION/ENV for twilio sdk: '${buildRegionForTwilioSdk(REGION)}'`);
-console.log(`Using REGION/ENV for event bridge: '${buildRegionForEventBridge(REGION)}'`);
-
 const getTwilioClient = () => client;
 
 function getEventBridgeUrl() {
     // For backward compatibility it's ENV. Valid values are: prod|stage|dev
-    if (REGION === 'stage' || REGION === 'dev') {
-        return `event-bridge.${REGION}-us1.twilio.com`;
-    }else if (REGION === 'prod' || REGION === 'us1'){
-        return'event-bridge.twilio.com';
+    switch (REGION) {
+        case 'stage':
+            return `event-bridge.stage-us1.twilio.com`;
+        case 'dev':
+            return `event-bridge.dev-us1.twilio.com`;
+        case 'prod':
+        case 'us1' :
+            return'event-bridge.twilio.com';
+        default:
+            return `event-bridge.${REGION}.twilio.com`;
     }
-    return `event-bridge.${REGION}.twilio.com`;
 }
 
 

@@ -152,7 +152,7 @@ describe('OutgoingTransfer', () => {
                                         });
                                     });
                             });
-                    }).catch(err => done(err));
+                    }).catch(done);
             });
         }).timeout(10000);
     });
