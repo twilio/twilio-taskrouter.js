@@ -6,9 +6,13 @@ const REGION = process.env.REGION || process.env.ENV;
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
 const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
-const client = new Twilio(ACCOUNT_SID, AUTH_TOKEN, {region: buildRegionForTwilioSdk(REGION)});
+const getTwilioClient = () => {
+    if(ACCOUNT_SID && AUTH_TOKEN){
+        return new Twilio(ACCOUNT_SID, AUTH_TOKEN, {region: buildRegionForTwilioSdk(REGION)});
+    }
+};
 
-const getTwilioClient = () => client;
+const client = getTwilioClient();
 
 function getEventBridgeUrl() {
     // For backward compatibility it's ENV. Valid values are: prod|stage|dev
