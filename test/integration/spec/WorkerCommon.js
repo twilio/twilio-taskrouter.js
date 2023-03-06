@@ -140,7 +140,6 @@ describe('Common Worker Client', () => {
             bob.on('disconnected', event => {
                 assert.equal(event.message, 'SDK Disconnect',
                     envTwilio.getErrorMessage('SDK disconnect message mismatch', credentials.accountSid, credentials.multiTaskBobSid));
-
                 done();
             });
         });

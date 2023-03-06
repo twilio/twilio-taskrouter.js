@@ -107,6 +107,17 @@ export default class EnvTwilio {
             });
     }
 
+    async fetchWorkspace(workspaceSid) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .fetch();
+    }
+
+    async fetchWorker(workspaceSid, workerSid) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .workers(workerSid)
+            .fetch();
+    }
+
     updateWorkerCapacity(workspaceSid, workerSid, taskChannelUniqueName, newCapacity) {
         return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
             .workers(workerSid)
