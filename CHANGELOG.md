@@ -1,3 +1,10 @@
+0.7.3
+==========
+New Features
+----------
+- Added exponential backoff time for reties
+- Added unit and integration tests to test retries
+
 0.7.2
 ==========
 Bug Fixes
