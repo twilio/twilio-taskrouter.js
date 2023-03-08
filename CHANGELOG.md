@@ -4,6 +4,10 @@ New Features
 ----------
 - Added exponential backoff time for reties
 - Added unit and integration tests to test retries
+==========
+Bug Fixes
+----------
+- Fix for fetching more than 1000 workers
 
 0.7.2
 ==========
