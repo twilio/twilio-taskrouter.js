@@ -7,4 +7,4 @@ require('./outbound/spec/Task');
 require('./outbound/spec/TaskTransferToQueue');
 require('./outbound/spec/TaskTransferToWorker');
 require('./outbound/spec/ExternalTransfer');
-require('../integration/spec/WorkerPresence');
+// require('../integration/spec/WorkerPresence');

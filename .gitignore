@@ -13,3 +13,4 @@ package-lock.json
 yarn-error.log
 reports
 .nyc_output
+.DS_Store

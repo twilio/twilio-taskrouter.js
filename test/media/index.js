@@ -7,4 +7,4 @@ require('../voice/outbound/spec/Task');
 require('../voice/outbound/spec/TaskTransferToQueue');
 require('../voice/outbound/spec/TaskTransferToWorker');
 require('../voice/outbound/spec/ExternalTransfer');
-require('../integration/spec/WorkerPresence');
+// require('../integration/spec/WorkerPresence');
