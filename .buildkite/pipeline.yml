@@ -7,7 +7,8 @@ steps:
     commands:
       - "yarn"
       - "yarn build"
-      - "yarn run coverage"
+    artifact_paths:
+      - ./coverage/lcov.info
 
   ## sonarqube
   # set the necessary sonarqube properties
@@ -31,6 +32,7 @@ steps:
       - artifacts#v1.3.0:
           download:
             - "sonar-project.properties"
+            - "coverage/lcov.info"
       - docker#v3.13.0:
           image: "sonarsource/sonar-scanner-cli"
           environment:
