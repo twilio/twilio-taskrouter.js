@@ -28,7 +28,16 @@ const createConfig = libraryTarget => {
             })
         ],
         externals: [nodeExternals()],
-        module: {},
+        module: {
+            rules: [
+                {
+                    test: /\.(js)$/,
+                    loader: 'babel-loader',
+                    exclude: /node_modules/,
+
+                }
+            ]
+        },
         optimization: {
             minimize: true,
             minimizer: [

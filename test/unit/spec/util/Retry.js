@@ -8,26 +8,41 @@ describe('RetryUtil', () => {
     const maxBackoffTime = 3000;
     let retryUtil;
     let sandbox;
+    let warnSpy;
 
     beforeEach(() => {
         retryUtil = new RetryUtil(baseBackoffTime, maxBackoffTime);
+        warnSpy = sinon.stub(retryUtil._log, 'warn');
+        warnSpy.returns('test');
         sandbox = sinon.sandbox.create();
     });
 
     afterEach(() => {
+        warnSpy.reset();
         sandbox.restore();
     });
 
     describe('generateBackoffInterval', () => {
-        it('should throw an error if interval is not a positive finite number', () => {
-            const error = 'Interval count should be a positive finite number';
-            expect(() => retryUtil.generateBackoffInterval(-1)).to.throw(error);
-            expect(() => retryUtil.generateBackoffInterval(0)).to.throw(error);
-            expect(() => retryUtil.generateBackoffInterval(Infinity)).to.throw(error);
-            expect(() => retryUtil.generateBackoffInterval(NaN)).to.throw(error);
-            expect(() => retryUtil.generateBackoffInterval('foo')).to.throw(error);
-            expect(() => retryUtil.generateBackoffInterval(null)).to.throw(error);
+        // eslint-disable-next-line no-undefined
+        [null, '2', undefined, true, false, -1, 0, Infinity, {}, [], NaN].forEach(item => {
+            it(`should reset the retryCount and log a warning when ${item} is passed as retryCount`, () => {
+                const msg = 'Interval count should be a positive finite number. Resetting retryCount to 1, Current value:' + item;
+                retryUtil.generateBackoffInterval(item);
+                expect(warnSpy.calledOnce).to.have.true;
+                expect(warnSpy.calledWith(msg)).to.be.true;
+            });
         });
+
+        // eslint-disable-next-line no-undefined
+        ['2', undefined, -2, -1, Infinity, []].forEach(item => {
+            it(`should reset the retryCount and log a warning when ${item}+1 is passed as retryCount`, () => {
+                const msg = 'Interval count should be a positive finite number. Resetting retryCount to 1, Current value:' + (item + 1);
+                retryUtil.generateBackoffInterval(item + 1);
+                expect(warnSpy.calledOnce).to.have.true;
+                expect(warnSpy.calledWith(msg)).to.be.true;
+            });
+        });
+
 
         it('should return a delay between baseBackoffTime and maxBackoffTime with a random time upto 100ms', () => {
             expect(retryUtil.generateBackoffInterval(1)).to.be.within(baseBackoffTime, maxBackoffTime + 100);
