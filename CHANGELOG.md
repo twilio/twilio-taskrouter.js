@@ -1,3 +1,14 @@
+0.8.1
+==========
+New Features
+----------
+- Added status based retries
+
+Maintenance
+----------
+- Added babel transpiler as part of build process for ES6+ syntax
+- Added sonarqube integration for code quality
+
 0.8.0
 ==========
 New Features
