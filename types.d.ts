@@ -27,9 +27,9 @@ export class Worker extends EventEmitter {
     version: string;
 
     createTask(to: string, from: string, workflowSid: string, taskQueueSid: string, options: Object): Promise<string>
-    disconnect();
+    disconnect(): void;
     setAttributes(attributes: any): Promise<Worker>;
-    updateToken(newToken: string);
+    updateToken(newToken: string): void;
     fetchLatestVersion(): Promise<Worker>;
 }
 
@@ -86,8 +86,8 @@ export interface Task extends NodeJS.EventEmitter {
 
     complete(reason: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;
-    async transfer(to: string, options: TransferOptions): Promise<Task>;
-    wrapUp({reason: string}): Promise<Task>;
+    transfer(to: string, options: TransferOptions): Promise<Task>;
+    wrapUp(options: WrappingOptions): Promise<Task>;
     updateParticipant(options: TaskParticipantOptions): Promise<Task>;
     kick(workerSid: string): Promise<Task>;
     hold(targetWorkerSid: string, onHold: boolean, options: HoldOptions): Promise<Task>;
@@ -106,7 +106,7 @@ export interface Reservation extends NodeJS.EventEmitter {
     readonly workerSid: string;
     readonly workspaceSid: string;
     readonly task: Task;
-    readonly canceledReasonCode?: int;
+    readonly canceledReasonCode?: number;
     readonly version: string;
 
     accept(): Promise<Reservation>;
@@ -115,7 +115,7 @@ export interface Reservation extends NodeJS.EventEmitter {
     call(from: string, url: string, options?: CallOptions): Promise<Reservation>;
     dequeue(options?: DequeueOptions): Promise<Reservation>;
     conference(options?: ConferenceOptions): Promise<Reservation>;
-    redirect(callSid: string, url: string, options?: RedirectOptions);
+    redirect(callSid: string, url: string, options?: RedirectOptions): Promise<Reservation>;
     reject(options?: RejectOptions): Promise<Reservation>;
     updateParticipant(options: ReservationParticipantOptions): Promise<Reservation>;
     fetchLatestVersion(): Promise<Reservation>;
@@ -249,4 +249,8 @@ export interface ReservationParticipantOptions {
     endConferenceOnExit: boolean;
     mute: boolean;
     beepOnExit: boolean;
+}
+
+export interface WrappingOptions {
+    reason: string;
 }
