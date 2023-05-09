@@ -1,3 +1,9 @@
+0.8.2
+==========
+Bug Fixes
+----------
+- Fixed TS warnings in types file
+
 0.8.1
 ==========
 New Features
