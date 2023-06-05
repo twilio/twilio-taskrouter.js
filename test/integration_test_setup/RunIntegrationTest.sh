@@ -3,7 +3,7 @@ set -e
 
 TEST_FILE="test.json"
 
-npm install
+yarn install
 
 # Used by Datadog reporter script to determine test duration
 export JOB_START_MS=$(date +%s000)
@@ -27,9 +27,9 @@ fi
 RUN_SIX_SIGMA_SUITE=$(grep RUN_SIX_SIGMA_SUITE ./test/integration_test_setup/.env | cut -d '=' -f2)
 
 if [[ $RUN_SIX_SIGMA_SUITE == true ]]; then
-  time npm run test:integration-six-sigma || EXIT_CODE=$?
+  time yarn test:integration-six-sigma || EXIT_CODE=$?
 else
-  time npm run test:integration || EXIT_CODE=$?
+  time yarn test:integration || EXIT_CODE=$?
 fi
 
 echo "Integration test exit code $EXIT_CODE"

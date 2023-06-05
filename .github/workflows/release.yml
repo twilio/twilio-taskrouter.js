@@ -23,7 +23,7 @@ jobs:
         run: |
           git config user.name flexrouting+ci
           git config user.email flexrouting+ci@twilio.com
-          npm version "${{ github.event.inputs.releaseVersion }}" --no-git-tag-version
+          yarn version --new-version "${{ github.event.inputs.releaseVersion }}" --no-git-tag-version
       - run: |
           yarn
           yarn build
@@ -41,7 +41,7 @@ jobs:
           git commit -am "${{ github.event.inputs.releaseVersion }}"
           git push origin gh-pages --force
           git checkout master
-          npm publish
+          yarn publish --new-version "${{ github.event.inputs.releaseVersion }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
@@ -59,7 +59,7 @@ jobs:
           git config user.name flexrouting+ci
           git config user.email flexrouting+ci@twilio.com
           git pull origin HEAD:master          
-          npm version "${{ github.event.inputs.developmentVersion }}" --no-git-tag-version
+          yarn version --new-version "${{ github.event.inputs.developmentVersion }}" --no-git-tag-version
           git pull origin HEAD:master
           git add .
           git rm -rf dist
