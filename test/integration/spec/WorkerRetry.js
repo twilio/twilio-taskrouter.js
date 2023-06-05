@@ -85,6 +85,34 @@ describe('Worker Retry', () => {
 
         }).timeout(15000);
 
+        it('connectRetry should get reset when new instance is created', async() => {
+            alice = new Worker(aliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
+                logLevel: 'info'
+            });
+
+            // waiting here, as the logs takes time as reties happen after each delay
+            await new Promise((r)=> setTimeout(r, 10000));
+
+            // checking _connectRetry was increased
+            chai.expect(alice._connectRetry).to.equal(3);
+
+            // creating new instance
+            alice = new Worker(aliceToken, {
+                connectActivitySid: credentials.multiTaskConnectActivitySid,
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
+                logLevel: 'info'
+            });
+
+            // checking _connectRetry has reset
+            // eslint-disable-next-line no-undefined
+            chai.expect(alice._connectRetry).to.equal(undefined);
+
+        }).timeout(15000);
+
     });
 
     describe('For non-retry status codes', ()=> {
