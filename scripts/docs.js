@@ -18,12 +18,14 @@ const publicClasses = [
   'lib/Task.js',
   'lib/TaskQueue.js',
   'lib/Worker.js',
+  'lib/Supervisor.js',
   'lib/Workspace.js'
 ];
 
 const publicConstructors = [
   'Worker',
-  'Workspace'
+  'Workspace',
+  'Supervisor'
 ];
 
 const privateConstructors = [

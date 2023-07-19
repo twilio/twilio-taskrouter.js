@@ -36,8 +36,9 @@
     "test": "yarn test:unit && yarn test:integration",
     "build:dev": "yarn webpack development",
     "build:prod": "yarn webpack production",
+    "build:types": "tsc && node ./scripts/types.js",
     "prebuild": "yarn clean && yarn install",
-    "build": "yarn lint && yarn build:prod",
+    "build": "yarn lint && yarn build:prod && yarn run build:types",
     "postbuild": "yarn docs && yarn coverage",
     "docs": "node ./scripts/docs.js ./dist/docs",
     "coverage": "nyc --report-dir coverage --reporter lcov --reporter text-summary yarn test:unit",
@@ -74,7 +75,6 @@
     "chai-as-promised": "^7.1.1",
     "chai-datetime": "^1.4.1",
     "cheerio": "^1.0.0-rc.10",
-    "copy-webpack-plugin": "^6.4.1",
     "dotenv": "16.0.1",
     "eslint": "^7.32.0",
     "ink-docstrap": "^1.3.2",
@@ -90,6 +90,7 @@
     "sinon-chai": "^3.5.0",
     "twilio": "^3.71.3",
     "twilio-sync": "^2.0.1",
+    "typescript": "^4.5.5",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1",
     "webpack-node-externals": "^3.0.0"
@@ -100,5 +101,5 @@
   "engines": {
     "node": ">=12"
   },
-  "types": "./dist/types.d.ts"
+  "types": "./dist/declarations"
 }

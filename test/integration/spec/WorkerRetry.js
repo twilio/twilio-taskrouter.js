@@ -10,7 +10,10 @@ const sinon = require('sinon');
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
-// This is an integration test to test the retry logic with backoff for worker connectivity
+/**
+ * This is a mocked integration test to test the retry logic with backoff interval for worker connectivity
+ * Added along with e2e tests, as we don't have separate integration tests
+ */
 describe('Worker Retry', () => {
 
     describe('For status codes with retries 0, 429, 500, 502, 503, 504', ()=> {
@@ -108,8 +111,7 @@ describe('Worker Retry', () => {
             });
 
             // checking _connectRetry has reset
-            // eslint-disable-next-line no-undefined
-            chai.expect(alice._connectRetry).to.equal(undefined);
+            chai.expect(alice._connectRetry).to.equal(0);
 
         }).timeout(15000);
 
@@ -155,8 +157,7 @@ describe('Worker Retry', () => {
             await new Promise((r)=> setTimeout(r, 10000));
             const matches = infoLoggerSpy.args.filter(args => message.test(args[0]));
 
-            // eslint-disable-next-line no-undefined
-            chai.expect(alice._connectRetry).to.equal(undefined);
+            chai.expect(alice._connectRetry).to.equal(0);
             // checking no retry messages were logged
             chai.expect(matches.length).to.equal(0);
 
