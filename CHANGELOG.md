@@ -1,3 +1,9 @@
+0.8.3
+==========
+Maintenance
+----------
+- Increased timeout for http requests from 5s to 15s
+
 0.8.2
 ==========
 Bug Fixes
