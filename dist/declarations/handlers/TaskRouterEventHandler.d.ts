@@ -1,0 +1,40 @@
+export default class TaskRouterEventHandler {
+    constructor(worker: typeof import("../Worker"), options?: Object | undefined);
+    private _worker;
+    private _logLevel;
+    private _log;
+    public getTREventsToHandlerMapping(): {
+        "task.transfer-completed": string;
+        "reservation.completed": string;
+        "task.transfer-attempt-failed": string;
+        "reservation.created": string;
+        "task.updated": string;
+        "reservation.rescinded": string;
+        "worker.attributes.update": string;
+        "worker.channel.availability.update": string;
+        "task.transfer-initiated": string;
+        "reservation.accepted": string;
+        "reservation.timeout": string;
+        "reservation.failed": string;
+        "worker.activity.update": string;
+        "reservation.rejected": string;
+        "task.canceled": string;
+        "task.transfer-failed": string;
+        "task.wrapup": string;
+        "reservation.wrapup": string;
+        "reservation.canceled": string;
+        "task.transfer-canceled": string;
+        "worker.capacity.update": string;
+        "task.completed": string;
+    };
+    private _workerActivityUpdateHandler;
+    private _workerAttributesUpdateHandler;
+    private _workerCapacityUpdateHandler;
+    private _workerChannelAvailabilityUpdateHandler;
+    private _reservationCreatedHandler;
+    private _reservationFailedHandler;
+    private _reservationUpdateHandler;
+    private _reservationCleanupEventsHandler;
+    private _taskTypeEventHandler;
+    private _transferTaskEventHandler;
+}
