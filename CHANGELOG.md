@@ -1,3 +1,9 @@
+0.8.4
+==========
+Bug Fixes
+----------
+- fixing broken types
+
 0.8.3
 ==========
 Maintenance

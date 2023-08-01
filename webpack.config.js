@@ -1,3 +1,4 @@
+const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
@@ -15,6 +16,11 @@ const createConfig = libraryTarget => {
         plugins: [
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+            }),
+            new CopyPlugin({
+                patterns: [
+                    { from: 'types.d.ts' }
+                ]
             }),
             new webpack.BannerPlugin({
                 banner,
