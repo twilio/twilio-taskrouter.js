@@ -42,7 +42,13 @@
     "postbuild": "yarn docs && yarn coverage",
     "docs": "node ./scripts/docs.js ./dist/docs",
     "coverage": "nyc --report-dir coverage --reporter lcov --reporter text-summary yarn test:unit",
-    "test:setup": "node test/integration_test_setup/IntegrationTestSetup.js"
+    "test:setup": "node test/integration_test_setup/IntegrationTestSetup.js",
+    "sample-app:install": "yarn --cwd sample-app install",
+    "sample-app:build": "yarn --cwd sample-app build",
+    "sample-app:start": "yarn --cwd sample-app start",
+    "sample-app:dev": "yarn --cwd sample-app dev",
+    "sample-app:lint": "yarn --cwd sample-app lint",
+    "sample-app:format": "yarn --cwd sample-app format"
   },
   "repository": {
     "type": "git",

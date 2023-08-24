@@ -14,3 +14,13 @@ yarn-error.log
 reports
 .nyc_output
 .DS_Store
+
+# sample nextjs app
+# next.js
+sample-app/.next/
+sample-app/out/
+# production
+sample-app/build
+# typescript
+sample-app/*.tsbuildinfo
+sample-app/next-env.d.ts

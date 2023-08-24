@@ -118,6 +118,10 @@ Testing
 - set ACCOUNT_SID, AUTH_TOKEN, SIGNING_KEY_SID, SIGNING_KEY_SECRET
 - Run ./test/integration_test_setup/RunIntegrationTestLocal.sh this will create everything needed for running E2E tests and run the tests
 
+Test with Sample App
+------------
+- See [README.md](sample-app/README.md)
+
 Contributing
 ------------
 
