@@ -1,3 +1,9 @@
+0.8.5
+==========
+Maintenance
+----------
+- Added sample app for testing integrations
+
 0.8.4
 ==========
 Bug Fixes
