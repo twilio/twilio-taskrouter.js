@@ -69,6 +69,24 @@ describe('WorkerEvents', () => {
             expect(spy.getCall(1).args[0].reservationSid).to.equal(r2);
 
         });
+
+        it('should update version field after receiving task update event', () => {
+            const oldVersion = 1;
+            const newVersion = 2;
+
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+            worker._dataServices.reservationsEntity = reservationsServices;
+
+            const reservation = Object.assign({}, mockEvents.reservation.accepted);
+            reservation.task.sid = t1;
+            reservation.task.version = oldVersion;
+            reservationsServices.insert(reservation);
+
+            worker._signaling.emit('task.updated', Object.assign({}, mockEvents.task.updated, { version: newVersion }), 'task.updated');
+
+            const updatedTask = reservationsServices.reservations.get(reservation.sid).task;
+            assert.equal(updatedTask.version, newVersion);
+        });
     });
 
     describe('TransferEvents', () => {
@@ -127,5 +145,23 @@ describe('WorkerEvents', () => {
             assert.isTrue(spy.calledOnce);
             expect(spy.getCall(0).args[0]).to.equal(mockEvents.reservation.failed);
         });
+
+        it('should update version field after receiving reservation accepted event', () => {
+            const oldVersion = 1;
+            const newVersion = 2;
+
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+            worker._dataServices.reservationsEntity = reservationsServices;
+
+            const reservation = Object.assign({}, mockEvents.reservation.accepted);
+            reservation.version = oldVersion;
+            reservationsServices.insert(reservation);
+
+            worker._signaling.emit('reservation.accepted', Object.assign({}, mockEvents.reservation.accepted, { version: newVersion }), 'reservation.accepted');
+
+            const updatedReservation = reservationsServices.reservations.get(reservation.sid);
+            assert.equal(updatedReservation.version, newVersion);
+        });
     });
+
 });

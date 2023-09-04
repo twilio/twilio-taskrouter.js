@@ -1,12 +1,12 @@
 import { pauseTestExecution } from '../voice/VoiceBase';
-
+import { buildRegionForTwilioSdk } from '../integration_test_setup/IntegrationTestSetupUtils';
 const Twilio = require('twilio');
 const credentials = require('../../test/env');
 
 export default class EnvTwilio {
-    constructor(accountSid, authToken, environment) {
+    constructor(accountSid, authToken, region) {
         this.twilioClient = new Twilio(accountSid, authToken, {
-            region: environment
+            region: buildRegionForTwilioSdk(region)
         });
     }
 
@@ -33,6 +33,30 @@ export default class EnvTwilio {
             }).catch(err => {
                 console.log('err updating task', err);
             });
+    }
+
+    createTaskQueue(workspaceSid, attributes) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .taskQueues
+            .create(attributes)
+            .then(taskQueue => taskQueue);
+    }
+
+    deleteTaskQueues(workspaceSid, taskQueueSids = []) {
+        return Promise.all(
+            taskQueueSids
+                .map(taskQueueSid => this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+                .taskQueues(taskQueueSid)
+                    .remove()
+                )
+        );
+    }
+
+    deleteTaskQueueByName(workspaceSid, friendlyName) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .taskQueues
+            .list({ friendlyName })
+            .then(taskQueues => taskQueues.forEach(taskQueue => taskQueue.remove()));
     }
 
     cancelTask(workspaceSid, taskSid, reason) {
@@ -83,6 +107,17 @@ export default class EnvTwilio {
             });
     }
 
+    async fetchWorkspace(workspaceSid) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .fetch();
+    }
+
+    async fetchWorker(workspaceSid, workerSid) {
+        return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
+            .workers(workerSid)
+            .fetch();
+    }
+
     updateWorkerCapacity(workspaceSid, workerSid, taskChannelUniqueName, newCapacity) {
         return this.twilioClient.taskrouter.v1.workspaces(workspaceSid)
             .workers(workerSid)
@@ -120,7 +155,7 @@ export default class EnvTwilio {
      */
     async fetchConference(conferenceSid) {
         return this.twilioClient.conferences(conferenceSid).fetch();
-      }
+    }
 
     /**
      * Fetch the list of Participants for a particular Conference
@@ -138,7 +173,7 @@ export default class EnvTwilio {
         return this.twilioClient.conferences.list({
             friendlyName: conferenceName, limit: 1
         }).then(conferences => {
-             return conferences[0];
+            return conferences[0];
         });
     }
 

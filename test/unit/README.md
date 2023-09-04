@@ -2,7 +2,7 @@
 
 ## Run in Node.js
 
-`> npm run test:unit`
+`> yarn run test:unit`
 
 ## Run in a browser
 

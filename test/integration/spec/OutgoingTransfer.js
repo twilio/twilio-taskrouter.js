@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -7,12 +8,12 @@ const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
 describe('OutgoingTransfer', () => {
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
     const conferenceSid = 'CF11111111111111111111111111111111';
-    const ebServerUrl = `${credentials.ebServer}/v1/wschannels`;
-    const wsServerUrl = `${credentials.wsServer}/v1/wschannels`;
+    const region = buildRegionForEventBridge(credentials.region);
+    const edge = credentials.edge;
     let alice;
     let bob;
 
@@ -36,15 +37,15 @@ describe('OutgoingTransfer', () => {
     beforeEach(() => {
         alice = new Worker(aliceToken, {
             connectActivitySid: credentials.multiTaskConnectActivitySid,
-            ebServer: ebServerUrl,
-            wsServer: wsServerUrl,
+            region,
+            edge,
             logLevel: 'error'
         });
 
         // bob stays offline
         bob = new Worker(bobToken, {
-            ebServer: ebServerUrl,
-            wsServer: wsServerUrl,
+            region,
+            edge,
             logLevel: 'error'
         });
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(createTaskForAlicePromise);
@@ -151,7 +152,7 @@ describe('OutgoingTransfer', () => {
                                         });
                                     });
                             });
-                    }).catch(err => done(err));
+                    }).catch(done);
             });
         }).timeout(10000);
     });

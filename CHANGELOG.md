@@ -1,8 +1,92 @@
+0.8.4
+==========
+Bug Fixes
+----------
+- fixing broken types
+
+0.8.3
+==========
+Maintenance
+----------
+- Increased timeout for http requests from 5s to 15s
+
+0.8.2
+==========
+Bug Fixes
+----------
+- Fixed TS warnings in types file
+
+0.8.1
+==========
+New Features
+----------
+- Added status based retries
+
+Maintenance
+----------
+- Added babel transpiler as part of build process for ES6+ syntax
+- Added sonarqube integration for code quality
+
+0.8.0
+==========
+New Features
+----------
+- Added exponential backoff time for retries
+- Added unit and integration tests to test retries
+
+Bug Fixes
+----------
+- Fix for fetching more than 1000 workers
+
+0.7.2
+==========
+Bug Fixes
+----------
+- Decommissioning `edge` support
+
+0.7.1
+==========
+Bug Fixes
+----------
+- Bringing back `ebServer` and `wsServer`
+
+0.7.0
+==========
+New Features
+----------
+- Add `fetchTaskQueues` and `fetchWorkers` to `Workspace`
+- Add new fields to `Worker` and `TaskQueue` for Sync compatibility
+
+0.6.1
+==========
+Bug Fixes
+----------
+- Handle version mismatch in Worker after creating or completing reservations
+
+
 0.6.0
 ==========
 New Features
 ----------
 - Add `version` field to TaskRouter resources (Task, Reservation and Worker)
+
+0.5.13
+==========
+New Features
+----------
+- TR SDK Now starts supporting edge & region parameter
+
+0.5.11
+==========
+Bug Fixes
+----------
+- Improved the fix for race condition when initiating task transfer
+
+Maintenance
+----------
+- Upgraded several dependencies to more recents versions
+- Upgraded node engine requirement from 6 to >=12.17.0
+
 
 0.5.10
 ==========
@@ -170,7 +254,7 @@ Add task.hold(targetWorkerSid, onHold) for holding/unholding specified target wo
 ============
 New Features
 ------------
-Workers can now kick another Worker's active call leg from a Conference by calling the `kick(workerSid)` method on a `Task` 
+Workers can now kick another Worker's active call leg from a Conference by calling the `kick(workerSid)` method on a `Task`
 
 Maintenance
 ------------

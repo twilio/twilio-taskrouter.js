@@ -1,3 +1,4 @@
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -10,7 +11,7 @@ import Worker from '../../../lib/Worker';
 
 describe('Reservation Reject', () => {
     const multiTaskAliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
 
     before(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
@@ -36,11 +37,11 @@ describe('Reservation Reject', () => {
 
 
     describe('#reject reservation', () => {
-        it('should reject the reservation', () => {
+        it('@SixSigma - should reject the reservation', () => {
             const alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {

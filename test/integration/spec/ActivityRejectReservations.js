@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -10,44 +11,44 @@ const JWT = require('../../util/MakeAccessToken');
 
 describe('ActivityRejectReservations', () => {
     const multiTaskToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let multiTaskWorker;
     let defaultChannelName = 'default';
     let defaultChannelCapacity = 3;
 
-    beforeEach(() => {
-        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
-            .then(() => {
-                return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, defaultChannelCapacity).then(() => {
-                    envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid).then(() => {
-                        const promises = [];
-                        for (let i = 0; i < 3; i++) {
-                            promises.push(envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, '{}'));
-                        }
-                        return Promise.all(promises);
-                    });
-                });
-            });
+    beforeEach(async() => {
+        await envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
+        const promises = [];
+        await new Promise(resolve => setTimeout(async() => {
+            await envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, defaultChannelCapacity);
+            await envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid);
 
+            for (let i = 0; i < 3; i++) {
+                promises.push(envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid, '{}'));
+            }
+            resolve();
+        }, 5000));
+        return Promise.all(promises);
     });
 
     afterEach(() => {
-         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
-            return envTwilio.updateWorkerActivity(
-                credentials.multiTaskWorkspaceSid,
-                credentials.multiTaskAliceSid,
-                credentials.multiTaskUpdateActivitySid);
-            }).then(() => {
-                return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
-            });
+        multiTaskWorker.removeAllListeners();
+        return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid)
+            .then(() => envTwilio.updateWorkerActivity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, credentials.multiTaskUpdateActivitySid))
+            .then(() => envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1));
     });
 
-    describe('successful update with reject pending reservations', () => {
-        it('should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
+    describe('successful update with reject pending reservations', (done) => {
+
+        it('@SixSigma - should reject the pending reservations for the Worker when the flag is set to true, and update the activity', async() => {
+            // this test fails sometimes with 412 errors, because it tries to update the activity sid with an older version during initialization,
+            // adding this delay before initializing the worker so all background updates are applied, it will make sense to refactor this test to properly wait for events
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
             });
 
             let connectActivity;
@@ -109,11 +110,12 @@ describe('ActivityRejectReservations', () => {
                 return Promise.all(promises).then(() => {
                     multiTaskWorker.reservations.forEach(reservation => {
                         expect(reservation.status).equal('rejected');
+                        done();
                     });
                 });
-            });
+            }).catch(done);
 
-        }).timeout(5000);
+        }).timeout(10000);
     });
 
     describe.skip('unsuccessful update with reject pending reservations', () => {
@@ -122,8 +124,8 @@ describe('ActivityRejectReservations', () => {
         it.skip('should not reject the pending reservations for the Worker when the flag is set to true, and the activity is unavailable', async() => {
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
             });
 
             const createdReservations = [];

@@ -4,6 +4,7 @@ import Supervisor from '../../../../lib/Supervisor';
 import { getAccessToken } from '../../../util/MakeAccessToken';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import SyncClientInstance from '../../../util/SyncClientInstance';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -13,7 +14,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const supervisorToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, null, 'supervisor', { useSync: true });
 
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let worker;
     let supervisor;
@@ -32,14 +33,14 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             // make worker and supervisor available
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             supervisor = new Supervisor(supervisorToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return Promise.all([outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(worker),

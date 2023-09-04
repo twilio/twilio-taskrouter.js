@@ -8,7 +8,7 @@ class WS extends MockWebSocket {
     }
 }
 
-const mockServer = new Server('wss://127.0.0.1'); // eslint-disable-line
+const mockServer = new Server('wss://event-bridge.twilio.com/v1/wschannels'); // eslint-disable-line
 global.WebSocket = WS;
 
 require('./spec/Activity');
@@ -21,11 +21,14 @@ require('./spec/Supervisor');
 require('./spec/Task');
 require('./spec/Worker');
 require('./spec/WorkerEvents');
+require('./spec/Workspace');
 require('./spec/signaling/EventBridgeSignaling');
 require('./spec/util/Configuration');
 require('./spec/util/Logger');
 require('./spec/util/Paginator');
 require('./spec/util/Tools');
+require('./spec/util/Retry');
+require('./spec/util/Request');
 require('./spec/util/TwilioError');
 require('./spec/data/Activities');
 require('./spec/data/Channels');

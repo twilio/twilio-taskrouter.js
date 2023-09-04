@@ -10,7 +10,7 @@ if (process.env.TRAVIS_SECURE_ENV_VARS === 'false') {
   process.exit(0);
 }
 
-const childProcess = spawnSync('npm', ['run', 'test:integration'], {
+const childProcess = spawnSync('yarn', ['run', 'test:integration'], {
   stdio: 'inherit'
 });
 

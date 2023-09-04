@@ -7,6 +7,7 @@ import CommonHelpers from '../../../util/CommonHelpers';
 import { pauseTestExecution } from '../../VoiceBase';
 import { TRANSFER_MODE } from '../../../util/Constants';
 import SyncClientInstance from '../../../util/SyncClientInstance';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const STATUS_CHECK_DELAY = 1000;
 
@@ -20,7 +21,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                                       credentials.multiTaskAliceSid, null, null, { useSync: true });
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                     credentials.multiTaskBobSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     const commonHelpers = new CommonHelpers(envTwilio);
     let alice;
@@ -32,15 +33,15 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             // Make Alice available
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             // bob stays offline
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
             aliceSyncClient = new SyncClientInstance(aliceToken);
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);

@@ -4,12 +4,13 @@ import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
 import { twimletUrl } from '../../VoiceBase';
 import SyncClientInstance from '../../../util/SyncClientInstance';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const credentials = require('../../../env');
 
 describe('Reservation with Inbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, null, null, { useSync: true });
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let worker;
     let syncClient;
 
@@ -34,8 +35,8 @@ describe('Reservation with Inbound Voice Task', () => {
         it('should issue an inbound conference instruction on the Reservation', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(async(resolve, reject) => {

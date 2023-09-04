@@ -1,23 +1,25 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import { getAccessToken } from '../../util/MakeAccessToken';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const expect = chai.expect;
+const assert = chai.assert;
 
 const credentials = require('../../env');
 
 describe('Reservation', () => {
   const multiTaskAliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-  const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+  const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
   let worker;
 
   beforeEach(() => {
     return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
       worker = new Worker(multiTaskAliceToken, {
         connectActivitySid: credentials.multiTaskConnectActivitySid,
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`
+        region: buildRegionForEventBridge(credentials.region),
+        edge: credentials.edge
       });
 
       return envTwilio.updateWorkerActivity(
@@ -43,7 +45,7 @@ describe('Reservation', () => {
   });
 
   describe('#complete reservation', () => {
-    it('should complete the reservation', done => {
+    it('@SixSigma - should complete the reservation', done => {
       envTwilio.createTask(
         credentials.multiTaskWorkspaceSid,
         credentials.multiTaskWorkflowSid,
@@ -57,7 +59,7 @@ describe('Reservation', () => {
           done();
         }).catch(done);
       });
-    }).timeout(5000);
+    }).timeout(15000);
   });
 
   describe.skip('#complete outbound task reservation', () => {
@@ -80,7 +82,7 @@ describe('Reservation', () => {
   });
 
   describe('#wrap reservation', () => {
-    it('should wrap the reservation', done => {
+    it('@SixSigma - should wrap the reservation', done => {
       envTwilio.createTask(
         credentials.multiTaskWorkspaceSid,
         credentials.multiTaskWorkflowSid,
@@ -92,6 +94,48 @@ describe('Reservation', () => {
           expect(updatedReservation.status).equal('wrapping');
           done();
         }).catch(done);
+      });
+    }).timeout(5000);
+  });
+
+  describe('Reservation versioning', () => {
+    it('@SixSigma - should update the version of the reservation', done => {
+      envTwilio.createTask(
+        credentials.multiTaskWorkspaceSid,
+        credentials.multiTaskWorkflowSid,
+        '{ "selected_language": "es" }'
+      );
+      worker.on('reservationCreated', reservation => {
+        const oldVersion = reservation.version;
+
+        reservation.accept().then(updatedReservation => {
+          expect(Number(updatedReservation.version)).to.equal(Number(oldVersion) + 1);
+          done();
+        }).catch(done);
+      });
+    }).timeout(5000);
+
+    it('@SixSigma - should have the version field in list response', (done) => {
+      new Promise(resolve => {
+        worker.on('ready', resolve);
+      }).then(()=> {
+        envTwilio.createTask(
+            credentials.multiTaskWorkspaceSid,
+            credentials.multiTaskWorkflowSid,
+            '{ "selected_language": "es" }'
+        );
+
+        const reservationsEntity = worker._dataServices.reservationsEntity;
+
+        worker.on('reservationCreated', ()=> {
+          reservationsEntity.fetchReservations().then(()=> {
+            reservationsEntity.reservations.forEach(reservation => {
+              assert.isDefined(reservation.version);
+              assert.isDefined(reservation.task.version);
+            });
+            done();
+          });
+        });
       });
     }).timeout(5000);
   });

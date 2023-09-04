@@ -2,6 +2,7 @@ import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
 import Task from '../../../lib/Task';
 import { getAccessToken } from '../../util/MakeAccessToken';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -11,15 +12,15 @@ const credentials = require('../../env');
 
 describe('Reservation Accept', () => {
     const multiTaskAliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let worker;
 
     before(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             worker = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return envTwilio.updateWorkerActivity(
@@ -44,9 +45,9 @@ describe('Reservation Accept', () => {
         });
     });
 
-    describe.skip('#accept reservation, wrapup and complete the task', () => {
+    describe('#accept reservation, wrapup and complete the task', () => {
         // ORCH-1796 file for unreliable test
-        it.skip('should accept the reservation, wrapup and complete the task', done => {
+        it('@SixSigma - should accept the reservation, wrapup and complete the task', done => {
             envTwilio.createTask(
                 credentials.multiTaskWorkspaceSid,
                 credentials.multiTaskWorkflowSid,
@@ -59,7 +60,7 @@ describe('Reservation Accept', () => {
                 expect(reservation.task.sid.substring(0, 2)).to.equal('WT');
                 expect(reservation.task.taskChannelUniqueName).to.equal('default');
 
-                reservation.accept().then(updatedReservation => {
+                reservation.accept().then(async updatedReservation => {
                     expect(reservation).to.equal(updatedReservation);
                     expect(reservation.status).equal('accepted');
                     expect(updatedReservation.status).equal('accepted');
@@ -76,6 +77,13 @@ describe('Reservation Accept', () => {
                         'selected_language': 'es'
                     });
 
+                    await new Promise(resolve => {
+                        reservation.on('accepted', acceptedReservation => {
+                            resolve(acceptedReservation);
+                        });
+                    });
+
+
                     return updatedReservation.task.wrapUp({
                         reason: 'Work is almost finished'
                     });
@@ -90,12 +98,12 @@ describe('Reservation Accept', () => {
                     done();
                 }).catch(done);
             });
-        }).timeout(5000);
+        }).timeout(15000);
     });
 
     describe('#receive a reservationCompleted event after deleting an accepted task', () => {
         let acceptedReservation;
-        it('should accept the reservation', () => {
+        it('@SixSigma - should accept the reservation', () => {
             const promises = [];
             // Register Listener
             promises.push(new Promise(resolve => {
@@ -129,7 +137,7 @@ describe('Reservation Accept', () => {
                     });
         }).timeout(5000);
 
-        it('should delete the task and receive the completed event', done => {
+        it('@SixSigma - should delete the task and receive the completed event', done => {
             envTwilio.deleteTask(credentials.multiTaskWorkspaceSid, acceptedReservation.task.sid);
             acceptedReservation.on('completed', () => done());
             worker.removeAllListeners();
@@ -137,7 +145,7 @@ describe('Reservation Accept', () => {
     });
 
     describe('#accept reservation, complete task, wait for reservation completed', () => {
-        it('should accept the reservation, complete the task and receive a reservationCompleted event', () => {
+        it('@SixSigma - should accept the reservation, complete the task and receive a reservationCompleted event', () => {
             const taskAndReservationCreated = [];
             // Register listener for worker
             taskAndReservationCreated.push(new Promise(resolve => {
@@ -171,7 +179,15 @@ describe('Reservation Accept', () => {
                                         });
                             }
                         );
-            const completedReservation = reservation => {
+
+
+            const completedReservation = async reservation => {
+                await new Promise(resolve => {
+                    reservation.on('accepted', acceptedReservation => {
+                        resolve(acceptedReservation);
+                    });
+                });
+
                 const taskAndReservationCompleted = [];
 
                 taskAndReservationCompleted.push(new Promise(resolve => {

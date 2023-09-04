@@ -11,7 +11,8 @@ const workerActivityUpdated = {
     available: true,
     activity_sid: 'WAxxx',
     activity_name: 'Idle',
-    date_status_changed: 1519160462
+    date_status_changed: 1519160462,
+    version: 1
 };
 
 const workerAttributesUpdated = {
@@ -25,7 +26,8 @@ const workerAttributesUpdated = {
     available: true,
     activity_sid: 'WAxxx',
     activity_name: 'Idle',
-    date_status_changed: 1519160462
+    date_status_changed: 1519160462,
+    version: 1
 };
 
 // capacity=2 -> capacity=5
@@ -42,7 +44,8 @@ const workerChannelCapacityUpdated = {
     task_channel_unique_name: 'default',
     date_created: 1510257438,
     date_updated: 1519160621,
-    last_reserved_time: 1519160332037
+    last_reserved_time: 1519160332037,
+    version: 1
 };
 
 // available=true to available=false
@@ -59,13 +62,15 @@ const workerChannelAvailabilityUpdated = {
     task_channel_unique_name: 'default',
     date_created: 1510257438,
     date_updated: 1519160698,
-    last_reserved_time: 1519160332037
+    last_reserved_time: 1519160332037,
+    version: 1
 };
 
 const reservationCreated = {
     worker_sid: 'WKxxx',
     date_updated: 0,
     reservation_status: 'pending',
+    version: 1,
     task: {
         reason: null,
         date_updated: 1521437155,
@@ -83,7 +88,8 @@ const reservationCreated = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 13,
-        routing_target: null
+        routing_target: null,
+        version: 0
     },
     workspace_sid: 'WSxxx',
     date_created: 0,
@@ -97,6 +103,7 @@ const reservationAccepted = {
     worker_sid: 'WKxxx',
     date_updated: 1521437338,
     reservation_status: 'accepted',
+    version: 2,
     task: {
         reason: null,
         date_updated: 1521437277,
@@ -114,7 +121,8 @@ const reservationAccepted = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 183,
-        routing_target: null
+        routing_target: null,
+        version: 2
     },
     workspace_sid: 'WSxxx',
     date_created: 1521437277,
@@ -128,6 +136,7 @@ const reservationRejected = {
     worker_sid: 'WKxxx',
     date_updated: 1521437277,
     reservation_status: 'rejected',
+    version: 3,
     task:
     {
         reason: null,
@@ -146,7 +155,8 @@ const reservationRejected = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 122,
-        routing_target: null
+        routing_target: null,
+        version: 3
     },
     workspace_sid: 'WSxxx',
     date_created: 1521437168,
@@ -160,6 +170,7 @@ const reservationCanceled = {
     worker_sid: 'WKxxx',
     date_updated: 1521491096,
     reservation_status: 'canceled',
+    version: 4,
     task: {
         reason: null,
         date_updated: 1521490731,
@@ -177,7 +188,8 @@ const reservationCanceled = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 2871,
-        routing_target: null
+        routing_target: null,
+        version: 4
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -191,6 +203,7 @@ const reservationCanceledWithValidReasonCode = {
     worker_sid: 'WKxxx',
     date_updated: 1521491096,
     reservation_status: 'canceled',
+    version: 5,
     task: {
         reason: null,
         date_updated: 1521490731,
@@ -208,7 +221,8 @@ const reservationCanceledWithValidReasonCode = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 2871,
-        routing_target: null
+        routing_target: null,
+        version: 5
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -223,6 +237,7 @@ const reservationCanceledWithInValidReasonCode = {
     worker_sid: 'WKxxx',
     date_updated: 1521491096,
     reservation_status: 'canceled',
+    version: 6,
     task: {
         reason: null,
         date_updated: 1521490731,
@@ -240,7 +255,8 @@ const reservationCanceledWithInValidReasonCode = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 2871,
-        routing_target: null
+        routing_target: null,
+        version: 6
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -255,6 +271,7 @@ const reservationTimedOut = {
     worker_sid: 'WKxxx',
     date_updated: 1521490731,
     reservation_status: 'timeout',
+    version: 7,
     task: {
         reason: null,
         date_updated: 1521488705,
@@ -272,7 +289,8 @@ const reservationTimedOut = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 2480,
-        routing_target: null
+        routing_target: null,
+        version: 7
     },
     workspace_sid: 'WSxxx',
     date_created: 1521490611,
@@ -286,6 +304,7 @@ const reservationRescinded = {
     worker_sid: 'WKxxx',
     date_updated: 1521492229,
     reservation_status: 'rescinded',
+    version: 8,
     task: {
         reason: null,
         date_updated: 1521492208,
@@ -303,7 +322,8 @@ const reservationRescinded = {
         queue_sid: 'WQxxx',
         attributes: '{}',
         age: 21,
-        routing_target: null
+        routing_target: null,
+        version: 8
     },
     workspace_sid: 'WSxxx',
     date_created: 1521492208,
@@ -317,6 +337,7 @@ const reservationCompleted = {
     worker_sid: 'WKxxx',
     date_updated: 1521491479,
     reservation_status: 'completed',
+    version: 9,
     task: {
         reason: 'Is Completed',
         date_updated: 1521491495,
@@ -334,7 +355,8 @@ const reservationCompleted = {
         queue_sid: 'WQxxx',
         attributes: '{"selected_language":"en"}',
         age: 164,
-        routing_target: null
+        routing_target: null,
+        version: 9
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491467,
@@ -348,6 +370,7 @@ const reservationWrapping = {
     worker_sid: 'WKxxx',
     date_updated: 1556049971,
     reservation_status: 'wrapping',
+    version: 10,
     task: {
         reason: null,
         date_updated: 1556049971,
@@ -365,7 +388,8 @@ const reservationWrapping = {
         queue_sid: 'WQxxx',
         attributes: '{}',
         age: 11,
-        routing_target: null
+        routing_target: null,
+        version: 10
     },
     workspace_sid: 'WSxxx',
     date_created: 1556049960,
@@ -380,6 +404,7 @@ const reservationCreatedForWorker2ByTransfer = {
 	worker_sid: 'WKxxx',
 	date_updated: 1556049971,
 	reservation_status: 'pending',
+    version: 12,
 	task: {
 		reason: null,
 		date_updated: 1556049971,
@@ -397,7 +422,8 @@ const reservationCreatedForWorker2ByTransfer = {
 		queue_sid: 'WQxxx',
 		attributes: '{}',
 		age:11,
-        routing_target: null
+        routing_target: null,
+        version: 12
 	},
 	workspace_sid: 'WSxxx',
 	date_created:1556049971,
@@ -442,7 +468,8 @@ const reservationFailed = {
     routing_target: "WKxxx",
     counter: 1,
     age: 65,
-    addons: '{}'
+    addons: '{}',
+    version: 13
 };
 
 const taskUpdated = {
@@ -465,7 +492,8 @@ const taskUpdated = {
     counter: 1,
     age: 65,
     addons: '{}',
-    routing_target: null
+    routing_target: null,
+    version: 19
 };
 
 const taskCanceled = {
@@ -488,7 +516,8 @@ const taskCanceled = {
     counter: 1,
     age: 100,
     addons: '{}',
-    routing_target: null
+    routing_target: null,
+    version: 20
 };
 
 const taskCompleted = {
@@ -511,7 +540,8 @@ const taskCompleted = {
     counter: 2,
     age: 499,
     addons: '{}',
-    routing_target: null
+    routing_target: null,
+    version: 23
 };
 
 const taskWrappedUp = {
@@ -534,7 +564,8 @@ const taskWrappedUp = {
     counter: 2,
     age: 413,
     addons: '{}',
-    routing_target: null
+    routing_target: null,
+    version: 34
 };
 
 const transferInitiated = {
@@ -628,6 +659,7 @@ const reservationCanceledForIncomingTransfer = {
     worker_sid: 'WKxx2',
     date_updated: 1554313056,
     reservation_status: 'canceled',
+    version: 49,
     task: {
         reason: null,
         date_updated: 1554313056,
@@ -645,7 +677,8 @@ const reservationCanceledForIncomingTransfer = {
         queue_sid: 'WQxxx',
         attributes: '{}',
         age: 17,
-        routing_target: null
+        routing_target: null,
+        version: 10
     },
     workspace_sid: 'WSxxx',
     date_created: 1554313056,

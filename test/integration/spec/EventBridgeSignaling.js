@@ -1,5 +1,6 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -8,7 +9,7 @@ const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
 describe('EventBridgeSignaling', () => {
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let alice;
 
     beforeEach(() => {
@@ -16,8 +17,8 @@ describe('EventBridgeSignaling', () => {
             const token = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, 8);
             alice = new Worker(token, {
                 closeExistingSessions: true,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`,
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
                 logLevel: 'error',
             });
         });
@@ -39,7 +40,7 @@ describe('EventBridgeSignaling', () => {
     });
 
     describe('Worker on token update after expiration and disconnect', () => {
-        it('should create a new websocket connection', done => {
+        it('@SixSigma - should create a new websocket connection', done => {
             let readyCount = 0;
 
             alice.on('tokenExpired', () => {

@@ -1,6 +1,7 @@
 import EnvTwilio from '../../util/EnvTwilio';
 import Supervisor from '../../../lib/Supervisor';
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -13,7 +14,7 @@ describe('Supervisor Client', function() {
   this.timeout(10000);
   /* eslint-enable */
 
-  const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+  const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
   const superToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, null, 'supervisor');
   const workerToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
 
@@ -23,15 +24,15 @@ describe('Supervisor Client', function() {
   beforeEach(done => {
     envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
       worker = new Worker(workerToken, {
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`,
+        region: buildRegionForEventBridge(credentials.region),
+        edge: credentials.edge,
         logLevel: 'error',
         connectActivitySid: credentials.multiTaskConnectActivitySid
       });
 
       supervisor = new Supervisor(superToken, {
-        ebServer: `${credentials.ebServer}/v1/wschannels`,
-        wsServer: `${credentials.wsServer}/v1/wschannels`,
+        region: buildRegionForEventBridge(credentials.region),
+        edge: credentials.edge,
         logLevel: 'error'
       });
       const createTask = envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid,

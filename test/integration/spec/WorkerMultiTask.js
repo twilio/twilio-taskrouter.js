@@ -7,10 +7,11 @@ const assert = chai.assert;
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 import Worker from '../../../lib/Worker';
+import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
 describe('MultiTask Worker Client', () => {
     const aliceMultiToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
 
     before(() => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
@@ -27,10 +28,10 @@ describe('MultiTask Worker Client', () => {
     });
 
     describe('initialization of Multi Task Worker', () => {
-        it('should populate .activities', () => {
+        it('@SixSigma - should populate .activities', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -45,10 +46,10 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should populate .channels', () => {
+        it('@SixSigma - should populate .channels', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -72,11 +73,11 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should set the activity on connect if provided', () => {
+        it('@SixSigma - should set the activity on connect if provided', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise((resolve) => {
@@ -99,11 +100,11 @@ describe('MultiTask Worker Client', () => {
             });
         }).timeout(5000);
 
-        it('should populate .reservations with 0 Reservations when none currently pending', () => {
+        it('@SixSigma - should populate .reservations with 0 Reservations when none currently pending', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -138,11 +139,11 @@ describe('MultiTask Worker Client', () => {
             return envTwilio.updateWorkerCapacity(credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, defaultChannelName, 1);
         });
 
-        it('should populate pending .reservations', async() => {
+        it('@SixSigma - should populate pending .reservations', async() => {
             await new Promise(r => setTimeout(r, 2000));
             multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -163,10 +164,10 @@ describe('MultiTask Worker Client', () => {
     });
 
     describe('Multi Task Worker creates Task', () => {
-        it('should be able to create a Task for self', () => {
+        it('@SixSigma - should be able to create a Task for self', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {

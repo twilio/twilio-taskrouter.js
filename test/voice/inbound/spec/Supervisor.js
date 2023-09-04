@@ -6,6 +6,7 @@ import { getAccessToken } from '../../../util/MakeAccessToken';
 import AssertionUtils from '../../../util/AssertionUtils';
 import { twimletUrl } from '../../VoiceBase';
 import SyncClientInstance from '../../../util/SyncClientInstance';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -15,7 +16,7 @@ describe('Supervisor with Inbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid, null, null, { useSync: true });
     const supervisorToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid, null, 'supervisor');
 
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     let worker;
     let supervisor;
     let syncClient;
@@ -46,14 +47,14 @@ describe('Supervisor with Inbound Voice Task', () => {
         it('should allow a Supervisor to monitor an inbound conference/task successfully', () => {
             // supervisor stays offline
             supervisor = new Supervisor(supervisorToken, {
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(async(resolve, reject) => {

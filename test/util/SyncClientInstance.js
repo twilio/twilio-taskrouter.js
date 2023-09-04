@@ -66,8 +66,8 @@ export default class SyncClientInstance {
                     return true;
                 }
             }
-        } else if (args.item.value.worker_sid === workerSid) {
-            expect(args.item.value.status).to.equal(status);
+        } else if (args.item.data.worker_sid === workerSid) {
+            expect(args.item.data.status).to.equal(status);
             return true;
         }
         return false;
@@ -91,8 +91,8 @@ export default class SyncClientInstance {
                 }
             }
         }
-        else if (args.item.value.participant_type === 'customer') {
-            expect(args.item.value.hold).to.equal(holdVal);
+        else if (args.item.data.participant_type === 'customer') {
+            expect(args.item.data.hold).to.equal(holdVal);
             return true;
         }
         return false;

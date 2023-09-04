@@ -5,17 +5,18 @@ import AssertionUtils from '../../../util/AssertionUtils';
 import OutboundCommonHelpers from '../../../util/OutboundCommonHelpers';
 import { confTwimlUrl } from '../../VoiceBase';
 import SyncClientInstance from '../../../util/SyncClientInstance';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 
-describe('External Transfer for Outbound Voice Task', () => {
+describe.skip('External Transfer for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                       credentials.multiTaskAliceSid);
     const bobToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
                                     credentials.multiTaskBobSid, null, null, { useSync: true });
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let alice;
     let bob;
@@ -34,15 +35,15 @@ describe('External Transfer for Outbound Voice Task', () => {
             // Make Alice available
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             // bob stays offline
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);

@@ -111,6 +111,13 @@ Before commits, be sure to validate by running:
 make lint
 ```
 
+Testing
+------------
+- Create a twilio account
+- copy ./test/integration_test_setup/.env.example to ./test/integration_test_setup/.env
+- set ACCOUNT_SID, AUTH_TOKEN, SIGNING_KEY_SID, SIGNING_KEY_SECRET
+- Run ./test/integration_test_setup/RunIntegrationTestLocal.sh this will create everything needed for running E2E tests and run the tests
+
 Contributing
 ------------
 

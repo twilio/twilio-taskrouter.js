@@ -7,6 +7,8 @@ export class Worker extends EventEmitter {
     readonly accountSid: string;
     readonly activities: Map<string, Activity>;
     readonly activity: Activity;
+    readonly activitySid: string;
+    readonly available: boolean;
     readonly attributes: Record<string, any>;
     readonly channels: Map<string, Channel>;
     readonly connectActivitySid: string;
@@ -18,11 +20,17 @@ export class Worker extends EventEmitter {
     readonly reservations: Map<string, Reservation>;
     readonly sid: string;
     readonly workspaceSid: string;
+    readonly workerSid: string;
+    readonly workerActivitySid: string;
+    readonly dateActivityChanged: Date;
+    readonly friendlyName: string;
+    version: string;
 
     createTask(to: string, from: string, workflowSid: string, taskQueueSid: string, options: Object): Promise<string>
-    disconnect();
+    disconnect(): void;
     setAttributes(attributes: any): Promise<Worker>;
-    updateToken(newToken: string);
+    updateToken(newToken: string): void;
+    fetchLatestVersion(): Promise<Worker>;
 }
 
 export class Supervisor extends Worker {
@@ -74,14 +82,16 @@ export interface Task extends NodeJS.EventEmitter {
     readonly workflowName: string;
     readonly workflowSid: string;
     readonly routingTarget: string;
+    readonly version: string;
 
     complete(reason: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;
-    async transfer(to: string, options: TransferOptions): Promise<Task>;
-    wrapUp({reason: string}): Promise<Task>;
+    transfer(to: string, options: TransferOptions): Promise<Task>;
+    wrapUp(options: WrappingOptions): Promise<Task>;
     updateParticipant(options: TaskParticipantOptions): Promise<Task>;
     kick(workerSid: string): Promise<Task>;
     hold(targetWorkerSid: string, onHold: boolean, options: HoldOptions): Promise<Task>;
+    fetchLatestVersion(): Promise<Task>;
 }
 
 export interface Reservation extends NodeJS.EventEmitter {
@@ -96,8 +106,8 @@ export interface Reservation extends NodeJS.EventEmitter {
     readonly workerSid: string;
     readonly workspaceSid: string;
     readonly task: Task;
-    readonly canceledReasonCode?: int;
-
+    readonly canceledReasonCode?: number;
+    readonly version: string;
 
     accept(): Promise<Reservation>;
     complete(): Promise<Reservation>;
@@ -105,16 +115,19 @@ export interface Reservation extends NodeJS.EventEmitter {
     call(from: string, url: string, options?: CallOptions): Promise<Reservation>;
     dequeue(options?: DequeueOptions): Promise<Reservation>;
     conference(options?: ConferenceOptions): Promise<Reservation>;
-    redirect(callSid: string, url: string, options?: RedirectOptions);
+    redirect(callSid: string, url: string, options?: RedirectOptions): Promise<Reservation>;
     reject(options?: RejectOptions): Promise<Reservation>;
     updateParticipant(options: ReservationParticipantOptions): Promise<Reservation>;
+    fetchLatestVersion(): Promise<Reservation>;
 }
 
 export interface TaskQueue {
     sid: string;
+    queueSid: string;
     accountSid: string;
     workspaceSid: string;
     name: string;
+    queueName: string;
     assignmentActivityName: string;
     reservationActivityName: string;
     assignmentActivitySid: string;
@@ -131,11 +144,31 @@ export class TaskRouterEventHandler {
     getTREventsToHandlerMapping(): {[key: string]: string};
 }
 
-export class Workspace {
-    constructor(jwt: string, options?: Object);
+type FetchTaskQueuesParams = {
+    AfterSid?: string;
+    FriendlyName?: string;
+    Ordering?: "DateUpdated:asc" | "DateUpdated:desc"
+}
 
-    fetchWorkers(): Promise<Map<string, Worker>>;
-    fetchTaskQueues(): Promise<Map<string, TaskQueue>>;
+type FetchWorkersParams = {
+    AfterSid?: string;
+    FriendlyName?: string;
+    ActivitySid?: string;
+    ActivityName?: string;
+    TargetWorkersExpression?: string;
+    Ordering?: "DateStatusChanged:asc" | "DateStatusChanged:desc"
+    maxWorkers?: number;
+};
+
+export class Workspace {
+    constructor(jwt: string, options?: Object, workspaceSid?: string);
+    readonly workspaceSid: string;
+
+    updateToken(newToken: string): void;
+    fetchWorker(workerSid: string): Promise<Worker>;
+    fetchWorkers(params?: FetchWorkersParams): Promise<Map<string, Worker>>;
+    fetchTaskQueue(queueSid: string): Promise<TaskQueue>;
+    fetchTaskQueues(params?: FetchTaskQueuesParams): Promise<Map<string, TaskQueue>>;
 }
 
 export interface CallOptions {
@@ -218,3 +251,6 @@ export interface ReservationParticipantOptions {
     beepOnExit: boolean;
 }
 
+export interface WrappingOptions {
+    reason: string;
+}

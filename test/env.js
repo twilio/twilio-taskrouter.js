@@ -6,22 +6,11 @@ try {
   // Do nothing.
 }
 
-const singleTaskingKeys = [
-  'nonMultiTaskWorkspaceSid',
-  'nonMultiTaskWorkflowSid',
-  'nonMultiTaskAliceSid',
-  'nonMultiTaskBobSid',
-  'nonMultiTaskConnectActivitySid',
-  'nonMultiTaskUpdateActivitySid',
-  'nonMultiTaskNumActivities'
-];
-
 const voiceE2EKeys = [
   'supervisorNumber',
   'customerNumber',
   'flexCCNumber',
-  'workerNumber',
-  'region'
+  'workerNumber'
 ];
 
 // Ensure required variables are present
@@ -39,39 +28,19 @@ const requiredKeys = [
   'multiTaskConnectActivitySid',
   'multiTaskUpdateActivitySid',
   'multiTaskNumActivities',
-  'multiTaskNumChannels',
-  'ebServer',
-  'wsServer'
+  'multiTaskNumChannels'
 ];
 
 requiredKeys.forEach(key => {
   if (!(key in env)) {
     throw new Error('Missing ' + key);
   }
-
-  // e2e tester -- no voice
-  if (key === 'hasSingleTasking') {
-    if (env[key]) {
-      // check for single tasking
-      singleTaskingKeys.forEach(singleTaskingKey => {
-        if (!(singleTaskingKey in env)) {
-          throw new Error('Missing Single Tasking Key: ' + singleTaskingKey);
-        }
-      });
-    } else {
-      // check for voice
-      voiceE2EKeys.forEach(voiceKey => {
-        if (!(voiceKey in env)) {
-          throw new Error('Missing Voice Integration Key: ' + voiceKey);
-        }
-      });
-    }
-  }
 });
 
-if (env.hasOwnProperty('env') && env.env &&
-    !env.env.includes('dev') && !env.env.includes('stage')) {
-    env.env = env.env.concat('.us1');
-}
+voiceE2EKeys.forEach(voiceKey => {
+  if (!(voiceKey in env)) {
+    throw new Error('Missing Voice Integration Key: ' + voiceKey);
+  }
+});
 
 module.exports = env;

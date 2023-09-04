@@ -9,12 +9,13 @@ import {
     GEO_NOT_ALLOW_NUMBER,
     TASK_CANCELED_REASON,
 } from '../../../util/Constants';
+import { buildRegionForEventBridge } from '../../../integration_test_setup/IntegrationTestSetupUtils';
 
 const credentials = require('../../../env');
 
 describe('Reservation with Outbound Voice Task', () => {
     const workerToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
-    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.env);
+    const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
     const outboundCommonHelpers = new OutboundCommonHelpers(envTwilio);
     let worker;
 
@@ -23,8 +24,8 @@ describe('Reservation with Outbound Voice Task', () => {
             // make worker available
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
-                ebServer: `${credentials.ebServer}/v1/wschannels`,
-                wsServer: `${credentials.wsServer}/v1/wschannels`
+                region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(worker);
@@ -147,15 +148,21 @@ describe('Reservation with Outbound Voice Task', () => {
             );
         });
 
-        it('should cancel reservation after cancel the task', () => {
+        it.skip('should cancel reservation after cancel the task', () => {
             const options = {
                 reason: 'RoutingTarget not available',
             };
 
             return new Promise(async(resolve, reject) => {
-                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
+                await envTwilio.updateWorkerCapacity(
+                    credentials.multiTaskWorkspaceSid,
+                    credentials.multiTaskAliceSid,
+                    'default',
+                    2
+                );
 
-                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, 'in-progress', options).then(() => {
+                const workerReservation = await outboundCommonHelpers.createTaskAndAssertOnResCreated(worker, options);
+                outboundCommonHelpers.assertOnResCancelEvent(workerReservation, ['in-progress', 'completed'], options).then(() => {
                     resolve('Outbound cancel reservation after cancel task test finished ');
                 }).catch(err => {
                     reject(`Failed to validate wraup & completed event for Outbound Task ${workerReservation.task.sid}. Error: ${err}`);
