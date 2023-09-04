@@ -9,7 +9,7 @@ export class Worker extends EventEmitter {
     readonly activity: Activity;
     readonly activitySid: string;
     readonly available: boolean;
-    readonly attributes: Object;
+    readonly attributes: Record<string, any>;
     readonly channels: Map<string, Channel>;
     readonly connectActivitySid: string;
     readonly dateCreated: Date;
@@ -67,7 +67,7 @@ export interface Channel {
 export interface Task extends NodeJS.EventEmitter {
     readonly addOns: Object;
     readonly age: number;
-    readonly attributes: Object;
+    readonly attributes: Record<string, any>;
     readonly dateCreated: Date;
     readonly dateUpdated: Date;
     readonly priority: number;
