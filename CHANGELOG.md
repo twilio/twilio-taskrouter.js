@@ -3,6 +3,7 @@
 Maintenance
 ----------
 - Added sample app for testing integrations
+- Tested SDK with TaskRouter standalone instance
 
 0.8.4
 ==========
