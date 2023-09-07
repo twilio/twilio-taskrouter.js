@@ -21,13 +21,6 @@ First, install the project dependencies.
 yarn sample-app:install
 ```
 
-Start the App with below command
-```bash
-yarn sample-app:start
-```
-Open [http://localhost:3000](http://localhost:3000) in the browser for the App.
-
-
 For local development, run the development server.
 
 ```bash
@@ -39,6 +32,12 @@ For building the App for deployment,
 ```bash
 yarn sample-app:build
 ```
+
+Start the App with below command
+```bash
+yarn sample-app:start
+```
+Open [http://localhost:3000](http://localhost:3000) in the browser for the App.
 
 
 # 1. Steps to Test with TaskRouter Sample App

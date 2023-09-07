@@ -4,16 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 
-const initialFields = {
-  accountSid: '',
-  signingKeySid: '',
-  signingKeySecret: '',
-  workspaceSid: '',
-  workerSid: '',
-  identity: '',
-  environment: '',
-};
-
 export default function Token() {
   const router = useRouter();
   const searchParams = useSearchParams();
