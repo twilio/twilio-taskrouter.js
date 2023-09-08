@@ -4,6 +4,7 @@ Maintenance
 ----------
 - Added sample app for testing integrations
 - Tested SDK with TaskRouter standalone instance
+- Allow Task's and Worker's attributes to be any object
 
 0.8.4
 ==========
