@@ -1,3 +1,7 @@
+[![build](https://github.com/twilio/twilio-taskrouter.js/actions/workflows/build.yml/badge.svg)](https://github.com/twilio/twilio-taskrouter.js/actions/workflows/build.yml)
+[![Release](https://github.com/twilio/twilio-taskrouter.js/actions/workflows/release.yml/badge.svg)](https://github.com/twilio/twilio-taskrouter.js/actions/workflows/release.yml)
+[![npm version](https://badge.fury.io/js/twilio-taskrouter.svg)](https://badge.fury.io/js/twilio-taskrouter)
+
 # twilio-taskrouter.js
 
 [![npm version](https://badge.fury.io/js/twilio-taskrouter.svg)](https://badge.fury.io/js/twilio-taskrouter)
