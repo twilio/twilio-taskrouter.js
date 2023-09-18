@@ -56,13 +56,13 @@
   },
   "dependencies": {
     "axios": "^0.21.2",
+    "events": "3.3.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "loglevel": "^1.4.1",
     "path-browserify": "^1.0.1",
     "util": "^0.12.4",
-    "ws": "^7.4.6",
-    "xmlhttprequest": "^1.8.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 
 export as namespace TaskRouter;
 export class Worker extends EventEmitter {
@@ -64,7 +64,7 @@ export interface Channel {
     readonly workspaceSid: string;
 }
 
-export interface Task extends NodeJS.EventEmitter {
+export interface Task extends EventEmitter {
     readonly addOns: Object;
     readonly age: number;
     readonly attributes: Record<string, any>;
@@ -94,7 +94,7 @@ export interface Task extends NodeJS.EventEmitter {
     fetchLatestVersion(): Promise<Task>;
 }
 
-export interface Reservation extends NodeJS.EventEmitter {
+export interface Reservation extends EventEmitter {
     readonly accountSid: string;
     readonly dateCreated: Date;
     readonly dateUpdated: Date;
