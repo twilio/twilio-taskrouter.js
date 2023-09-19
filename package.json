@@ -61,6 +61,7 @@
     "lodash": "^4.17.21",
     "loglevel": "^1.4.1",
     "path-browserify": "^1.0.1",
+    "typed-emitter": "^2.1.0",
     "util": "^0.12.4",
     "ws": "^7.4.6"
   },

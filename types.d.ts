@@ -1,8 +1,9 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
+import TypedEmitter from 'typed-emitter';
 
 export as namespace TaskRouter;
-export class Worker extends EventEmitter {
-    constructor(token: string, options?: any);
+export class Worker extends (EventEmitter as new () => TypedEmitter<WorkerEvents>) {
+    constructor(token: string, options?: WorkerOptions);
 
     readonly accountSid: string;
     readonly activities: Map<string, Activity>;
@@ -26,7 +27,7 @@ export class Worker extends EventEmitter {
     readonly friendlyName: string;
     version: string;
 
-    createTask(to: string, from: string, workflowSid: string, taskQueueSid: string, options: Object): Promise<string>
+    createTask(to: string, from: string, workflowSid: string, taskQueueSid: string, options?: TaskOptions): Promise<string>;
     disconnect(): void;
     setAttributes(attributes: any): Promise<Worker>;
     updateToken(newToken: string): void;
@@ -35,6 +36,18 @@ export class Worker extends EventEmitter {
 
 export class Supervisor extends Worker {
     monitor(taskSid: string, reservationSid: string, extraParams: Object): Promise<void>;
+}
+
+interface WorkerEvents {
+    activityUpdated: (worker: Worker) => void;
+    attributesUpdated: (worker: Worker) => void;
+    disconnected: (worker: Worker) => void;
+    error: (error: Error) => void;
+    ready: (worker: Worker) => void;
+    reservationCreated: (reservation: Reservation) => void;
+    reservationFailed: (reservation: Reservation) => void;
+    tokenExpired: () => void;
+    tokenUpdated: () => void;
 }
 
 export interface Activity {
@@ -47,14 +60,16 @@ export interface Activity {
     readonly sid: string;
     readonly workspaceSid: string;
 
-    setAsCurrent(): Promise<Activity>;
+    setAsCurrent(options?: ActivityOptions): Promise<Activity>;
 }
 
-export interface Channel {
+export class Channel extends (EventEmitter as new () => TypedEmitter<ChannelEvents>) {
     readonly accountSid: string;
+    readonly assignedTasks: number;
     readonly available: boolean;
-    readonly capacity: number;
     readonly availableCapacityPercentage: number;
+    readonly capacity: number;
+    readonly lastReservedTime: Date;
     readonly dateCreated: Date;
     readonly dateUpdated: Date;
     readonly sid: string;
@@ -64,7 +79,12 @@ export interface Channel {
     readonly workspaceSid: string;
 }
 
-export interface Task extends EventEmitter {
+interface ChannelEvents {
+    availabilityUpdated: (channel: Channel) => void;
+    capacityUpdated: (channel: Channel) => void;
+}
+
+export class Task extends (EventEmitter as new () => TypedEmitter<TaskEvents>) {
     readonly addOns: Object;
     readonly age: number;
     readonly attributes: Record<string, any>;
@@ -79,33 +99,40 @@ export interface Task extends EventEmitter {
     readonly taskChannelSid: string;
     readonly taskChannelUniqueName: string;
     readonly timeout: number;
+    readonly transfers: Transfers;
     readonly workflowName: string;
     readonly workflowSid: string;
     readonly routingTarget: string;
     readonly version: string;
 
     complete(reason: string): Promise<Task>;
+    hold(targetWorkerSid: string, onHold: boolean, options?: TaskHoldOptions): Promise<Task>;
+    kick(workerSid: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;
     transfer(to: string, options: TransferOptions): Promise<Task>;
     wrapUp(options: WrappingOptions): Promise<Task>;
     updateParticipant(options: TaskParticipantOptions): Promise<Task>;
-    kick(workerSid: string): Promise<Task>;
-    hold(targetWorkerSid: string, onHold: boolean, options: HoldOptions): Promise<Task>;
     fetchLatestVersion(): Promise<Task>;
 }
 
-export interface Reservation extends EventEmitter {
+interface TaskEvents {
+    canceled: (task: Task) => void;
+    completed: (task: Task) => void;
+    transferInitiated: (outgoingTransfer: OutgoingTransfer) => void;
+    updated: (task: Task) => void;
+    wrapup: (task: Task) => void;
+}
+
+export class Reservation extends (EventEmitter as new () => TypedEmitter<ReservationEvents>) {
     readonly accountSid: string;
     readonly dateCreated: Date;
     readonly dateUpdated: Date;
     readonly sid: string;
-    readonly status: "pending" | "accepted" | "rejected" | "timeout" | "canceled" | "rescinded";
-    readonly taskChannelSid: string;
-    readonly taskChannelUniqueName: string;
-    readonly taskSid: string;
+    readonly status: "pending" | "accepted" | "rejected" | "timeout" | "canceled" | "rescinded" | "wrapping" | "completed";
+    readonly task: Task;
+    readonly timeout: number;
     readonly workerSid: string;
     readonly workspaceSid: string;
-    readonly task: Task;
     readonly canceledReasonCode?: number;
     readonly version: string;
 
@@ -113,28 +140,38 @@ export interface Reservation extends EventEmitter {
     complete(): Promise<Reservation>;
     wrap(): Promise<Reservation>;
     call(from: string, url: string, options?: CallOptions): Promise<Reservation>;
-    dequeue(options?: DequeueOptions): Promise<Reservation>;
     conference(options?: ConferenceOptions): Promise<Reservation>;
+    dequeue(options?: DequeueOptions): Promise<Reservation>;
     redirect(callSid: string, url: string, options?: RedirectOptions): Promise<Reservation>;
     reject(options?: RejectOptions): Promise<Reservation>;
     updateParticipant(options: ReservationParticipantOptions): Promise<Reservation>;
     fetchLatestVersion(): Promise<Reservation>;
 }
 
+interface ReservationEvents {
+    accepted: (reservation: Reservation) => void;
+    canceled: (reservation: Reservation) => void;
+    completed: (reservation: Reservation) => void;
+    rejected: (reservation: Reservation) => void;
+    rescinded: (reservation: Reservation) => void;
+    timeout: (reservation: Reservation) => void;
+    wrapup: (reservation: Reservation) => void;
+}
+
 export interface TaskQueue {
-    sid: string;
-    queueSid: string;
-    accountSid: string;
-    workspaceSid: string;
-    name: string;
-    queueName: string;
-    assignmentActivityName: string;
-    reservationActivityName: string;
-    assignmentActivitySid: string;
-    reservationActivitySid: string;
-    targetWorkers: string;
-    maxReservedWorkers: number;
-    taskOrder: string;
+    readonly sid: string;
+    readonly queueSid: string;
+    readonly queueName: string;
+    readonly accountSid: string;
+    readonly workplaceSid: string;
+    readonly name: string;
+    readonly assignmentActivityName: string;
+    readonly reservationActivityName: string;
+    readonly assignmentActivitySid: string;
+    readonly reservationActivitySid: string;
+    readonly targetWorkers: string;
+    readonly maxReservedWorkers: number;
+    readonly taskOrder: string;
     dateCreated: Date;
     dateUpdated: Date;
 }
@@ -157,7 +194,7 @@ type FetchWorkersParams = {
     ActivityName?: string;
     TargetWorkersExpression?: string;
     Ordering?: "DateStatusChanged:asc" | "DateStatusChanged:desc"
-    maxWorkers?: number;
+    MaxWorkers?: number;
 };
 
 export class Workspace {
@@ -171,13 +208,44 @@ export class Workspace {
     fetchTaskQueues(params?: FetchTaskQueuesParams): Promise<Map<string, TaskQueue>>;
 }
 
+export interface Transfers {
+    readonly incoming: IncomingTransfer;
+    readonly outgoing: OutgoingTransfer;
+}
+
+export interface IncomingTransfer {
+    readonly dateCreated: Date;
+    readonly dateUpdated: Date;
+    readonly mode: "WARM" | "COLD";
+    readonly reservationSid: string;
+    readonly sid: string;
+    readonly status: "INITIATED" | "FAILED" | "COMPLETE" | "CANCELED";
+    readonly to: string;
+    readonly type: "QUEUE" | "WORKER";
+    readonly workerSid: string;
+}
+
+export interface OutgoingTransfer extends EventEmitter {
+    readonly dateCreated: Date;
+    readonly dateUpdated: Date;
+    readonly mode: "WARM" | "COLD";
+    readonly reservationSid: string;
+    readonly sid: string;
+    readonly status: "INITIATED" | "FAILED" | "COMPLETED" | "CANCELED";
+    readonly to: string;
+    readonly transferFailedReason: string;
+    readonly type: "QUEUE" | "WORKER";
+    readonly workerSid: string;
+
+    cancel(): Promise<OutgoingTransfer>;
+}
+
 export interface CallOptions {
-    readonly statusCallbackUrl?: string;
     readonly accept?: boolean;
     readonly record?: boolean;
+    readonly statusCallbackUrl?: string;
     readonly to?: string;
     readonly timeout?: number;
-
 }
 
 export interface DequeueOptions {
@@ -231,9 +299,9 @@ export interface RejectOptions {
 }
 
 export interface TransferOptions {
-    attributes: Object;
-    mode: "COLD" | "WARM";
-    priority: number;
+    attributes?: Object;
+    mode?: "COLD" | "WARM";
+    priority?: number;
 }
 
 export interface HoldOptions {
@@ -245,12 +313,43 @@ export interface TaskParticipantOptions extends HoldOptions {
     hold: boolean;
 }
 
-export interface ReservationParticipantOptions {
-    endConferenceOnExit: boolean;
-    mute: boolean;
-    beepOnExit: boolean;
-}
-
 export interface WrappingOptions {
     reason: string;
+}
+
+export interface ReservationParticipantOptions {
+    endConferenceOnExit?: boolean;
+    mute?: boolean;
+    beepOnExit?: boolean;
+}
+
+export interface WorkerOptions {
+    connectActivitySid?: string;
+    closeExistingSessions?: boolean;
+    logLevel?: "error" | "warn" | "info" | "debug" | "trace" | "silent";
+    ebServer?: string;
+    wsServer?: string;
+    eventHandlerClass?: string;
+    region?: string;
+}
+
+export interface TaskOptions {
+    attributes?: any;
+    taskChannelUniqueName?: string;
+    taskChannelSid?: string;
+}
+
+export interface ActivityOptions {
+    rejectPendingReservations?: boolean;
+}
+
+export interface TaskHoldOptions {
+    holdUrl?: string;
+    holdMethod?: string;
+}
+
+export interface TaskTransferOptions {
+    attributes?: any;
+    mode?: "WARM" | "COLD";
+    priority?: string;
 }
