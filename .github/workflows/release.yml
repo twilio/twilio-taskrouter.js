@@ -1,25 +1,25 @@
 name: Release
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       releaseVersion:
-        description: 'Release Version'     
+        description: "Release Version"
         required: true
       developmentVersion:
-        description: 'Next Development Version'     
+        description: "Next Development Version"
         required: true
- 
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - uses: actions/setup-node@v1
         with:
           node-version: 12.x
-          registry-url: 'https://registry.npmjs.org'      
-      - name : Bump to release version
+          registry-url: "https://registry.npmjs.org"
+      - name: Bump to release version
         run: |
           git config user.name flexrouting+ci
           git config user.email flexrouting+ci@twilio.com
@@ -32,7 +32,7 @@ jobs:
           git add -f dist
           git commit -m "${{ github.event.inputs.releaseVersion }}"
           git tag ${{ github.event.inputs.releaseVersion }}
-          git push origin HEAD:master --tags        
+          git push origin HEAD:main --tags        
           git checkout -B gh-pages
           find . -mindepth 1 -maxdepth 1 \( -name .gitignore -o -name node_modules -o -name dist -o -name .git \) -prune -o -exec rm -rf {} +
           mv dist/docs/* .
@@ -40,7 +40,7 @@ jobs:
           git add .
           git commit -am "${{ github.event.inputs.releaseVersion }}"
           git push origin gh-pages --force
-          git checkout master
+          git checkout main
           yarn publish --new-version "${{ github.event.inputs.releaseVersion }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - uses: actions/setup-node@v1
         with:
           node-version: 12.x
@@ -58,10 +58,10 @@ jobs:
         run: |
           git config user.name flexrouting+ci
           git config user.email flexrouting+ci@twilio.com
-          git pull origin HEAD:master          
+          git pull origin HEAD:main          
           yarn version --new-version "${{ github.event.inputs.developmentVersion }}" --no-git-tag-version
-          git pull origin HEAD:master
+          git pull origin HEAD:main
           git add .
           git rm -rf dist
           git commit -m "${{ github.event.inputs.developmentVersion }}"
-          git push origin HEAD:master --force
+          git push origin HEAD:main --force
