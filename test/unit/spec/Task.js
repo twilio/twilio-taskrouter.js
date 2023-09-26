@@ -463,6 +463,13 @@ describe('Task', () => {
             sandbox.restore();
         });
 
+        it('should use default holdMethod and holdUrl props when not provided', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+                task.updateParticipant();
+            }).should.not.throw();
+        });
+
         it('should return an error if the optional params fail type check', () => {
             (() => {
                 const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);

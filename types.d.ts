@@ -304,12 +304,7 @@ export interface TransferOptions {
     priority?: number;
 }
 
-export interface HoldOptions {
-    holdUrl: string;
-    holdMethod: "GET"
-}
-
-export interface TaskParticipantOptions extends HoldOptions {
+export interface TaskParticipantOptions extends TaskHoldOptions {
     hold: boolean;
 }
 
