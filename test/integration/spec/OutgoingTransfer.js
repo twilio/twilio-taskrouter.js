@@ -142,12 +142,7 @@ describe('OutgoingTransfer', () => {
 
                                         // canceling the same outgoing task again
                                         return transferredTask.transfers.outgoing.cancel().catch(err => {
-                                            assert.equal(err.response.status, 400,
-                                                envTwilio.getErrorMessage('400 not received when canceling same task twice', credentials.accountSid, credentials.multiTaskBobSid));
-
-                                            assert.equal(err.response.statusText, `Transfer ${canceledTransfer.sid} is already canceled . Cannot cancel transfer.`,
-                                                envTwilio.getErrorMessage('400 error message content mismatch', credentials.accountSid, credentials.multiTaskBobSid));
-
+                                            assert.equal(err.message, `Request failed with status code 400. Transfer ${canceledTransfer.sid} is already canceled . Cannot cancel transfer.`, envTwilio.getErrorMessage('400 not received when canceling same task twice', credentials.accountSid, credentials.multiTaskBobSid));
                                             done();
                                         });
                                     });
