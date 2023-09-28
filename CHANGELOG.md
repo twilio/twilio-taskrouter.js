@@ -1,3 +1,18 @@
+2.0.0
+==========
+New Features
+----------
+- Added React Native support
+- Added status links to the readme file
+- Added error handling to axios requests
+
+Maintenance
+----------
+- Updated lodash from 4.17.5 to 4.17.21
+- Fixed types in types.d.ts file
+- Changed default branch to main
+- Updated TaskHoldOptions
+
 0.8.5
 ==========
 Maintenance
