@@ -1,3 +1,9 @@
+2.0.1
+==========
+New Features
+----------
+- Added `transcribe` and `transcriptionConfiguration` options to `reservation.conference` method
+
 2.0.0
 ==========
 New Features

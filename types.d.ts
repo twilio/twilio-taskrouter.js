@@ -289,6 +289,8 @@ export interface ConferenceOptions {
     region?:string;
     sipAuthUsername?:string;
     sipAuthPassword?:string;
+    transcribe?:boolean;
+    transcriptionConfiguration?:string;
 }
 export interface RedirectOptions {
     accept?:boolean;
