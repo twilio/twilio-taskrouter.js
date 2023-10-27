@@ -33,8 +33,12 @@ else
 fi
 
 echo "Integration test exit code $EXIT_CODE"
+echo "Run count: $RUN_COUNT of $RETRIES_COUNT"
 
-sh test/integration_test_setup/PublishIntegrationTestResultsDatadog.sh
+if [[ $RUN_COUNT -eq $RETRIES_COUNT ]] || [[ -z $EXIT_CODE ]]; then
+  # send test results to Datadog.
+  sh test/integration_test_setup/PublishIntegrationTestResultsDatadog.sh
+fi
 
 # If tests failed, fail the job
 if [[ $EXIT_CODE -ne 0 ]]; then
