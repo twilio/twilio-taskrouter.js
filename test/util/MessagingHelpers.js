@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import { assert } from 'chai';
-import AssertionUtils from './AssertionUtils';
-
 
 const credentials = require('../env');
 

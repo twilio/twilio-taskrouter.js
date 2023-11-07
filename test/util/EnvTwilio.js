@@ -90,7 +90,9 @@ export default class EnvTwilio {
                 tasks.map(task => {
                     return task.remove().catch(err => {
                         console.log('error deleting task', err);
-                        throw err;
+                        if (err.status !== 404) {
+                            throw err;
+                        }
                     });
                 })
             )).catch(err => {

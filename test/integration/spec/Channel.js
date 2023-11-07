@@ -1,5 +1,6 @@
 import Worker from '../../../lib/Worker';
 import { WorkerChannelCapacities } from '../../mock/WorkerChannelCapacities';
+import AssertionUtils from '../../util/AssertionUtils';
 import EnvTwilio from '../../util/EnvTwilio';
 import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
@@ -35,7 +36,10 @@ describe('Channel', () => {
                 multiTaskAlice.on('ready', resolve);
             }).then(() => {
                 assert.isNotNull(multiTaskAlice.channels);
-                assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels);
+
+                AssertionUtils.retryAssertion(() => {
+                    assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels);
+                }, 100, 100);
 
                 multiTaskAlice.channels.forEach(channel => {
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity);

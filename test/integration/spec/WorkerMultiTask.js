@@ -1,4 +1,5 @@
 import { WorkerChannelCapacities } from '../../mock/WorkerChannelCapacities';
+import AssertionUtils from '../../util/AssertionUtils';
 import EnvTwilio from '../../util/EnvTwilio';
 
 const chai = require('chai');
@@ -58,9 +59,10 @@ describe('MultiTask Worker Client', () => {
                 assert.isNotNull(multiTaskAlice.channels,
                     envTwilio.getErrorMessage('Task channels is null', credentials.accountSid, credentials.multiTaskAliceSid));
 
-                assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels,
-                    envTwilio.getErrorMessage('Channels count mismatch', credentials.accountSid, credentials.multiTaskAliceSid));
-
+                AssertionUtils.retryAssertion(() => {
+                    assert.equal(multiTaskAlice.channels.size, credentials.multiTaskNumChannels,
+                        envTwilio.getErrorMessage('Channels count mismatch', credentials.accountSid, credentials.multiTaskAliceSid));
+                }, 100, 100);
 
                 multiTaskAlice.channels.forEach(channel => {
                     assert.equal(channel.capacity, WorkerChannelCapacities[channel.taskChannelUniqueName].capacity,

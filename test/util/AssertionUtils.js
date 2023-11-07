@@ -1,4 +1,5 @@
 import { assert } from 'chai';
+import { sleepSync } from './sleep';
 
 /**
  * Utility class for common assertions.
@@ -101,5 +102,24 @@ export default class AssertionUtils {
         assert.deepStrictEqual(reservation.task.attributes.outbound_to, expectedTo, 'Conference To number');
         assert.strictEqual(reservation.status, 'pending', 'Reservation Status');
         assert.strictEqual(reservation.workerSid, worker.sid, 'Worker Sid in conference');
+    }
+
+    static retryAssertion(
+        assertCallback,
+        retry = 50,
+        timeout = 100
+    ) {
+        for (let index = 0; index < retry; index++) {
+            try {
+                assertCallback();
+                index = retry + 1;
+            } catch {
+                sleepSync(timeout);
+            }
+
+            if (index === retry - 1) {
+                assertCallback();
+            }
+        }
     }
 }

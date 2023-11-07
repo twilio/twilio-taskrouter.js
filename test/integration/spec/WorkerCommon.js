@@ -29,7 +29,7 @@ describe('Common Worker Client', () => {
     });
 
     afterEach(() => {
-        alice.removeAllListeners();
+        alice?.removeAllListeners();
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid);
     });
 

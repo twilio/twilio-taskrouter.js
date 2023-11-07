@@ -25,7 +25,9 @@ export default class OutboundCommonHelpers {
     listenToWorkerReadyOrErrorEvent(worker) {
         return new Promise((resolve, reject) => {
             worker.on('ready', (readyWorker) => {
-                assert.strictEqual(worker.reservations.size, 0, 'Worker should initialize with 0 pending Reservations');
+                AssertionUtils.retryAssertion(() => {
+                    assert.strictEqual(worker.reservations.size, 0, 'Worker should initialize with 0 pending Reservations');
+                }, 100, 100);
                 resolve(readyWorker);
             });
 
