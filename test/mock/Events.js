@@ -89,7 +89,8 @@ const reservationCreated = {
         attributes: '{"selected_language":"en"}',
         age: 13,
         routing_target: null,
-        version: 0
+        version: 0,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 0,
@@ -122,7 +123,8 @@ const reservationAccepted = {
         attributes: '{"selected_language":"en"}',
         age: 183,
         routing_target: null,
-        version: 2
+        version: 2,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521437277,
@@ -156,7 +158,8 @@ const reservationRejected = {
         attributes: '{"selected_language":"en"}',
         age: 122,
         routing_target: null,
-        version: 3
+        version: 3,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521437168,
@@ -189,7 +192,8 @@ const reservationCanceled = {
         attributes: '{"selected_language":"en"}',
         age: 2871,
         routing_target: null,
-        version: 4
+        version: 4,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -222,7 +226,8 @@ const reservationCanceledWithValidReasonCode = {
         attributes: '{"selected_language":"en"}',
         age: 2871,
         routing_target: null,
-        version: 5
+        version: 5,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -256,7 +261,8 @@ const reservationCanceledWithInValidReasonCode = {
         attributes: '{"selected_language":"en"}',
         age: 2871,
         routing_target: null,
-        version: 6
+        version: 6,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491096,
@@ -290,7 +296,8 @@ const reservationTimedOut = {
         attributes: '{"selected_language":"en"}',
         age: 2480,
         routing_target: null,
-        version: 7
+        version: 7,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521490611,
@@ -323,7 +330,8 @@ const reservationRescinded = {
         attributes: '{}',
         age: 21,
         routing_target: null,
-        version: 8
+        version: 8,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521492208,
@@ -356,7 +364,8 @@ const reservationCompleted = {
         attributes: '{"selected_language":"en"}',
         age: 164,
         routing_target: null,
-        version: 9
+        version: 9,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1521491467,
@@ -389,7 +398,8 @@ const reservationWrapping = {
         attributes: '{}',
         age: 11,
         routing_target: null,
-        version: 10
+        version: 10,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1556049960,
@@ -423,7 +433,8 @@ const reservationCreatedForWorker2ByTransfer = {
 		attributes: '{}',
 		age:11,
         routing_target: null,
-        version: 12
+        version: 12,
+        virtual_start_time: 1521437155
 	},
 	workspace_sid: 'WSxxx',
 	date_created:1556049971,
@@ -469,7 +480,8 @@ const reservationFailed = {
     counter: 1,
     age: 65,
     addons: '{}',
-    version: 13
+    version: 13,
+    virtual_start_time: 1521437155
 };
 
 const taskUpdated = {
@@ -493,7 +505,8 @@ const taskUpdated = {
     age: 65,
     addons: '{}',
     routing_target: null,
-    version: 19
+    version: 19,
+    virtual_start_time: 1521437155
 };
 
 const taskCanceled = {
@@ -517,7 +530,8 @@ const taskCanceled = {
     age: 100,
     addons: '{}',
     routing_target: null,
-    version: 20
+    version: 20,
+    virtual_start_time: 1521437155
 };
 
 const taskCompleted = {
@@ -541,7 +555,8 @@ const taskCompleted = {
     age: 499,
     addons: '{}',
     routing_target: null,
-    version: 23
+    version: 23,
+    virtual_start_time: 1521437155
 };
 
 const taskWrappedUp = {
@@ -565,7 +580,8 @@ const taskWrappedUp = {
     age: 413,
     addons: '{}',
     routing_target: null,
-    version: 34
+    version: 34,
+    virtual_start_time: 1521437155
 };
 
 const transferInitiated = {
@@ -678,7 +694,8 @@ const reservationCanceledForIncomingTransfer = {
         attributes: '{}',
         age: 17,
         routing_target: null,
-        version: 10
+        version: 10,
+        virtual_start_time: 1521437155
     },
     workspace_sid: 'WSxxx',
     date_created: 1554313056,

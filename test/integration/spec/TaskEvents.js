@@ -276,6 +276,56 @@ describe('TaskEvents', () => {
         }).timeout(5000);
     });
 
+    describe('#setVirtualStartTime(date)', () => {
+        it('@SixSigma - should set virtualStartTime of the task', done => {
+            new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation.task);
+                });
+            }).then(task => {
+                const newStartTime = new Date('January 1, 2023 03:24:00');
+                return task.setVirtualStartTime(newStartTime)
+                    .then(updatedTask => {
+                        expect(task).to.equal(updatedTask);
+                        expect(task.virtualStartTime).to.deep.equal(newStartTime);
+                        done();
+                    });
+            }).catch(done);
+        }).timeout(5000);
+
+        it('should throw an error if parameter missing for setVirtualStartTime', done => {
+            new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation.task);
+                });
+            }).then(task => {
+                (() => {
+                    task.setVirtualStartTime();
+                }).should.throw(/date is a required parameter/);
+                done();
+            }).catch(done);
+        }).timeout(5000);
+
+        it('should throw an error if trying to set virtualStartTime to the future', done => {
+            new Promise(resolve => {
+                alice.on('reservationCreated', reservation => {
+                    resolve(reservation.task);
+                });
+            }).then(task => {
+                var newStartTime = new Date();
+                newStartTime.setDate(newStartTime.getDate() + 1);
+                return task.setVirtualStartTime(newStartTime)
+                    .then(() => {
+                        throw new Error('Test failed');
+                    })
+                    .catch(error => {
+                        expect(error.message).to.contain('future');
+                        done();
+                    });
+            }).catch(done);
+        }).timeout(5000);
+    });
+
     describe('Task versioning', () => {
         it('@SixSigma - should update the version of the task', done => {
             new Promise(resolve => {

@@ -303,6 +303,20 @@ describe('Worker', () => {
         sinon.assert.calledWith(stub, requestURL, requestParams, API_V1);
       });
     });
+
+    it('should create a task request with virtualStartTime', () => {
+      const stub = sandbox.stub(Request.prototype, 'post');
+      const requestParamsWithVirtualStartTime = Object.assign({}, requestParams, {
+        VirtualStartTime: '2023-01-01T01:24:00Z'
+      });
+
+      const date = new Date('2023-01-01T01:24:00Z');
+      stub.withArgs(requestURL, requestParamsWithVirtualStartTime, API_V1).returns(Promise.resolve(createTask));
+      return worker.createTask('customer', 'worker', 'WWxxx', 'WQxxx', { virtualStartTime: date }).then(taskSid => {
+        expect(taskSid).to.equal(createTask.sid);
+        sinon.assert.calledWith(stub, requestURL, requestParamsWithVirtualStartTime, API_V1);
+      });
+    });
   });
 
   describe('#updateToken(newToken)', () => {

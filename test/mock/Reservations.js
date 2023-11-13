@@ -29,7 +29,8 @@ export const pendingReservationInstance = {
     sid: 'WTxx1',
     date_created: 1518809969,
     date_updated: 1518809969,
-    version: 0
+    version: 0,
+    virtual_start_time: 1518809969
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -63,7 +64,8 @@ export const pendingReservationInstanceForOutbound = {
     sid: 'WTxx1',
     date_created: 1518809969,
     date_updated: 1518809969,
-    version: 0
+    version: 0,
+    virtual_start_time: 1518809969
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -91,7 +93,8 @@ export const pendingReservationIncomingTransfer = {
     attributes: '{}',
     age:11,
     routing_target: null,
-    version: 0
+    version: 0,
+    virtual_start_time: 1554313056
   },
   workspace_sid:'WSxxx',
   date_created:1554313056,
@@ -144,7 +147,8 @@ export const assignedReservationInstance = {
     routing_target: null,
     date_created: 1518809969,
     date_updated: 1518809969,
-    version: 0
+    version: 0,
+    virtual_start_time: 1518809969
   },
   worker_previous_activity_sid: 'WAxxx'
 };
@@ -178,7 +182,8 @@ export const acceptedReservationWithActiveOutgoingTransfer = {
     age: 39,
     addons: '{}',
     routing_target: null,
-    version: 0
+    version: 0,
+    virtual_start_time: 1553124517
   },
   active_outgoing_task_transfer: {
     sid: 'TTxxx',
@@ -225,7 +230,8 @@ export const acceptedReservationWithIncomingAndActiveOutgoingTransfer = {
     age: 271,
     addons: '{}',
     routing_target: null,
-    version: 0
+    version: 0,
+    virtual_start_time: 1553189894
   },
   task_transfer: {
     sid: 'TTxxx',
@@ -331,7 +337,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518809969,
       date_updated: 1518809969,
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -363,7 +370,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518809972,
       date_updated: 1518809972,
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -395,7 +403,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518809975,
       date_updated: 1518809975, 
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -427,7 +436,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518809980,
       date_updated: 1518809980, 
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -459,7 +469,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518809994,
       date_updated: 1518809994,
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -491,7 +502,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518809997,
       date_updated: 1518809997, 
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }, {
@@ -523,7 +535,8 @@ export const reservations = {
       routing_target: null,
       date_created: 1518810002,
       date_updated: 1518810002,
-      version: 0
+      version: 0,
+      virtual_start_time: 1518809969
     },
     worker_previous_activity_sid: 'WAxxx'
   }].concat(acceptedReservationWithActiveOutgoingTransfer, acceptedReservationWithIncomingAndActiveOutgoingTransfer),

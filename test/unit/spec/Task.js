@@ -69,6 +69,7 @@ describe('Task', () => {
             assert.equal(task.workflowName, assignedTaskData.workflow_name);
             assert.equal(task.workflowSid, assignedTaskData.workflow_sid);
             assert.isNull(task.routingTarget);
+            assert.equalDate(task.virtualStartTime, new Date(assignedTaskData.virtual_start_time * 1000));
         });
     });
 
@@ -114,6 +115,7 @@ describe('Task', () => {
                 expect(task.dateCreated).to.equalDate(new Date(taskCompleted.date_created * 1000));
                 expect(task.dateUpdated).to.equalDate(new Date(taskCompleted.date_updated * 1000));
                 expect(task.routingTarget).to.equal(null);
+                expect(task.virtualStartTime).to.equalDate(new Date(taskCompleted.virtual_start_time * 1000));
             });
         });
 
@@ -334,6 +336,7 @@ describe('Task', () => {
                 expect(task.dateCreated).to.equalDate(new Date(updatedTaskAttributes.date_created * 1000));
                 expect(task.dateUpdated).to.equalDate(new Date(updatedTaskAttributes.date_updated * 1000));
                 expect(task.routingTarget).to.equal(null);
+                expect(task.virtualStartTime).to.equalDate(new Date(updatedTaskAttributes.virtual_start_time * 1000));
             });
         });
 
@@ -443,6 +446,41 @@ describe('Task', () => {
                 expect(task.version).to.equal(updatedVersion);
                 expect(Number(task.version)).to.equal(Number(initialVersion) + 1);
             });
+        });
+    });
+
+    describe('#setVirtualStartTime(date)', () => {
+        let sandbox;
+
+        const requestURL = 'Workspaces/WSxxx/Tasks/WTxx1';
+        const requestParams = {
+            VirtualStartTime: '2023-01-01T01:24:00Z',
+        };
+
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should update virtualStartTime upon successful execution', () => {
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, requestParams, API_V1).returns(Promise.resolve(updatedTaskAttributes));
+
+            const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+
+            const date = new Date('2023-01-01T01:24:00Z');
+            return task.setVirtualStartTime(date).then(() => {
+                expect(task.virtualStartTime).to.equalDate(new Date(updatedTaskAttributes.virtual_start_time * 1000));
+            });
+        });
+
+        it('should throw an error if date parameter is missing', () => {
+            (() => {
+                const task = new Task(worker, new Request(config), reservationSid, assignedTaskDescriptor);
+                task.setVirtualStartTime();
+            }).should.throw(/date is a required parameter/);
         });
     });
 

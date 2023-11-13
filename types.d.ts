@@ -104,11 +104,13 @@ export class Task extends (EventEmitter as new () => TypedEmitter<TaskEvents>) {
     readonly workflowSid: string;
     readonly routingTarget: string;
     readonly version: string;
+    readonly virtualStartTime: Date;
 
     complete(reason: string): Promise<Task>;
     hold(targetWorkerSid: string, onHold: boolean, options?: TaskHoldOptions): Promise<Task>;
     kick(workerSid: string): Promise<Task>;
     setAttributes(attributes: Object): Promise<Task>;
+    setVirtualStartTime(date: Date): Promise<Task>;
     transfer(to: string, options: TransferOptions): Promise<Task>;
     wrapUp(options: WrappingOptions): Promise<Task>;
     updateParticipant(options: TaskParticipantOptions): Promise<Task>;

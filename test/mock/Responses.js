@@ -81,7 +81,8 @@ export const taskCompleted = {
   age: 291,
   addons: "{}",
   routing_target: null,
-  version: 1
+  version: 1,
+  virtual_start_time: 1518809969
 };
 
 export const taskWrapping = {
@@ -105,7 +106,8 @@ export const taskWrapping = {
   age: 211,
   addons: "{}",
   routing_target: null,
-  version: 1
+  version: 1,
+  virtual_start_time: 1518809969
 };
 
 export const taskHoldUnhold = {
@@ -129,7 +131,8 @@ export const taskHoldUnhold = {
     age: 291,
     addons: "{}",
     routing_target: null,
-    version: 1
+    version: 1,
+    virtual_start_time: 1518809969
 };
 
 export const updatedTaskAttributes = {
@@ -153,7 +156,8 @@ export const updatedTaskAttributes = {
     age: 291,
     addons: "{}",
     routing_target: null,
-    version: 1
+    version: 1,
+    virtual_start_time: 1518809969
 };
 
 export const latestTask = {
@@ -177,7 +181,8 @@ export const latestTask = {
   age: 291,
   addons: "{}",
   routing_target: null,
-  version: 30
+  version: 30,
+  virtual_start_time: 1518809969
 };
 
 export const updatedTaskAttributesForOutbound = {
@@ -201,7 +206,8 @@ export const updatedTaskAttributesForOutbound = {
     age: 291,
     addons: "{}",
     routing_target: 'WKxxx',
-    version: 23
+    version: 23,
+    virtual_start_time: 1518809969
 };
 
 export const reservationAccepted = {
@@ -359,7 +365,8 @@ export const createTask = {
   task_channel_unique_name: 'default',
   routing_target: 'WKxxx',
   counter: 0,
-  addons: '{}'
+  addons: '{}',
+  virtual_start_time: 1672536240
 };
 
 
