@@ -2,6 +2,8 @@
 ==========
 New Features
 ----------
+- Added `virtualStartTime` as an optional parameter to `WorkerTaskOptions` so that the virtual start time of the task can be set when `Worker.createTask` method is called
+- Added `setVirtualStartTime` method to update the virtual start time of a `Task`
 - Added `transcribe` and `transcriptionConfiguration` options to `reservation.conference` method
 
 2.0.0
