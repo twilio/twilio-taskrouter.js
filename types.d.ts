@@ -211,8 +211,8 @@ export class Workspace {
 }
 
 export interface Transfers {
-    readonly incoming: IncomingTransfer;
-    readonly outgoing: OutgoingTransfer;
+    readonly incoming: IncomingTransfer | null;
+    readonly outgoing: OutgoingTransfer | null;
 }
 
 export interface IncomingTransfer {
