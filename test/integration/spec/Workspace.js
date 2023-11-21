@@ -31,10 +31,10 @@ describe('Workspace', () => {
     describe('#fetchTaskQueues', () => {
         let taskQueueSids = [];
 
-        const createTaskQueues = async(friendlyNames = []) => {
+        const createTaskQueues = async(friendlyNames = [], targetWorkers = '1==1') => {
             const taskQueueSids = [];
             for (const name of friendlyNames) {
-                const queue = await envTwilio.createTaskQueue(workspace.workspaceSid, { friendlyName: name });
+                const queue = await envTwilio.createTaskQueue(workspace.workspaceSid, { friendlyName: name, targetWorkers });
                 taskQueueSids.push(queue.sid);
             }
 
@@ -116,6 +116,28 @@ describe('Workspace', () => {
 
             }
         }).timeout(5000);
+
+        describe('WorkerSid filter', () => {
+            before(async() => {
+                await createTaskQueues(['notBob'], 'missingAttribute = "foo"');
+            });
+
+            it('should not filter by default', async() => {
+                const queuesMap = await workspace.fetchTaskQueues();
+                assert.equal(queuesMap.size, 4);
+            }).timeout(5000);
+
+            it('should filter by selected WorkerSid', async() => {
+                let workerSid = credentials.multiTaskBobSid;
+
+                const queuesMap = await workspace.fetchTaskQueues({ WorkerSid: workerSid });
+                assert.equal(queuesMap.size, 3);
+            }).timeout(5000);
+
+            after(async() => {
+                await deleteTaskQueues(['notBob']);
+            });
+        });
 
         it('should paginate with ordering param', async() => {
             workspace = new Workspace(adminToken, { ...options, pageSize: 1 });
