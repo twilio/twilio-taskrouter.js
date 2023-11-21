@@ -187,6 +187,7 @@ type FetchTaskQueuesParams = {
     AfterSid?: string;
     FriendlyName?: string;
     Ordering?: "DateUpdated:asc" | "DateUpdated:desc"
+    WorkerSid?: string;
 }
 
 type FetchWorkersParams = {
