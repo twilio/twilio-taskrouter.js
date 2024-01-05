@@ -22,7 +22,7 @@
     "react-dom": "^18.2.0",
     "server-only": "^0.0.1",
     "tailwindcss": "^3.3.3",
-    "twilio": "^4.15.0",
+    "twilio": "^4.19.3",
     "twilio-taskrouter": "^0.8.4",
     "typescript": "^5.1.6"
   },
