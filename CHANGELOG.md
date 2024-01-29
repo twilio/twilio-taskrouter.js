@@ -1,3 +1,9 @@
+2.0.2
+==========
+Bug Fixes
+----------
+- Fixed `axios.create is not a function` when initializing a Worker
+
 2.0.1
 ==========
 New Features
