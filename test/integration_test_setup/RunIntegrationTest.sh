@@ -25,11 +25,16 @@ if [[ $EXIT_CODE -ne 0 ]]; then
 fi
 
 RUN_SIX_SIGMA_SUITE=$(grep RUN_SIX_SIGMA_SUITE ./test/integration_test_setup/.env | cut -d '=' -f2)
+RUN_VOICE_TESTS=$(grep RUN_VOICE_TESTS ./test/integration_test_setup/.env | cut -d '=' -f2)
 
 if [[ $RUN_SIX_SIGMA_SUITE == true ]]; then
   time yarn test:integration-six-sigma || EXIT_CODE=$?
 else
-  time yarn test:integration || EXIT_CODE=$?
+  if [[ $RUN_VOICE_TESTS == true ]]; then
+      time yarn test:integration:tr:voice || EXIT_CODE=$?
+  else
+    time yarn test:integration || EXIT_CODE=$?
+  fi
 fi
 
 echo "Integration test exit code $EXIT_CODE"

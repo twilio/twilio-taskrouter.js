@@ -16,6 +16,10 @@ const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const SIGNING_KEY_SID = process.env.SIGNING_KEY_SID;
 const SIGNING_KEY_SECRET = process.env.SIGNING_KEY_SECRET;
 const WORKSPACE_FRIENDLY_NAME = process.env.WORKSPACE_FRIENDLY_NAME;
+const WORKER_NUMBER = process.env.WORKER_NUMBER;
+const SUPERVISOR_NUMBER = process.env.SUPERVISOR_NUMBER;
+const CUSTOMER_NUMBER = process.env.CUSTOMER_NUMBER;
+const FLEX_CC_NUMBER = process.env.FLEX_CC_NUMBER;
 const client = getTwilioClient();
 const fs = require('fs');
 
@@ -68,10 +72,10 @@ async function createWorkspaces() {
         'ebServer': `https://${eventBridgeUrl}/v1/wschannels`,
         'wsServer': `wss://${eventBridgeUrl}/v1/wschannels`,
         'hasSingleTasking': false,
-        'supervisorNumber': '',
-        'customerNumber': '',
-        'flexCCNumber': '',
-        'workerNumber': '',
+        'supervisorNumber': SUPERVISOR_NUMBER ?? '',
+        'customerNumber': CUSTOMER_NUMBER ?? '',
+        'flexCCNumber': FLEX_CC_NUMBER ?? '',
+        'workerNumber': WORKER_NUMBER ?? '',
         'region': buildRegionForEventBridge(REGION || ENV),
         'edge': process.env.EDGE
     };
