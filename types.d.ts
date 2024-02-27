@@ -329,7 +329,7 @@ export interface WorkerOptions {
     logLevel?: "error" | "warn" | "info" | "debug" | "trace" | "silent";
     ebServer?: string;
     wsServer?: string;
-    eventHandlerClass?: string;
+    eventHandlerClass?: typeof TaskRouterEventHandler;
     region?: string;
 }
 

@@ -1,3 +1,9 @@
+2.0.3
+==========
+Bug Fixes
+----------
+- Fixed the type of `eventHandlerClass` in `WorkerOptions`
+
 2.0.2
 ==========
 Bug Fixes
