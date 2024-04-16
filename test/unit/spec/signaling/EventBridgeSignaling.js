@@ -87,7 +87,7 @@ describe('EventBridgeSignaling', () => {
   });
 
   describe('websocket teardown', () => {
-    it('should close the existing websocket when no heartbeat is received in 60s', async() => {
+    it('should close the existing websocket when no heartbeat is received in 30s', async() => {
       const worker = new Worker(initialToken, WorkerConfig);
 
       const disconnectedSpy = sinon.spy();
@@ -105,19 +105,20 @@ describe('EventBridgeSignaling', () => {
       await sleep(500);
       assert.isTrue(worker._signaling.webSocket.readyState === WebSocket.OPEN);
 
-      // trigger the heartbeat sleep function (no heartbeat felt within max 60s interval)
+      // trigger the heartbeat sleep function (no heartbeat felt within max 30s interval)
       worker._signaling._heartbeat.onsleep();
 
       // verify that websocket moves to closed when the onsleep triggers a disconnect
       assert.isTrue(worker._signaling.webSocket.readyState === WebSocket.CLOSED);
-      expect(disconnectedSpy).to.have.been.calledOnce;
+      expect(disconnectedSpy).to.have.been.calledTwice;
       expect(connectedSpy).to.have.been.calledOnce;
 
       // random backoff will wait x ms before attempting to create a new websocket
       await sleep(1000);
       // verify that a new websocket was created
       assert.isTrue(worker._signaling.webSocket.readyState !== WebSocket.CLOSED && worker._signaling.webSocket.readyState !== WebSocket.CLOSING);
-      expect(connectedSpy).to.have.been.calledTwice;
+      // it is called thrice, because the websocket event handlers are not removed in unit tests which use the ws package
+      expect(connectedSpy).to.have.been.calledThrice;
     });
 
     it('should not be closed by missing heartbeat if closed manually', async() => {
@@ -134,6 +135,41 @@ describe('EventBridgeSignaling', () => {
       // webSocket.close() cannot be called by missing heartbeat anymore
       worker._signaling._heartbeat.onsleep();
       expect(websocketCloseSpy).to.have.been.calledOnce;
+    });
+  });
+
+  describe('websocket reconnect', () => {
+    it('should not reconnect if already reconnecting', async() => {
+      const worker = new Worker(initialToken, WorkerConfig);
+
+      const disconnectedSpy = sinon.spy();
+      const connectedSpy = sinon.spy();
+
+      worker._signaling.on('disconnected', disconnectedSpy);
+      worker._signaling.on('connected', connectedSpy);
+
+      // verify that the current websocket is not already closing or closed
+      assert.isTrue(worker._signaling.webSocket.readyState !== WebSocket.CLOSED && worker._signaling.webSocket.readyState !== WebSocket.CLOSING);
+      // verify that if the websocket disconnects, it will attempt to reconnect
+      assert.isTrue(worker._signaling.reconnect);
+
+      // wait for the socket to transition from CONNECTING -> OPEN state
+      await sleep(500);
+      assert.isTrue(worker._signaling.webSocket.readyState === WebSocket.OPEN);
+
+      // set _isReconnecting true to simulate the scenario, where reconnection is already in progress
+      worker._signaling._isReconnecting = true;
+
+      // then close the websocket to trigger the onclose event
+      worker._signaling.webSocket.close();
+
+      // random backoff will wait x ms before attempting to create a new websocket
+      await sleep(1000);
+
+      // connectedSpy should have been called just once, because _isReconnecting flag is true
+      // and _reconnectWebSocket is not called anymore.
+      expect(connectedSpy).to.have.been.calledOnce;
+      expect(disconnectedSpy).to.have.been.calledOnce;
     });
   });
 });
