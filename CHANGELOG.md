@@ -1,3 +1,9 @@
+2.0.4
+==========
+Maintenance
+----------
+- Enhanced websocket reconnection logic.
+
 2.0.3
 ==========
 Bug Fixes
