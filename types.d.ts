@@ -331,6 +331,7 @@ export interface WorkerOptions {
     wsServer?: string;
     eventHandlerClass?: typeof TaskRouterEventHandler;
     region?: string;
+    enableVersionCheck?: boolean;
 }
 
 export interface TaskOptions {

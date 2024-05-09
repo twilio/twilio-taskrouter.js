@@ -70,16 +70,39 @@ describe('Request', () => {
       });
     });
 
-    // eslint-disable-next-line no-warning-comments
-    // TODO FLEXSDK-2255: unskip this test once the versioning bug is fixed
-    it.skip('adds object version to If-Match header', () => {
+    it('adds object version to If-Match header', () => {
+      const configWithVersionCheck = new Configuration(token, {
+        enableVersionCheck: true
+      });
+
+      const requestWithVersionCheck = new Request(configWithVersionCheck);
+
+      // set up the stub to check the headers and also mock the response, instead of using axios
+      stub = sandbox.stub(requestWithVersionCheck._postClient, 'post');
+
+      // build the expected request body
+      const requestWithVersionCheckBody = requestWithVersionCheck.buildRequest('POST', requestURL, requestParams);
+
+      setUpSuccessfulResponse(stub);
+      const version = '1';
+
+      return requestWithVersionCheck.post(requestURL, requestParams, API_V1, version).then(() => {
+        sinon.assert.calledWith(stub, config.EB_SERVER, requestWithVersionCheckBody, {
+          headers: {
+            'If-Match': version,
+            'apiVersion': API_V1
+          }
+        });
+      });
+    });
+
+    it('object version is not added to If-Match header by default', () => {
       setUpSuccessfulResponse(stub);
       const version = '1';
 
       return request.post(requestURL, requestParams, API_V1, version).then(() => {
         sinon.assert.calledWith(stub, config.EB_SERVER, requestBody, {
           headers: {
-            'If-Match': version,
             'apiVersion': API_V1
           }
         });
