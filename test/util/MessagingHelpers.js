@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isObject from 'lodash/isObject';
 import { assert } from 'chai';
 
 const credentials = require('../env');
@@ -9,7 +9,7 @@ const credentials = require('../env');
  */
 export default class MessagingHelpers {
     constructor(envTwilio) {
-        if (!_.isObject(envTwilio)) {
+        if (!isObject(envTwilio)) {
             throw new TypeError('Failed to instantiate MessagingHelpers. <EnvTwilio>envTwilio is a required parameter.');
         }
 

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import _ from 'lodash';
+import isObject from 'lodash/isObject';
 import { pauseTestExecution } from '../voice/VoiceBase';
 const STATUS_CHECK_DELAY = 2000;
 import AssertionUtils from './AssertionUtils';
@@ -10,7 +10,7 @@ const credentials = require('../env');
  */
 export default class OutboundCommonHelpers {
     constructor(envTwilio) {
-        if (!_.isObject(envTwilio)) {
+        if (!isObject(envTwilio)) {
             throw new TypeError('Failed to instantiate OutboundCommonHelpers. <EnvTwilio>envTwilio is a required parameter.');
         }
 
