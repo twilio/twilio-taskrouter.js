@@ -9,7 +9,7 @@ chai.should();
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
-describe('Supervisor Client', function() {
+describe.only('Supervisor Client', function() {
   /* eslint-disable no-invalid-this */
   this.timeout(10000);
   /* eslint-enable */
@@ -78,5 +78,17 @@ describe('Supervisor Client', function() {
   // ORCH-1786 filed for unreliabe test
   it.skip('should get a 200 and resolve the Promise if all goes well', () => {
     return supervisor.monitor(reservation.task.sid, reservation.sid);
+  });
+
+  it('supervisor should set worker attributes', async() => {
+    const newAttributes = { languages: ['en'], name: 'Ms. Alice' };
+    const response = await supervisor.setWorkerAttributes(worker.sid, newAttributes);
+    chai.expect(JSON.parse(response.attributes)).to.deep.equal(newAttributes);
+  });
+
+  it('should return an error if unable to set the attributes', () => {
+    return supervisor.setWorkerAttributes(worker.sid, 'invalid_attribute').catch(error => {
+      chai.expect(error.message).to.equal('Error setting worker attributes: <object>attributes is a required parameter');
+    });
   });
 });

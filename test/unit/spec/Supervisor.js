@@ -107,6 +107,44 @@ describe('Supervisor', () => {
       });
     });
   });
+
+  describe('.setWorkerAttributes()', () => {
+    context('before initialization', () => {
+      it('should throw', () => {
+        assert.throws(() => supervisor.setWorkerAttributes('WA123', { Foo: 'bar' }));
+      });
+    })
+
+    context('once initialized', () => {
+      beforeEach(() => {
+        signaling.emit('init', fakeInitEvent);
+      });
+  
+      it('should throw if workerSid is missing', () => {
+        assert.throws(() => supervisor.setWorkerAttributes());
+      })
+
+      it('should throw if attributes is not an object', () => {
+        assert.throws(() => supervisor.setWorkerAttributes('WA123', 'wrong'));
+        assert.throws(() => supervisor.setWorkerAttributes('WA123', 123));
+      })
+
+      it('should throw if workerSid is not a string', () => {
+        assert.throws(() => supervisor.setWorkerAttributes(123, { Foo: 'bar' }));
+      })
+
+      it('should make a valid POST request to API_V1', () => {
+        const attrbutes = { Foo: 'bar', skills: ['foo', 'bar'] }
+        supervisor.setWorkerAttributes('WA123', attrbutes);
+        sinon.assert.calledWith(request.post,
+          'Workspaces/baz/Workers/WA123',
+          { Attributes: attrbutes },
+          API_V1
+        );
+      });
+    })
+  });
+    
 });
 
 /**
