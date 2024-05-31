@@ -107,6 +107,96 @@ describe('Supervisor', () => {
       });
     });
   });
+
+  describe('.setWorkerAttributes()', () => {
+    context('before initialization', () => {
+      it('should throw', () => {
+        assert.throws(() => supervisor.setWorkerAttributes('WA123', { Foo: 'bar' }));
+      });
+    })
+
+    context('once initialized', () => {
+      beforeEach(() => {
+        signaling.emit('init', fakeInitEvent);
+      });
+  
+      it('should throw if workerSid is missing', () => {
+        assert.throws(() => supervisor.setWorkerAttributes());
+      })
+
+      it('should throw if attributes is not an object', () => {
+        assert.throws(() => supervisor.setWorkerAttributes('WA123', 'wrong'));
+        assert.throws(() => supervisor.setWorkerAttributes('WA123', 123));
+      })
+
+      it('should throw if workerSid is not a string', () => {
+        assert.throws(() => supervisor.setWorkerAttributes(123, { Foo: 'bar' }));
+      })
+
+      it('should make a valid POST request to API_V1', () => {
+        const attrbutes = { Foo: 'bar', skills: ['foo', 'bar'] }
+        supervisor.setWorkerAttributes('WA123', attrbutes);
+        sinon.assert.calledWith(request.post,
+          'Workspaces/baz/Workers/WA123',
+          { Attributes: attrbutes },
+          API_V1
+        );
+      });
+    })
+  });
+
+  describe('.setWorkerActivity()', () => {
+    context('before initialization', () => {
+      it('should throw', () => {
+        assert.throws(() => supervisor.setWorkerActivity('WA123', 'bar'));
+      });
+    })
+
+    context('once initialized', () => {
+      beforeEach(() => {
+        signaling.emit('init', fakeInitEvent);
+      });
+  
+      it('should throw if workerSid is missing', () => {
+        assert.throws(() => supervisor.setWorkerActivity());
+      })
+
+      it('should throw if activitySid is missing', () => {
+        assert.throws(() => supervisor.setWorkerActivity('WA123'));
+      })
+
+      it('should throw if workerSid is not a string', () => {
+        assert.throws(() => supervisor.setWorkerActivity(123, 'bar'));
+      })
+
+      it('should throw if activitySid is not a string', () => {
+        assert.throws(() => supervisor.setWorkerActivity('WA123', 123));  
+      })
+
+      it('should make a valid POST request to API_V1', () => {
+        supervisor.setWorkerActivity('WA123', 'bar');
+        sinon.assert.calledWith(request.post,
+          'Workspaces/baz/Workers/WA123',
+          { ActivitySid: 'bar' },
+          API_V1
+        );
+      })
+
+      it('should fail when invalid options are provided', () => {
+        assert.throws(() => supervisor.setWorkerActivity('WA123', 'bar', 'invalid_option'));
+      })
+
+
+      it('should succeed when valid option is provided', () => {
+        supervisor.setWorkerActivity('WA123', 'bar', { rejectPendingReservations: 'foo' });
+        sinon.assert.calledWith(request.post,
+          'Workspaces/baz/Workers/WA123',
+          { ActivitySid: 'bar', RejectPendingReservations: 'foo'},
+          API_V1
+        );
+      })
+    })
+  })  
 });
 
 /**
