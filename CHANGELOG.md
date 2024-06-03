@@ -1,3 +1,9 @@
+2.0.6
+==========
+New Features
+----------
+- Added `setWorkerAttributes` and `setWorkerActivity` to Supervisor 
+
 2.0.5
 ==========
 New Features
