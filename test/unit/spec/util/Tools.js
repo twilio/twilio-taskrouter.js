@@ -1,5 +1,5 @@
 const tools = require('../../../../lib/util/Tools');
-import _ from 'lodash';
+import isString from 'lodash/isString';
 import chai from 'chai';
 const expect = chai.expect;
 
@@ -9,7 +9,7 @@ describe('Tools', () => {
       (() => {
         tools.validateOptions(
           { foo: new Date() },
-          { foo: (val) => _.isString(val) }
+          { foo: (val) => isString(val) }
         );
       }).should.throw(/does not meet the required type/);
     });

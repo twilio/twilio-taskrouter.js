@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import mapKeys from 'lodash/mapKeys';
+import upperFirst from 'lodash/upperFirst';
 import { API_V1, API_V2 } from '../../../lib/util/Constants';
 import Configuration from '../../../lib/util/Configuration';
 import Logger from '../../../lib/util/Logger';
@@ -367,7 +368,7 @@ describe('Reservation', () => {
             timeout: 10,
             statusCallbackUrl: 'http://example.com'
         };
-        const optionalParmsWithCallPrefix = _.mapKeys(optionalParams, (v, k) => 'Call' + _.upperFirst(k));
+        const optionalParmsWithCallPrefix = mapKeys(optionalParams, (v, k) => 'Call' + upperFirst(k));
 
         beforeEach(() => {
             sandbox = sinon.sandbox.create();
@@ -462,7 +463,7 @@ describe('Reservation', () => {
             statusCallbackUrl: 'http://example.com',
             statusCallbackEvents: 'answered'
         };
-        const optionalParmsWithDequeuePrefix = _.mapKeys(optionalParams, (v, k) => 'Dequeue' + _.upperFirst(k));
+        const optionalParmsWithDequeuePrefix = mapKeys(optionalParams, (v, k) => 'Dequeue' + upperFirst(k));
 
 
         beforeEach(() => {
