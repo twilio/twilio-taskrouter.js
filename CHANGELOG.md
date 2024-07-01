@@ -1,8 +1,14 @@
+2.0.7
+==========
+Maintenance
+----------
+- Reduced transitive dependency size caused by Lodash.js
+
 2.0.6
 ==========
 New Features
 ----------
-- Added `setWorkerAttributes` and `setWorkerActivity` to Supervisor 
+- Added `setWorkerAttributes` and `setWorkerActivity` to Supervisor
 
 2.0.5
 ==========
