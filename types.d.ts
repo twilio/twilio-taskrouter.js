@@ -326,6 +326,7 @@ export interface ReservationParticipantOptions {
 export interface WorkerOptions {
     connectActivitySid?: string;
     closeExistingSessions?: boolean;
+    setWorkerOfflineIfDisconnected?: boolean
     logLevel?: "error" | "warn" | "info" | "debug" | "trace" | "silent";
     ebServer?: string;
     wsServer?: string;

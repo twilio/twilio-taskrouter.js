@@ -49,6 +49,18 @@ describe('EventBridgeSignaling', () => {
       const signaling = new EventBridgeSignaling(worker);
       assert.isFalse(signaling.closeExistingSessions);
     });
+
+    it('should set setWorkerOfflineIfDisconnected option', () => {
+      const worker = new Worker(initialToken, WorkerConfig);
+      const options = {
+        setWorkerOfflineIfDisconnected: false
+      };
+
+      const signaling = new EventBridgeSignaling(worker, options);
+
+      assert.isFalse(signaling.setWorkerOfflineIfDisconnected);
+    });
+
   });
 
   describe('#updateToken(newToken)', () => {
