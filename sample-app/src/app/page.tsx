@@ -13,7 +13,7 @@ export default async function Home({ searchParams }: { searchParams?: { [key: st
     searchParams?.signingKeySecret || '',
     searchParams?.workspaceSid || '',
     searchParams?.workerSid || '',
-    searchParams?.identity || '',
+    searchParams?.identity || ''
   );
 
   return (

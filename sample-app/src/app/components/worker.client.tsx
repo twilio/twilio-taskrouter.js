@@ -1,6 +1,6 @@
 'use client';
 
-import { Worker } from 'twilio-taskrouter';
+import { Supervisor, Workspace } from 'twilio-taskrouter';
 import { LogContextType, useLogContext } from '@/lib/log-context';
 import React, { useEffect, useState } from 'react';
 import Logger from './logger.client';
@@ -13,7 +13,8 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
   const [enableReject, setEnableReject] = useState<boolean>(false);
   const [enableDisconnectWorker, setEnableDisconnectWorker] = useState<boolean>(false);
 
-  const [workerObj, setWorkerObj] = useState<any | null>(null);
+  const [workerObj, setWorkerObj] = useState<Supervisor | null>(null);
+  const [workSpace, setWorkSpace] = useState<Workspace | null>(null);
   const [reservationObj, setReservationObj] = useState<any | null>(null);
 
   const [currentReservations, setCurrentReservations] = useState<Array<any>>([]);
@@ -54,6 +55,24 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
     }
   };
 
+  const handleFetchWorkers = async () => {
+    try {
+      const fetchWorkersReq = await workSpace?.fetchWorkers();
+      if (fetchWorkersReq) {
+        const workers = Array.from(fetchWorkersReq.values());
+        appendLogs('======================================================');
+        appendLogs('Workers fetched');
+        workers.forEach((worker: any) => {
+          appendLogs('Workers sid: ' + worker.sid);
+          appendLogs('Workers friendlyName: ' + worker.friendlyName);
+          appendLogs('Workers activity: ' + worker.activityName);
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       return;
@@ -65,10 +84,15 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
 
     appendLogs('Initializing Worker with the new token', 'green');
 
-    const worker = new Worker(token, {
+    const worker = new Supervisor(token, {
       region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
       logLevel: 'info',
     });
+    const workspace = new Workspace(token, {
+      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
+      logLevel: 'info',
+    });
+    setWorkSpace(workspace);
 
     setWorkerObj(worker);
 
@@ -234,13 +258,18 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
           >
             Reject
           </button>
-
           <button
             onClick={handleDisconnectWorker}
             disabled={!enableDisconnectWorker}
             className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded disabled:opacity-75 disabled:pointer-events-none font-medium"
           >
             Disconnect
+          </button>
+          <button
+            onClick={handleFetchWorkers}
+            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded disabled:opacity-75 disabled:pointer-events-none font-medium"
+          >
+            Fetch Workers
           </button>
         </div>
       </section>
