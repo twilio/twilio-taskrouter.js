@@ -1,3 +1,13 @@
+2.0.8
+==========
+New Features
+----------
+- Added `setWorkerOfflineIfDisconnected` to WorkerOptions
+
+Bug fixes
+----------
+- Added `setWorkerAttributes` and `setWorkerActivity` fields to Supervisor type declaration 
+
 2.0.7
 ==========
 Maintenance
