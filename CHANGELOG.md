@@ -1,3 +1,10 @@
+2.0.9
+==========
+Bug fixes
+----------
+- Fixed `setWorkerAttributes` and `setWorkerActivity` parameter types
+
+
 2.0.8
 ==========
 New Features
