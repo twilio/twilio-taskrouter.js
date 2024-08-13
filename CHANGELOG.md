@@ -1,3 +1,11 @@
+2.0.10
+==========
+Bug fixes
+----------
+- Made options for `setWorkerActivity` nullable
+
+
+
 2.0.9
 ==========
 Bug fixes

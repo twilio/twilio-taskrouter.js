@@ -37,7 +37,7 @@ export class Worker extends (EventEmitter as new () => TypedEmitter<WorkerEvents
 export class Supervisor extends Worker {
     monitor(taskSid: string, reservationSid: string, extraParams: Object): Promise<void>;
     setWorkerAttributes(workerSid: string, attributes: Record<string, any>): Promise<Worker>;
-    setWorkerActivity(workerSid: string, activitySid: string, options: ActivityOptions): Promise<Worker>;
+    setWorkerActivity(workerSid: string, activitySid: string, options?: ActivityOptions): Promise<Worker>;
 }
 
 interface WorkerEvents {
