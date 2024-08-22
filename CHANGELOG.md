@@ -1,9 +1,15 @@
+2.0.11
+==========
+Bug fixes
+----------
+- Stop reconnecting after `Worker.disconnect` has been called.
+
+
 2.0.10
 ==========
 Bug fixes
 ----------
-- Made options for `setWorkerActivity` nullable
-
+- Made the `options` parameter in `setWorkerActivity` optional
 
 
 2.0.9
