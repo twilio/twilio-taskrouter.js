@@ -4,6 +4,13 @@ Bug fixes
 ----------
 - Stop reconnecting after `Worker.disconnect` has been called.
 
+New Features
+----------
+- Export `WorkspaceOptions` type
+
+Maintenance
+----------
+- Upgraded `ws` dependency
 
 2.0.10
 ==========

@@ -337,6 +337,12 @@ export interface WorkerOptions {
     enableVersionCheck?: boolean;
 }
 
+export interface WorkspaceOptions {
+    region?: string;
+    pageSize?: number;
+    logLevel?: "error" | "warn" | "info" | "debug" | "trace" | "silent";
+}
+
 export interface TaskOptions {
     attributes?: any;
     taskChannelUniqueName?: string;
