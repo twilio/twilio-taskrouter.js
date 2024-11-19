@@ -211,6 +211,7 @@ export class Workspace {
     fetchWorkers(params?: FetchWorkersParams): Promise<Map<string, Worker>>;
     fetchTaskQueue(queueSid: string): Promise<TaskQueue>;
     fetchTaskQueues(params?: FetchTaskQueuesParams): Promise<Map<string, TaskQueue>>;
+    fetchTask(taskSid: string): Promise<Task>;
 }
 
 export interface Transfers {

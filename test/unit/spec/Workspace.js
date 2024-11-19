@@ -8,13 +8,14 @@ chai.use(require('chai-datetime'));
 chai.should();
 const sinon = require('sinon');
 import { API_V1 } from '../../../lib/util/Constants';
-import { taskQueueList, taskQueuesPage0, taskQueuesPage1, workerList, workerListPage0, workerListPage1, workerList2Page0, workerList2Page1 } from '../../mock/Workspace';
+import { taskQueueList, taskQueuesPage0, taskQueuesPage1, workerList, workerListPage0, workerListPage1, workerList2Page0, workerList2Page1, taskList } from '../../mock/Workspace';
 import { adminToken, token, updatedAdminToken } from '../../mock/Token';
 import Request from '../../../lib/util/Request';
 import path from 'path';
 import TaskQueue from '../../../lib/TaskQueue';
 import WorkerContainer from '../../../lib/WorkerContainer';
 import Configuration from '../../../lib/util/Configuration';
+import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 
 describe('Workspace', () => {
 
@@ -247,6 +248,31 @@ describe('Workspace', () => {
             return workspace.fetchWorker(workerInstance.sid).then(queue => {
                 expect(queue.sid).to.equal(workerInstance.sid);
                 expect(queue).to.be.instanceOf(WorkerContainer);
+                expect(stub.withArgs(url, API_V1).calledOnce).to.be.true;
+            });
+        });
+
+    });
+
+    describe('#fetchTasks', () => {
+        const requestURL = 'Workspaces/WSxxx/Tasks';
+
+        let sandbox;
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => sandbox.restore());
+
+        it('should fetch task with sid', () => {
+            const workspace = new Workspace(adminToken);
+            const taskInstance = taskList.contents[0];
+            const url = path.join(requestURL, taskInstance.sid);
+            const stub = sandbox.stub(Request.prototype, 'get').withArgs(url, API_V1).returns(Promise.resolve(taskInstance));
+
+            return workspace.fetchTask(taskInstance.sid).then(queue => {
+                expect(queue.sid).to.equal(taskInstance.sid);
+                expect(queue).to.be.instanceOf(TaskDescriptor);
                 expect(stub.withArgs(url, API_V1).calledOnce).to.be.true;
             });
         });

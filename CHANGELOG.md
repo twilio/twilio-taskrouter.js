@@ -1,3 +1,13 @@
+2.0.12
+==========
+New Features
+----------
+- Added `fetchTask` method to `Workspace`
+
+Maintenance
+----------
+- Fix missing Babel dependency
+
 2.0.11
 ==========
 Bug fixes

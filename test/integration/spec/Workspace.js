@@ -3,6 +3,7 @@ import { Workspace } from '../../../lib';
 import TaskQueue from '../../../lib/TaskQueue';
 import WorkerContainer from '../../../lib/WorkerContainer';
 import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
+import TaskDescriptor from '../../../lib/descriptors/TaskDescriptor';
 
 const chai = require('chai');
 chai.use(require('sinon-chai'));
@@ -307,6 +308,27 @@ describe('Workspace', () => {
             workspace = new Workspace(adminToken, { ...options, pageSize: 1 });
             const workersMap = await workspace.fetchWorkers();
             assert.equal(workersMap.size, 2);
+        }).timeout(5000);
+    });
+
+    describe('#fetchTasks', () => {
+        let createdTask;
+        before(async() => {
+            createdTask = await envTwilio.createTask(credentials.multiTaskWorkspaceSid, credentials.multiTaskWorkflowSid);
+        });
+
+        it('should fetch task with Sid', async() => {
+            let taskSid = createdTask.sid;
+            const task = await workspace.fetchTask(taskSid);
+
+            assert.instanceOf(task, TaskDescriptor);
+            assert.equal(task.sid, taskSid);
+        }).timeout(5000);
+
+        it('should return 404 error if invalid Sid provided', async() => {
+            const taskPromise = workspace.fetchTask('WT0000000000000000000000000000000000');
+
+            await expect(taskPromise).to.be.rejectedWith('Request failed with status code 404');
         }).timeout(5000);
     });
 });

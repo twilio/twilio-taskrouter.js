@@ -422,3 +422,54 @@ export const workerList2Page1 = {
   after_sid: "WKxx2",
   before_sid: null
 };
+
+export const taskList = {
+  contents: [
+    {
+      queue_name: 'Sample Queue',
+      queue_sid: "WQxxx",
+      workflow_name: 'Default Workflow',
+      account_sid: "ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      age: 25200,
+      assignment_status: "pending",
+      attributes: "{\"body\": \"hello\"}",
+      date_created: "2014-05-14T18:50:02Z",
+      date_updated: "2014-05-15T07:26:06Z",
+      task_queue_entered_date: "2014-05-14T18:50:02Z",
+      virtual_start_time: "2014-05-14T18:50:02Z",
+      priority: 0,
+      reason: "Test Reason",
+      sid: "WTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      task_queue_sid: "WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      task_channel_sid: "TCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      task_channel_unique_name: "task-channel",
+      timeout: 60,
+      url: "https://taskrouter.twilio.com/v1/Workspaces/WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Tasks/WTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      workflow_sid: "WWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      workspace_sid: "WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      workflow_friendly_name: "Test Workflow",
+      task_queue_friendly_name: "Test Queue",
+      ignore_capacity: false,
+      routing_target: "WKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      addons: "{}",
+      version: 0,
+      links: {
+        task_queue: "https://taskrouter.twilio.com/v1/Workspaces/WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/TaskQueues/WQaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        workflow: "https://taskrouter.twilio.com/v1/Workspaces/WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Workflows/WWaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        workspace: "https://taskrouter.twilio.com/v1/Workspaces/WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        reservations: "https://taskrouter.twilio.com/v1/Workspaces/WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Tasks/WTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Reservations"
+      }
+    }
+  ],
+  page: 0,
+  total: 2,
+  start: 0,
+  end: 0,
+  meta: {
+    list_key: "contents"
+  },
+  nextPage: 0,
+  lastPage: 0,
+  after_sid: null,
+  before_sid: null
+};
