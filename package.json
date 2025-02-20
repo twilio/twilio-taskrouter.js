@@ -57,8 +57,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "axios": "^1.7.4",
+    "axios": "^1.7.9",
     "events": "3.3.0",
+    "graphql": "^14",
+    "graphql-ws": "^5.16.2",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "loglevel": "^1.4.1",

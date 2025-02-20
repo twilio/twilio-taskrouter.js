@@ -32,6 +32,7 @@ describe('Configuration', () => {
 
         assert.equal(config.EB_SERVER, 'https://event-bridge.stage-us1.twilio.com/v1/wschannels');
         assert.equal(config.WS_SERVER, 'wss://event-bridge.stage-us1.twilio.com/v1/wschannels');
+        assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.stage-us1.twilio.com/graphql-subscriptions');
     });
 
     it('should use environment default if options not provided', () => {
@@ -39,6 +40,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('region should not append to ebServer and wsServer if provided falsy', () => {
@@ -51,6 +53,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('edge should append to ebServer and wsServer', () => {
@@ -62,6 +65,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('edge should not append to ebServer and wsServer if provided falsy', () => {
@@ -74,6 +78,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('region and edge should append to ebServer and wsServer', () => {
@@ -86,6 +91,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.stage-us1.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.stage-us1.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.stage-us1.twilio.com/graphql-subscriptions');
     });
 
     it('region and edge should not append to ebServer and wsServer if provided falsy', () => {
@@ -100,6 +106,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('region should not append to ebServer and wsServer if provided as "us1"', () => {
@@ -111,6 +118,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('ebServer and wsServer values should be used if provided', () => {
@@ -123,6 +131,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.dev-us1.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.twilio.com/graphql-subscriptions');
     });
 
     it('region and edge should not be used if ebServer and wsServer values are provided', () => {
@@ -137,6 +146,7 @@ describe('Configuration', () => {
 
       assert.equal(config.EB_SERVER, 'https://event-bridge.dev-us1.twilio.com/v1/wschannels');
       assert.equal(config.WS_SERVER, 'wss://event-bridge.dev-us1.twilio.com/v1/wschannels');
+      assert.equal(config.GQL_WS_SERVER, 'wss://event-bridge.stage-us1.twilio.com/graphql-subscriptions');
     });
   });
 

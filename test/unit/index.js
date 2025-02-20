@@ -9,6 +9,7 @@ class WS extends MockWebSocket {
 }
 
 const mockServer = new Server('wss://event-bridge.twilio.com/v1/wschannels'); // eslint-disable-line
+const mockGQLServer = new Server('wss://event-bridge.twilio.com/graphql-subscriptions'); // eslint-disable-line
 global.WebSocket = WS;
 
 require('./spec/Activity');
@@ -23,6 +24,7 @@ require('./spec/Worker');
 require('./spec/WorkerEvents');
 require('./spec/Workspace');
 require('./spec/signaling/EventBridgeSignaling');
+require('./spec/signaling/GraphqlSignaling');
 require('./spec/util/Configuration');
 require('./spec/util/Logger');
 require('./spec/util/Paginator');

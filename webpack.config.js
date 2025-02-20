@@ -27,7 +27,9 @@ const createConfig = libraryTarget => {
                 include: /\.js$/
             })
         ],
-        externals: [nodeExternals()],
+        externals: [nodeExternals({
+            allowlist: 'graphql'
+        })],
         module: {
             rules: [
                 {

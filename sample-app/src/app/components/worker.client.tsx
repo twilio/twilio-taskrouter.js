@@ -86,11 +86,12 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
 
     const worker = new Supervisor(token, {
       region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
-      logLevel: 'info',
+      logLevel: 'debug',
+      // useGraphQL: true, // Use for local development testing
     });
     const workspace = new Workspace(token, {
       region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
-      logLevel: 'info',
+      logLevel: 'debug',
     });
     setWorkSpace(workspace);
 
