@@ -15,6 +15,7 @@ const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 const assert = chai.assert;
+const expect = chai.expect;
 
 describe('Task Transfer to Worker for Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid,
@@ -360,7 +361,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                         try {
                             await aliceReservation.task.transfer(credentials.multiTaskBobSid, { mode: TRANSFER_MODE.cold });
                         } catch (err) {
-                            assert.strictEqual(err.response.status, 400, 'Task transfer failure error code');
+                            expect(err.toString()).contain('status code 400', 'Task transfer failure error code');
                             resolve('Test to fail initiating transfer when transferee is unavailable is finished.');
                         }
                     } catch (err) {
@@ -922,7 +923,7 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
                             }
                         } catch (err) {
                             reject(
-                              `Failed to validate Reservation and Transfer properties sid=${bobReservation.sid}. Error: ${err}`);
+                                `Failed to validate Reservation and Transfer properties sid=${bobReservation.sid}. Error: ${err}`);
                         }
                     });
 

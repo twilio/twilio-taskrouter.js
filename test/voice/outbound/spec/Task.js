@@ -10,6 +10,7 @@ const credentials = require('../../../env');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 const assert = chai.assert;
+const expect = chai.expect;
 
 describe('Outbound Voice Task', () => {
     const aliceToken = getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
@@ -176,7 +177,7 @@ describe('Outbound Voice Task', () => {
                         await aliceReservation.task.hold(credentials.multiTaskBobSid, true);
                         reject('Failed to throw 400 on request to hold worker B');
                     } catch (err) {
-                        assert.strictEqual(err.response.status, 400, 'Task on-hold request failure error code');
+                        expect(err.toString()).contain('status code 400', 'Task on-hold request failure error code');;
                     }
 
                     // Worker B tries to put worker A on hold
@@ -184,7 +185,7 @@ describe('Outbound Voice Task', () => {
                         await bobReservation.task.hold(credentials.multiTaskAliceSid, true);
                         reject('Failed to throw 400 on request to hold worker A');
                     } catch (err) {
-                        assert.strictEqual(err.response.status, 400, 'Task on-hold request failure error code');
+                        expect(err.toString()).contain('status code 400', 'Task on-hold request failure error code');
                     }
                     resolve('Outbound test fail if worker A put worker B (and vice versa) on hold if they are not in same conference');
                 } catch (err) {
@@ -219,7 +220,7 @@ describe('Outbound Voice Task', () => {
                             await aliceReservation.task.hold(credentials.multiTaskBobSid, true);
                             reject('Failed to throw 400 on request to hold worker B');
                         } catch (err) {
-                            assert.strictEqual(err.response.status, 400, 'Task on-hold request failure error code');
+                            expect(err.toString()).contain('status code 400', 'Task on-hold request failure error code');
                         }
 
                         // Worker B tries to put worker A on hold
@@ -227,7 +228,7 @@ describe('Outbound Voice Task', () => {
                             await bobReservation.task.hold(credentials.multiTaskAliceSid, true);
                             reject('Failed to throw 400 on request to hold worker A');
                         } catch (err) {
-                            assert.strictEqual(err.response.status, 400, 'Task on-hold request failure error code');
+                            expect(err.toString()).contain('status code 400', 'Task on-hold request failure error code');
                             resolve('Outbound test to fail when worker A puts worker B (and vice-versa) on hold if reservation of worker B is pending');
                         }
                     } catch (err) {
@@ -246,20 +247,20 @@ describe('Outbound Voice Task', () => {
         it('should throw a validation error when using an incorrect workflow sid', () => {
             return new Promise(async(resolve, reject) => {
                 // eslint-disable-next-line
-                const expected = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
-                                 ' WorkflowSid has an invalid format';
+                const expectedDownstreamStatusText = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
+                    ' WorkflowSid has an invalid format';
+                const expectedErrorMessage = `Request failed with status code 400. ${expectedDownstreamStatusText}`
                 try {
 
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
-                                           credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
+                        credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
 
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
-                                           credentials.multiTaskWorkflowSid + 'z', credentials.multiTaskQueueSid);
+                        credentials.multiTaskWorkflowSid + 'z', credentials.multiTaskQueueSid);
                     reject('Invalid WorkflowSid should be rejected');
                 } catch (err) {
-                    assert.strictEqual(err.response.status, 400, 'expecting a bad request');
-                    assert.strictEqual(err.response.statusText, expected,
-                                       'Got a different validation failure than expected');
+                    assert.strictEqual(err.message, expectedErrorMessage,
+                        'Got a different validation failure than expected');
                     resolve('Test for validation error when using an incorrect workflowSid finished');
                 }
             });
@@ -267,17 +268,16 @@ describe('Outbound Voice Task', () => {
 
         it('should throw a validation error when using an incorrect queue sid', () => {
             return new Promise(async(resolve, reject) => {
+                let expectedErrorMessage = 'Request failed with status code 400. HTTP 400 Bad Request';
                 try {
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
-                                           credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid + 'z');
+                        credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid + 'z');
                     reject('Invalid QueueSid should be rejected');
                 } catch (err) {
-                    assert.strictEqual(err.response.status, 400, 'expecting a bad request');
-                    // taskrouter doesn't send a validation message here
+                    assert.strictEqual(err.message, expectedErrorMessage, 'expecting a bad request');
                     resolve('Test for validation error when using an incorrect QueueSid finished');
                 }
             });
         }).timeout(5000);
     });
 });
-
