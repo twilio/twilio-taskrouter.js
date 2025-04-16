@@ -239,7 +239,7 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
 
   return (
     <div className="w-full mt-4">
-      <div className="border bg-gray-50 border-gray-300 block py-4 px-2 rounded-sm">Worker Dashboard</div>
+      <div className="border bg-gray-50 border-gray-300 block py-4 px-2 rounded-xs">Worker Dashboard</div>
 
       <Reservation currentReservations={currentReservations} />
 
@@ -248,27 +248,27 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
           <button
             onClick={handleAccept}
             disabled={!enableAccept}
-            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded disabled:opacity-75 disabled:pointer-events-none font-medium"
+            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded-sm disabled:opacity-75 disabled:pointer-events-none font-medium"
           >
             Accept
           </button>
           <button
             onClick={handleReject}
             disabled={!enableReject}
-            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded disabled:opacity-75 disabled:pointer-events-none font-medium"
+            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded-sm disabled:opacity-75 disabled:pointer-events-none font-medium"
           >
             Reject
           </button>
           <button
             onClick={handleDisconnectWorker}
             disabled={!enableDisconnectWorker}
-            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded disabled:opacity-75 disabled:pointer-events-none font-medium"
+            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded-sm disabled:opacity-75 disabled:pointer-events-none font-medium"
           >
             Disconnect
           </button>
           <button
             onClick={handleFetchWorkers}
-            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded disabled:opacity-75 disabled:pointer-events-none font-medium"
+            className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded-sm disabled:opacity-75 disabled:pointer-events-none font-medium"
           >
             Fetch Workers
           </button>

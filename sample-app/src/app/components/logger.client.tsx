@@ -23,11 +23,11 @@ const Logger = (): React.JSX.Element => {
 
   return (
     <div>
-      <div className="flex border bg-gray-50 border-gray-300 p-2 rounded-sm justify-between items-center">
+      <div className="flex border bg-gray-50 border-gray-300 p-2 rounded-xs justify-between items-center">
         <div>Logs</div>
         <button
           onClick={handleClearLogs}
-          className="bg-white enabled:hover:bg-[#ebf4ff] enable:hover:text-[#030b5d] font-medium text-[#121c2d] py-2 px-4 rounded border-[1px] border-gray-500 enabled:hover:border-[#121c2d]"
+          className="bg-white enabled:hover:bg-[#ebf4ff] enable:hover:text-[#030b5d] font-medium text-[#121c2d] py-2 px-4 rounded-sm border-[1px] border-gray-500 enabled:hover:border-[#121c2d]"
         >
           Clear logs
         </button>

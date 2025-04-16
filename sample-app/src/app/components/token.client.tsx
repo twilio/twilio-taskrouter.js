@@ -210,7 +210,7 @@ export default function Token() {
         </div>
         <div className="flex flex-col items-center justify-around h-full  mr-5">
           <div>
-            <button className="bg-[#0263e0] hover:bg-[#06033a] text-white py-2 px-4 rounded font-medium" type="submit">
+            <button className="bg-[#0263e0] hover:bg-[#06033a] text-white py-2 px-4 rounded-sm font-medium" type="submit">
               Get New Token
             </button>
             {Object.keys(errors).length === 0 && submitting ? (
@@ -220,7 +220,7 @@ export default function Token() {
           <div>
             <button
               onClick={handleClearAllInputs}
-              className="bg-white enabled:hover:bg-[#ebf4ff] enable:hover:text-[#030b5d] font-medium text-[#121c2d] py-2 px-4 rounded border-[1px] border-gray-500 enabled:hover:border-[#121c2d]"
+              className="bg-white enabled:hover:bg-[#ebf4ff] enable:hover:text-[#030b5d] font-medium text-[#121c2d] py-2 px-4 rounded-sm border-[1px] border-gray-500 enabled:hover:border-[#121c2d]"
             >
               Clear all inputs
             </button>
