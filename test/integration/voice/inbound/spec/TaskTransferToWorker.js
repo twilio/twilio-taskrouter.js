@@ -45,6 +45,10 @@ describe('Task Transfer to Worker for Inbound Voice Task', () => {
                 region: buildRegionForEventBridge(credentials.region),
                 edge: credentials.edge
             });
+
+            bob.on('ready', async() => {
+                bob.setAttributes({ 'contact_uri': credentials.supervisorNumber });
+            });
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);
         });
     });

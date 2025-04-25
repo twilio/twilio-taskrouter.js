@@ -51,6 +51,10 @@ describe('Supervisor with Inbound Voice Task', () => {
                 edge: credentials.edge
             });
 
+            supervisor.on('ready', async() => {
+                supervisor.setAttributes({ 'contact_uri': credentials.workerNumber });
+            });
+
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
