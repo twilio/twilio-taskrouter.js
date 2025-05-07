@@ -1,6 +1,6 @@
 'use client';
 
-import { Supervisor, Workspace } from 'twilio-taskrouter';
+import { Supervisor, WorkerInfo, Workspace } from 'twilio-taskrouter';
 import { LogContextType, useLogContext } from '@/lib/log-context';
 import React, { useEffect, useState } from 'react';
 import Logger from './logger.client';
@@ -55,14 +55,14 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
     }
   };
 
-  const handleFetchWorkers = async () => {
+  const handleFetchWorkersInfo = async () => {
     try {
-      const fetchWorkersReq = await workSpace?.fetchWorkers();
-      if (fetchWorkersReq) {
-        const workers = Array.from(fetchWorkersReq.values());
+      const fetchWorkersInfoReq = await workSpace?.fetchWorkersInfo();
+      if (fetchWorkersInfoReq) {
+        const workers = Array.from(fetchWorkersInfoReq.values());
         appendLogs('======================================================');
         appendLogs('Workers fetched');
-        workers.forEach((worker: any) => {
+        workers.forEach((worker: WorkerInfo) => {
           appendLogs('Workers sid: ' + worker.sid);
           appendLogs('Workers friendlyName: ' + worker.friendlyName);
           appendLogs('Workers activity: ' + worker.activityName);
@@ -267,7 +267,7 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
             Disconnect
           </button>
           <button
-            onClick={handleFetchWorkers}
+            onClick={handleFetchWorkersInfo}
             className="bg-[#0263e0] enabled:hover:bg-[#06033a] text-white py-2 px-4 mb-5 rounded-sm disabled:opacity-75 disabled:pointer-events-none font-medium"
           >
             Fetch Workers

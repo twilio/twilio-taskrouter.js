@@ -133,6 +133,9 @@ describe('Workspace', () => {
         });
     });
 
+    /**
+     * Deprecated method - replaced by fetchWorkersInfo
+     */
     describe('#fetchWorkers', () => {
         const requestURL = 'Workspaces/WSxxx/Workers';
 
@@ -251,7 +254,132 @@ describe('Workspace', () => {
                 expect(stub.withArgs(url, API_V1).calledOnce).to.be.true;
             });
         });
+    });
 
+    describe('#fetchWorkersInfo', () => {
+        const requestURL = 'Workspaces/WSxxx/Workers';
+
+        let sandbox;
+        beforeEach(() => {
+            sandbox = sinon.sandbox.create();
+        });
+
+        afterEach(() => sandbox.restore());
+
+        it('should fetch workers info', () => {
+            const workspace = new Workspace(adminToken);
+            const requestParams = { PageSize: 1000 };
+            const stub = sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1, requestParams).returns(Promise.resolve(workerList));
+
+            return workspace.fetchWorkersInfo().then(workers => {
+                expect(stub.withArgs(requestURL, API_V1, requestParams).calledOnce).to.be.true;
+                expect(workers.size).to.equal(workerList.contents.length);
+                for (const worker of workers.values()) {
+                    expect(worker).to.be.instanceOf(WorkerContainer);
+                }
+            });
+        });
+
+        it('should fetch workers info with args', () => {
+            const workspace = new Workspace(adminToken);
+            const requestParams = { 'PageSize': 1000, 'FriendlyName': 'test', 'ActivitySid': 'WAxxx', 'ActivityName': 'Idle', 'Ordering': 'DateUpdated:asc', 'TargetWorkersExpression': 'name IN [\'Alice\']' };
+            const stub = sandbox.stub(Request.prototype, 'get').withArgs(requestURL, API_V1, requestParams).returns(Promise.resolve(workerList));
+
+            return workspace.fetchWorkersInfo(requestParams).then(workers => {
+                expect(workers.size).to.equal(workerList.contents.length);
+                expect(stub.withArgs(requestURL, API_V1, requestParams).calledOnce).to.be.true;
+                for (const worker of workers.values()) {
+                    expect(worker).to.be.instanceOf(WorkerContainer);
+                }
+            });
+        });
+
+        it('should paginate for the next page if needed', () => {
+            const requestParamsPage0 = { 'PageSize': 1, 'FriendlyName': 'test' };
+            const requestParamsPage1 = { 'PageSize': 1, 'AfterSid': 'WKxx1', 'FriendlyName': 'test' };
+
+            const stub = sandbox.stub(Request.prototype, 'get');
+            stub.withArgs(requestURL, API_V1, requestParamsPage0).returns(Promise.resolve(workerListPage0));
+            stub.withArgs(requestURL, API_V1, requestParamsPage1).returns(Promise.resolve(workerListPage1));
+            const workspace = new Workspace(adminToken, { pageSize: 1 });
+
+            return workspace.fetchWorkersInfo(requestParamsPage0).then((workers) => {
+                expect(workers.size).to.equal(workerListPage0.total);
+                expect(stub.withArgs(requestURL, API_V1, requestParamsPage0).calledOnce).to.be.true;
+                expect(stub.withArgs(requestURL, API_V1, requestParamsPage1).calledOnce).to.be.true;
+            });
+        });
+
+        it('should paginate with ordering parameter', () => {
+            const requestParamsPage0 = { 'PageSize': 1, 'FriendlyName': 'test', 'Ordering': 'DateUpdated:asc' };
+            const requestParamsPage1 = { 'PageSize': 1, 'NextToken': 'WKxx1/2022-08-09T19:09:10.763Z', 'FriendlyName': 'test', 'Ordering': 'DateUpdated:asc' };
+
+            const stub = sandbox.stub(Request.prototype, 'get');
+            stub.withArgs(requestURL, API_V1, requestParamsPage0).returns(Promise.resolve(workerListPage0));
+            stub.withArgs(requestURL, API_V1, requestParamsPage1).returns(Promise.resolve(workerListPage1));
+            const workspace = new Workspace(adminToken, { pageSize: 1 });
+
+            return workspace.fetchWorkersInfo(requestParamsPage0).then((workers) => {
+                expect(workers.size).to.equal(workerListPage0.total);
+                expect(stub.withArgs(requestURL, API_V1, requestParamsPage0).calledOnce).to.be.true;
+                expect(stub.withArgs(requestURL, API_V1, requestParamsPage1).calledOnce).to.be.true;
+            });
+        });
+
+        it('should fetch max workers', async() => {
+            const requestParamsPage0 = { 'PageSize': 1 };
+            const requestParamsPage1 = { 'PageSize': 1, 'AfterSid': 'WKxx1' };
+
+            const stub = sandbox.stub(Request.prototype, 'get');
+            stub.withArgs(requestURL, API_V1, requestParamsPage0).returns(Promise.resolve(workerListPage0));
+            stub.withArgs(requestURL, API_V1, requestParamsPage1).returns(Promise.resolve(workerListPage1));
+            const workspace = new Workspace(adminToken, { pageSize: 1 });
+            const maxWorkers = 1;
+
+            const partOfWorkers = await workspace.fetchWorkersInfo({ MaxWorkers: maxWorkers });
+
+            expect(stub.withArgs(requestURL, API_V1, requestParamsPage0).calledOnce).to.be.true;
+            expect(stub.withArgs(requestURL, API_V1, requestParamsPage1).calledOnce).to.be.false;
+
+            const allWorkers = await workspace.fetchWorkersInfo();
+
+            expect(partOfWorkers.size).to.equal(maxWorkers);
+            expect(partOfWorkers.size).to.be.lessThan(allWorkers.size);
+        });
+
+        it('should fetch max workers and split the page if needed', async() => {
+            const requestParamsPage0 = { 'PageSize': 2 };
+            const requestParamsPage1 = { 'PageSize': 2, 'AfterSid': 'Wkxx2' };
+
+            const stub = sandbox.stub(Request.prototype, 'get');
+            stub.withArgs(requestURL, API_V1, requestParamsPage0).returns(Promise.resolve(workerList2Page0));
+            stub.withArgs(requestURL, API_V1, requestParamsPage1).returns(Promise.resolve(workerList2Page1));
+            const workspace = new Workspace(adminToken, { pageSize: 2 });
+            const maxWorkers = 1;
+
+            const partOfWorkers = await workspace.fetchWorkersInfo({ MaxWorkers: maxWorkers });
+
+            expect(stub.withArgs(requestURL, API_V1, requestParamsPage0).calledOnce).to.be.true;
+            expect(stub.withArgs(requestURL, API_V1, requestParamsPage1).calledOnce).to.be.false;
+
+            const allWorkers = await workspace.fetchWorkersInfo();
+
+            expect(partOfWorkers.size).to.equal(maxWorkers);
+            expect(partOfWorkers.size).to.be.lessThan(allWorkers.size);
+        });
+
+        it('should fetch worker with sid', () => {
+            const workspace = new Workspace(adminToken);
+            const workerInstance = workerList.contents[0];
+            const url = path.join(requestURL, workerInstance.sid);
+            const stub = sandbox.stub(Request.prototype, 'get').withArgs(url, API_V1).returns(Promise.resolve(workerInstance));
+
+            return workspace.fetchWorkerInfo(workerInstance.sid).then(queue => {
+                expect(queue.sid).to.equal(workerInstance.sid);
+                expect(queue).to.be.instanceOf(WorkerContainer);
+                expect(stub.withArgs(url, API_V1).calledOnce).to.be.true;
+            });
+        });
     });
 
     describe('#fetchTasks', () => {

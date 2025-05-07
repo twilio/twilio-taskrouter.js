@@ -2,6 +2,26 @@ import { EventEmitter } from 'events';
 import TypedEmitter from 'typed-emitter';
 
 export as namespace TaskRouter;
+
+type WorkerInfo = {
+    accountSid: string;
+    activityName: string;
+    activitySid: string;
+    attributes: Record<string, any>;
+    available: boolean;
+    dateCreated: Date | null;
+    dateStatusChanged: Date | null;
+    dateUpdated: Date;
+    name: string;
+    sid: string;
+    workspaceSid: string;
+    version: string;
+    workerSid: string;
+    workerActivitySid: string;
+    dateActivityChanged: Date | null;
+    friendlyName: string;
+}
+
 export class Worker extends (EventEmitter as new () => TypedEmitter<WorkerEvents>) {
     constructor(token: string, options?: WorkerOptions);
 
@@ -202,13 +222,19 @@ type FetchWorkersParams = {
     MaxWorkers?: number;
 };
 
+type FetchWorkersInfoParams = FetchWorkersParams;
+
 export class Workspace {
     constructor(jwt: string, options?: Object, workspaceSid?: string);
     readonly workspaceSid: string;
 
     updateToken(newToken: string): void;
+    /** @deprecated use fetchWorkerInfo */
     fetchWorker(workerSid: string): Promise<Worker>;
+    /** @deprecated use fetchWorkersInfo */
     fetchWorkers(params?: FetchWorkersParams): Promise<Map<string, Worker>>;
+    fetchWorkerInfo(workerSid: string): Promise<WorkerInfo>;
+    fetchWorkersInfo(params?: FetchWorkersInfoParams): Promise<Map<string, WorkerInfo>>;
     fetchTaskQueue(queueSid: string): Promise<TaskQueue>;
     fetchTaskQueues(params?: FetchTaskQueuesParams): Promise<Map<string, TaskQueue>>;
     fetchTask(taskSid: string): Promise<Task>;

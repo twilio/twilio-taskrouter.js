@@ -9,6 +9,7 @@ const fs = require('fs');
 const docs = process.argv[2];
 
 const publicClasses = [
+  'lib/types.jsdoc.js',
   'lib/Activity.js',
   'lib/Channel.js',
   'lib/core/transfer/OutgoingTransfer.js',
