@@ -1,3 +1,13 @@
+2.0.13
+==========
+New Features
+----------
+- Introduced `fetchWorkerInfo` and `fetchWorkersInfo` methods in `Workspace` for retrieving worker information in a more structured format
+
+Deprecations
+----------
+- Deprecated `fetchWorker` and `fetchWorkers` in `Workspace`. <b>Please migrate to `fetchWorkerInfo` and `fetchWorkersInfo`.§</b>
+
 2.0.12
 ==========
 New Features
