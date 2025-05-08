@@ -32,7 +32,7 @@ jobs:
           git add -f dist
           git commit -m "${{ github.event.inputs.releaseVersion }}"
           git tag ${{ github.event.inputs.releaseVersion }}
-          git push origin HEAD:release-14 --tags        
+          git push origin release-14 --tags        
           git checkout -B gh-pages
           find . -mindepth 1 -maxdepth 1 \( -name .gitignore -o -name node_modules -o -name dist -o -name .git \) -prune -o -exec rm -rf {} +
           mv dist/docs/* .
@@ -58,7 +58,7 @@ jobs:
         run: |
           git config user.name flexrouting+ci
           git config user.email flexrouting+ci@twilio.com
-          git pull origin HEAD:release-14          
+          git pull origin release-14          
           yarn version --new-version "${{ github.event.inputs.developmentVersion }}" --no-git-tag-version
           git pull origin HEAD:release-14
           git add .
