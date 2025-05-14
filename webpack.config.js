@@ -27,16 +27,19 @@ const createConfig = libraryTarget => {
                 include: /\.js$/
             })
         ],
-        externals: [nodeExternals({
-            allowlist: 'graphql'
-        })],
+        externals: [nodeExternals()],
         module: {
             rules: [
                 {
                     test: /\.(js)$/,
                     loader: 'babel-loader',
                     exclude: /node_modules/,
-
+                },
+                {
+                    test: /\.mjs$/i,
+                    resolve: {
+                        fullySpecified: false
+                    },
                 }
             ]
         },
