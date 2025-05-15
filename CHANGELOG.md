@@ -1,3 +1,17 @@
+2.1.0
+==========
+New Features
+----------
+- Introduced `fetchWorkerInfo` and `fetchWorkersInfo` methods in `Workspace` for retrieving worker information in a more structured format
+
+Deprecations
+----------
+- Deprecated `fetchWorker` and `fetchWorkers` in `Workspace`. <b>Please migrate to `fetchWorkerInfo` and `fetchWorkersInfo`.</b>
+
+Bug fixes
+----------
+- Fixed a bug with some node dependencies. `graphql` is now marked as `peerDependencies`.
+
 2.0.13
 ==========
 New Features
@@ -54,7 +68,7 @@ New Features
 
 Bug fixes
 ----------
-- Added `setWorkerAttributes` and `setWorkerActivity` fields to Supervisor type declaration 
+- Added `setWorkerAttributes` and `setWorkerActivity` fields to Supervisor type declaration
 
 2.0.7
 ==========
