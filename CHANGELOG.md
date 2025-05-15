@@ -1,3 +1,9 @@
+2.0.15
+==========
+Bug fixes
+----------
+- Fixed a bug with some node dependencies. `graphql` is now marked as `peerDependencies`.
+
 2.0.13
 ==========
 New Features
@@ -54,7 +60,7 @@ New Features
 
 Bug fixes
 ----------
-- Added `setWorkerAttributes` and `setWorkerActivity` fields to Supervisor type declaration 
+- Added `setWorkerAttributes` and `setWorkerActivity` fields to Supervisor type declaration
 
 2.0.7
 ==========
