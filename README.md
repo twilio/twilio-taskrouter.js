@@ -135,7 +135,7 @@ make lint
 
 ## Test with Sample App
 
-- See [README.md](sample-app/README.md)
+- See the [sample-app README on GitHub](https://github.com/twilio/twilio-taskrouter.js/blob/main/sample-app/README.md)
 
 ## Contributing
 
