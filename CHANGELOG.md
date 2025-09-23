@@ -1,3 +1,9 @@
+2.1.1
+==========
+Bug fixes
+----------
+- Fixed a bug where a `process is not defined` error gets thrown to the console when consuming the library inside a VanillaJS application.
+
 2.1.0
 ==========
 New Features
