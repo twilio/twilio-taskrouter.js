@@ -1,0 +1,34 @@
+{
+  "name": "task-router-sample-nextjs-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier 'src/**/*.tsx|src/**/*.ts' --write"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.4",
+    "@types/node": "^18.17.8",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "eslint": "^9.25.1",
+    "eslint-config-next": "^15.3.1",
+    "next": "^14.2.25",
+    "postcss": "^8.5.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "server-only": "^0.0.1",
+    "tailwindcss": "^4.1.4",
+    "twilio": "^5.5.2",
+    "twilio-taskrouter": "file:../",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "eslint-config-twilio-react": "^2.0.0",
+    "eslint-config-twilio-ts": "^2.0.0",
+    "prettier": "^3.0.2"
+  }
+}
