@@ -247,9 +247,10 @@ describe('Outbound Voice Task', () => {
         it('should throw a validation error when using an incorrect workflow sid', () => {
             return new Promise(async(resolve, reject) => {
                 // eslint-disable-next-line
-                const expectedDownstreamStatusText = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
-                    ' WorkflowSid has an invalid format';
-                const expectedErrorMessage = `Request failed with status code 400. ${expectedDownstreamStatusText}`
+                const expected = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
+                                 ` WorkflowSid as RoutingTarget has an invalid format. WorkspaceSid: ${credentials.multiTaskWorkspaceSid},` +
+                                 ` AccountSid: ${credentials.accountSid}`;
+                const expectedErrorMessage = `Request failed with status code 400. ${expected}`
                 try {
 
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,

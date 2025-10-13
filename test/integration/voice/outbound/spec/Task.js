@@ -252,7 +252,8 @@ describe('Outbound Voice Task', () => {
             return new Promise(async(resolve, reject) => {
                 // eslint-disable-next-line
                 const expected = `Value \'${credentials.multiTaskWorkflowSid}z\' provided for` +
-                                 ' WorkflowSid has an invalid format';
+                                 ` WorkflowSid as RoutingTarget has an invalid format. WorkspaceSid: ${credentials.multiTaskWorkspaceSid},` +
+                                 ` AccountSid: ${credentials.accountSid}`;
                 try {
 
                     await alice.createTask(credentials.customerNumber, credentials.flexCCNumber,
