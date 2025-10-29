@@ -20,6 +20,8 @@ SIGNING_KEY_SID=$SIGNING_KEY_SID
 SIGNING_KEY_SECRET=$SIGNING_KEY_SECRET
 
 DD_API_KEY=$DD_API_KEY
+DD_REPORT_ENABLED=$DD_REPORT_ENABLED
+
 ENV="STAGE"
 WORKSPACE_FRIENDLY_NAME="js-sdk e2e tester - Multi Tasking"
 EOT
@@ -35,7 +37,12 @@ fi
 if [[ $EXIT_CODE -ne 0 ]]; then
   echo "Test setup failed"
   # will post failed job even if no report was generated
-  sh test/integration_test_setup/PublishIntegrationTestResultsDatadog.sh
+  if [[ $DD_REPORT_ENABLED == true ]]; then
+    echo "Sending test setup failure report to Datadog"
+    sh test/integration_test_setup/PublishIntegrationTestResultsDatadog.sh
+  else
+    echo "Skipping Datadog reporting (DD_REPORT_ENABLED=$DD_REPORT_ENABLED)"
+  fi
   exit 1
 fi
 
@@ -81,8 +88,13 @@ do
 done
 
 if [[ $RUN_COUNT -eq $RETRIES_COUNT ]] || [[ -z $EXIT_CODE ]] || [[ $EXIT_CODE -eq 0 ]]; then
-  # send test results to Datadog.
-  sh test/integration_test_setup/PublishIntegrationTestResultsDatadog.sh
+  # send test results to Datadog only if enabled
+  if [[ $DD_REPORT_ENABLED == true ]]; then
+    echo "Sending test results to Datadog"
+    sh test/integration_test_setup/PublishIntegrationTestResultsDatadog.sh
+  else
+    echo "Skipping Datadog reporting (DD_REPORT_ENABLED=$DD_REPORT_ENABLED)"
+  fi
 fi
 
 # If tests failed after all retries, fail the job
