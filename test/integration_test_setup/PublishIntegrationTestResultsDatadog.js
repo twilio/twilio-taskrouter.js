@@ -207,6 +207,8 @@ const sendMetrics = async() => {
         metrics = generateEmptyMetrics();
     }
 
+    console.log('Metrics read: ', metrics)
+
     const result = await fetch(`https://api.datadoghq.com/api/v1/series?${new URLSearchParams({
         // eslint-disable-next-line camelcase
         api_key: config.DD_API_KEY
