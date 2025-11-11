@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-
 TEST_FILE="test.json"
 
 echo "Running integration tests with OTK..."
@@ -24,7 +23,8 @@ DD_REPORT_ENABLED=$DD_REPORT_ENABLED
 JOB_NAME=$JOB_NAME
 
 ENV="STAGE"
-WORKSPACE_FRIENDLY_NAME="js-sdk e2e tester - Multi Tasking"
+WORKSPACE_FRIENDLY_NAME=$WORKSPACE_FRIENDLY_NAME
+RUN_SIX_SIGMA_SUITE=$RUN_SIX_SIGMA_SUITE
 EOT
 
 # Used by Datadog reporter script to determine test duration
