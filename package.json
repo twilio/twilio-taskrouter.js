@@ -31,7 +31,7 @@
     "test:unit": "mocha --full-trace --check-leaks --require @babel/register ./test/unit/index.js --exit",
     "test:integration": "mocha --full-trace --check-leaks --require @babel/register -r ./test/mocha/no-unicode-reporter.js -r ./test/mocha/fetch.js ./test/integration/index.js --reporter mocha-multi-reporters --reporter-options configFile=reporters-config.json --timeout 40000 --exit",
     "test:integration-six-sigma": "mocha --full-trace --check-leaks --require @babel/register -r ./test/mocha/no-unicode-reporter.js -r ./test/mocha/fetch.js ./test/integration/index.js --reporter mocha-multi-reporters --reporter-options configFile=reporters-config.json --timeout 40000 --exit -g '@SixSigma'",
-    "test:integration:tr:voice": "mocha --full-trace --check-leaks --require @babel/register ./test/integration/voice/index.js --timeout 40000 --exit",
+    "test:integration:tr:voice": "mocha --full-trace --check-leaks --require @babel/register ./test/integration/voice/index.js --reporter mocha-multi-reporters --reporter-options configFile=reporters-config.json --timeout 40000 --exit",
     "test:integration:voice": "mocha --full-trace --check-leaks --require @babel/register ./test/voice/index.js --timeout 40000 --exit",
     "test:integration:media": "mocha --full-trace --check-leaks --require @babel/register ./test/media/index.js --timeout 40000 --exit",
     "test": "yarn test:unit && yarn test:integration",
