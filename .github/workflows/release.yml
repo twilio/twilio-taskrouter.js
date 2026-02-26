@@ -59,7 +59,15 @@ jobs:
         run: npm install -g npm@latest # Required by Trusted publishing (https://docs.npmjs.com/trusted-publishers)
 
       - name: Publish to NPM
-        run: npm publish
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-rc* ]]; then
+            npm publish --tag alpha
+          elif [[ "$VERSION" == *-* ]]; then
+            npm publish --tag canary
+          else
+            npm publish
+          fi
 
   development:
     runs-on: ubuntu-latest
