@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8
         with:
-          node-version: 12.x
+          node-version: 20
           registry-url: "https://registry.npmjs.org"
       - name: Bump to release version
         run: |
@@ -54,12 +54,6 @@ jobs:
         with:
           ref: main
 
-      # Required by Trusted publishing (https://docs.npmjs.com/trusted-publishers)
-      - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-
       # Ensure npm 11.5.1 or later is installed
       - name: Update npm
         run: npm install -g npm@latest # Required by Trusted publishing (https://docs.npmjs.com/trusted-publishers)
@@ -74,7 +68,7 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8
         with:
-          node-version: 12.x
+          node-version: 20
       - name: Bump version
         id: bump_version
         env:
