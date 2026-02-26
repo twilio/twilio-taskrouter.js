@@ -1,8 +1,0 @@
-node_modules
-dist
-coverage
-.idea
-.github
-.DS_Store
-.vscode
-.npmrc
