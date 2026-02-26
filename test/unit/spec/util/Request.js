@@ -24,15 +24,22 @@ describe('Request', () => {
   });
 
   const setUpSuccessfulResponse = (stub) => {
-    const mockResponse = {
-      data: {
-        payload: 'someData'
-      }
-    };
-    stub.resolves(Promise.resolve(mockResponse));
+    const mockResponse = new Response(JSON.stringify({ payload: 'someData' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    stub.resolves(mockResponse);
   };
 
-  const setUpErrorResponse = (stub, error) => {
+  const setUpErrorResponse = (stub, status, data) => {
+    const mockResponse = new Response(JSON.stringify(data), {
+      status,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    stub.resolves(mockResponse);
+  };
+
+  const setUpNetworkError = (stub, error) => {
     stub.rejects(error);
   };
 
@@ -51,22 +58,18 @@ describe('Request', () => {
 
     beforeEach(() => {
       request = new Request(config);
-
-      // set up the stub to check the headers and also mock the response, instead of using axios
-      stub = sandbox.stub(request._postClient, 'post');
-
-      // build the expected request body
+      stub = sandbox.stub(global, 'fetch');
       requestBody = request.buildRequest('POST', requestURL, requestParams);
     });
 
     it('adds default headers', () => {
       setUpSuccessfulResponse(stub);
       return request.post(requestURL, requestParams, API_V1).then(() => {
-        sinon.assert.calledWith(stub, config.EB_SERVER, requestBody, {
-          headers: {
-            apiVersion: API_V1
-          }
-        });
+        sinon.assert.calledOnce(stub);
+        const [url, options] = stub.firstCall.args;
+        url.should.equal(config.EB_SERVER);
+        options.body.should.equal(requestBody);
+        options.headers.apiVersion.should.equal(API_V1);
       });
     });
 
@@ -76,23 +79,18 @@ describe('Request', () => {
       });
 
       const requestWithVersionCheck = new Request(configWithVersionCheck);
-
-      // set up the stub to check the headers and also mock the response, instead of using axios
-      stub = sandbox.stub(requestWithVersionCheck._postClient, 'post');
-
-      // build the expected request body
       const requestWithVersionCheckBody = requestWithVersionCheck.buildRequest('POST', requestURL, requestParams);
 
       setUpSuccessfulResponse(stub);
       const version = '1';
 
       return requestWithVersionCheck.post(requestURL, requestParams, API_V1, version).then(() => {
-        sinon.assert.calledWith(stub, config.EB_SERVER, requestWithVersionCheckBody, {
-          headers: {
-            'If-Match': version,
-            'apiVersion': API_V1
-          }
-        });
+        sinon.assert.calledOnce(stub);
+        const [url, options] = stub.firstCall.args;
+        url.should.equal(config.EB_SERVER);
+        options.body.should.equal(requestWithVersionCheckBody);
+        options.headers['If-Match'].should.equal(version);
+        options.headers.apiVersion.should.equal(API_V1);
       });
     });
 
@@ -101,24 +99,15 @@ describe('Request', () => {
       const version = '1';
 
       return request.post(requestURL, requestParams, API_V1, version).then(() => {
-        sinon.assert.calledWith(stub, config.EB_SERVER, requestBody, {
-          headers: {
-            'apiVersion': API_V1
-          }
-        });
+        sinon.assert.calledOnce(stub);
+        const [, options] = stub.firstCall.args;
+        (options.headers['If-Match'] === undefined).should.be.true;
+        options.headers.apiVersion.should.equal(API_V1);
       });
     });
 
     it('should throw request invalid error', async() => {
-      const error = new Error();
-      error.response = {
-        status: 400,
-        data: {
-          message: 'Invalid request'
-        },
-      };
-
-      setUpErrorResponse(stub, error);
+      setUpErrorResponse(stub, 400, { message: 'Invalid request' });
       const version = '1';
 
       try {
@@ -130,16 +119,7 @@ describe('Request', () => {
     });
 
     it('should throw server error', async() => {
-      const error = new Error();
-      error.response = {
-        status: 500,
-        data:
-          {
-            message: 'Unexpected server error'
-          }
-      };
-
-      setUpErrorResponse(stub, error);
+      setUpErrorResponse(stub, 500, { message: 'Unexpected server error' });
       const version = '1';
 
       try {
@@ -150,25 +130,36 @@ describe('Request', () => {
       }
     });
 
-    it('should throw network error', async() => {
-      const error = new Error('Timeout');
-      error.request = true;
-
-      setUpErrorResponse(stub, error);
+    it('should throw network error for TypeError', async() => {
+      const error = new TypeError('fetch failed');
+      setUpNetworkError(stub, error);
       const version = '1';
 
       try {
         await request.post(requestURL, requestParams, API_V1, version);
         throw new Error('Expected an error to be thrown');
       } catch (thrownError) {
-        thrownError.message.should.equal('Network error has occurred. Timeout');
+        thrownError.message.should.equal('Network error has occurred. fetch failed');
+      }
+    });
+
+    it('should throw timeout error for AbortError', async() => {
+      const error = new DOMException('The operation was aborted', 'AbortError');
+      setUpNetworkError(stub, error);
+      const version = '1';
+
+      try {
+        await request.post(requestURL, requestParams, API_V1, version);
+        throw new Error('Expected an error to be thrown');
+      } catch (thrownError) {
+        thrownError.name.should.equal('REQUEST_TIMEOUT_ERROR');
+        thrownError.message.should.equal('Request timed out. The operation was aborted');
       }
     });
 
     it('should throw unknown error', async() => {
       const error = new Error('Something unexpected happened!');
-
-      setUpErrorResponse(stub, error);
+      setUpNetworkError(stub, error);
       const version = '1';
 
       try {
@@ -201,22 +192,18 @@ describe('Request', () => {
 
     beforeEach(() => {
       request = new Request(config);
-
-      // set up the stub to check the headers and also mock the response, instead of using axios
-      stub = sandbox.stub(request._postClient, 'post');
-
-      // build the expected request body
+      stub = sandbox.stub(global, 'fetch');
       requestBody = request.buildRequest('GET', requestURL, requestParams);
     });
 
     it('add default headers', () => {
       setUpSuccessfulResponse(stub);
       return request.get(requestURL, API_V1, requestParams).then(() => {
-        sinon.assert.calledWith(stub, config.EB_SERVER, requestBody, {
-          headers: {
-            apiVersion: API_V1
-          }
-        });
+        sinon.assert.calledOnce(stub);
+        const [url, options] = stub.firstCall.args;
+        url.should.equal(config.EB_SERVER);
+        options.body.should.equal(requestBody);
+        options.headers.apiVersion.should.equal(API_V1);
       });
     });
 
@@ -224,29 +211,19 @@ describe('Request', () => {
       setUpSuccessfulResponse(stub);
       requestBody = request.buildRequest('GET', requestURL, {});
       return request.get(requestURL, API_V1).then(() => {
-        sinon.assert.calledWith(stub, config.EB_SERVER, requestBody, {
-          headers: {
-            apiVersion: API_V1
-          }
-        });
+        sinon.assert.calledOnce(stub);
+        const [url, options] = stub.firstCall.args;
+        url.should.equal(config.EB_SERVER);
+        options.body.should.equal(requestBody);
+        options.headers.apiVersion.should.equal(API_V1);
       });
     });
 
     it('should throw request invalid error', async() => {
-      const error = new Error();
-      error.response = {
-        status: 400,
-        data:
-          {
-            message: 'Invalid request'
-          }
-      };
-
-      setUpErrorResponse(stub, error);
-      const version = '1';
+      setUpErrorResponse(stub, 400, { message: 'Invalid request' });
 
       try {
-        await request.post(requestURL, requestParams, API_V1, version);
+        await request.get(requestURL, API_V1, requestParams);
         throw new Error('Expected an error to be thrown');
       } catch (thrownError) {
         thrownError.message.should.equal('Request failed with status code 400. Invalid request');
@@ -254,49 +231,47 @@ describe('Request', () => {
     });
 
     it('should throw server error', async() => {
-      const error = new Error();
-      error.response = {
-        status: 500,
-        data:
-          {
-            message: 'Unexpected server error'
-          }
-      };
-
-      setUpErrorResponse(stub, error);
-      const version = '1';
+      setUpErrorResponse(stub, 500, { message: 'Unexpected server error' });
 
       try {
-        await request.post(requestURL, requestParams, API_V1, version);
+        await request.get(requestURL, API_V1, requestParams);
         throw new Error('Expected an error to be thrown');
       } catch (thrownError) {
         thrownError.message.should.equal('Server responded with status code 500. Unexpected server error');
       }
     });
 
-    it('should throw network error', async() => {
-      const error = new Error('Timeout');
-      error.request = true;
-
-      setUpErrorResponse(stub, error);
-      const version = '1';
+    it('should throw network error for TypeError', async() => {
+      const error = new TypeError('fetch failed');
+      setUpNetworkError(stub, error);
 
       try {
-        await request.post(requestURL, requestParams, API_V1, version);
+        await request.get(requestURL, API_V1, requestParams);
         throw new Error('Expected an error to be thrown');
       } catch (thrownError) {
-        thrownError.message.should.equal('Network error has occurred. Timeout');
+        thrownError.message.should.equal('Network error has occurred. fetch failed');
+      }
+    });
+
+    it('should throw timeout error for AbortError', async() => {
+      const error = new DOMException('The operation was aborted', 'AbortError');
+      setUpNetworkError(stub, error);
+
+      try {
+        await request.get(requestURL, API_V1, requestParams);
+        throw new Error('Expected an error to be thrown');
+      } catch (thrownError) {
+        thrownError.name.should.equal('REQUEST_TIMEOUT_ERROR');
+        thrownError.message.should.equal('Request timed out. The operation was aborted');
       }
     });
 
     it('should throw unknown error', async() => {
       const error = new Error('Something unexpected happened!');
-
-      setUpErrorResponse(stub, error);
-      const version = '1';
+      setUpNetworkError(stub, error);
 
       try {
-        await request.post(requestURL, requestParams, API_V1, version);
+        await request.get(requestURL, API_V1, requestParams);
         throw new Error('Expected an error to be thrown');
       } catch (thrownError) {
         thrownError.message.should.equal('Error: Something unexpected happened!');
@@ -319,4 +294,3 @@ describe('Request', () => {
     });
   });
 });
-
