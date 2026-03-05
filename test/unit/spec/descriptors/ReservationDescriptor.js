@@ -1,5 +1,5 @@
-import cloneDeep from 'lodash/cloneDeep';
-import unset from 'lodash/unset';
+import { cloneDeep } from 'es-toolkit';
+
 import { assert } from 'chai';
 import ReservationDescriptor from '../../../../lib/descriptors/ReservationDescriptor';
 import TaskDescriptor from '../../../../lib/descriptors/TaskDescriptor';
@@ -89,7 +89,7 @@ describe('ReservationDescriptor', () => {
 
         it('should throw an error if the task property is malformed or missing a required property', () => {
             const badReservationInstance = cloneDeep(instance);
-            unset(badReservationInstance, 'task.workflow_sid');
+            delete badReservationInstance.task.workflow_sid;
             (() => {
                 new ReservationDescriptor(badReservationInstance, worker);
             }).should.throw(/<Descriptor>descriptor does not contain all properties of a Task./);

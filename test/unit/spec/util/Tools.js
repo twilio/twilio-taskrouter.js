@@ -1,5 +1,5 @@
 const tools = require('../../../../lib/util/Tools');
-import isString from 'lodash/isString';
+import isString from '../../../../lib/util/isString';
 import chai from 'chai';
 const expect = chai.expect;
 

@@ -58,10 +58,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.28.6",
+    "es-toolkit": "^1.32.0",
     "events": "3.3.0",
     "graphql-ws": "^6.0.0",
     "jwt-decode": "^3.1.2",
-    "lodash": "^4.17.21",
     "loglevel": "^1.4.1",
     "path-browserify": "^1.0.1",
     "typed-emitter": "^2.1.0",

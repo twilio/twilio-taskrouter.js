@@ -1,4 +1,4 @@
-import isObject from 'lodash/isObject';
+import isObject from '../../lib/util/isObject';
 import { assert } from 'chai';
 import { pauseTestExecution } from '../voice/VoiceBase';
 import AssertionUtils from './AssertionUtils';

@@ -2676,6 +2676,11 @@ es-module-lexer@^1.2.1:
   resolved "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-1.2.1.tgz"
   integrity sha512-9978wrXM50Y4rTMmW5kXIC09ZdXQZqkE4mxhwkd8VbzsGkXGPgV4zWuqQJgCEzYngdo2dYDa0l8xhX4fkSwJSg==
 
+es-toolkit@^1.32.0:
+  version "1.44.0"
+  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.44.0.tgz#b363b436b6115c3cc9cc21954c1e08ecdaa51c8c"
+  integrity sha512-6penXeZalaV88MM3cGkFZZfOoLGWshWWfdy0tWw/RlVVyhvMaWSBTOvXNeiW3e5FwdS5ePW0LGEu17zT139ktg==
+
 es6-error@^4.0.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/es6-error/-/es6-error-4.1.1.tgz"
@@ -4911,7 +4916,7 @@ parse5@^7.0.0:
 
 path-browserify@^1.0.1:
   version "1.0.1"
-  resolved "https://registry.npmjs.org/path-browserify/-/path-browserify-1.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/path-browserify/-/path-browserify-1.0.1.tgz#d98454a9c3753d5790860f16f68867b9e46be1fd"
   integrity sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==
 
 path-exists@^3.0.0:

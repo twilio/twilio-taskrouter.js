@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import isObject from 'lodash/isObject';
+import isObject from '../../lib/util/isObject';
 import { pauseTestExecution } from '../voice/VoiceBase';
 const STATUS_CHECK_DELAY = 2000;
 import AssertionUtils from './AssertionUtils';

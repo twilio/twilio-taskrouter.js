@@ -67,7 +67,7 @@ const createConfig = libraryTarget => {
                 tls: 'empty',
                 process: false,
                 path: require.resolve('path-browserify'),
-                https: require.resolve('./utils/https-browserify'),
+                https: false,
                 http: false,
                 url: false,
             },
