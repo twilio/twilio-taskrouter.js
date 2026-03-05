@@ -940,9 +940,9 @@ braces@^3.0.3:
   dependencies:
     fill-range "^7.1.1"
 
-buffer-equal-constant-time@1.0.1:
+buffer-equal-constant-time@^1.0.1:
   version "1.0.1"
-  resolved "https://registry.npmjs.org/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
   integrity sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==
 
 busboy@1.6.0:
@@ -2232,11 +2232,6 @@ imurmurhash@^0.1.4:
   resolved "https://registry.npmjs.org/imurmurhash/-/imurmurhash-0.1.4.tgz"
   integrity sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==
 
-inherits@^2.0.3:
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz"
-  integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
-
 internal-slot@^1.0.3, internal-slot@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/internal-slot/-/internal-slot-1.0.5.tgz"
@@ -2254,14 +2249,6 @@ internal-slot@^1.1.0:
     es-errors "^1.3.0"
     hasown "^2.0.2"
     side-channel "^1.1.0"
-
-is-arguments@^1.0.4:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/is-arguments/-/is-arguments-1.2.0.tgz#ad58c6aecf563b78ef2bf04df540da8f5d7d8e1b"
-  integrity sha512-7bVbi0huj/wrIAOzb8U1aszg9kdi3KN/CyU19CTI7tAoZYEZoL9yCDXpbXN+uPsuWnP02cyug1gleqq+TU+YCA==
-  dependencies:
-    call-bound "^1.0.2"
-    has-tostringtag "^1.0.2"
 
 is-array-buffer@^3.0.1, is-array-buffer@^3.0.2:
   version "3.0.2"
@@ -2387,16 +2374,6 @@ is-generator-function@^1.0.10:
   dependencies:
     has-tostringtag "^1.0.0"
 
-is-generator-function@^1.0.7:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/is-generator-function/-/is-generator-function-1.1.0.tgz#bf3eeda931201394f57b5dba2800f91a238309ca"
-  integrity sha512-nPUB5km40q9e8UfN/Zc24eLlzdSf9OfKByBw9CIdw4H1giPMeA0OIJvbchsCu4npfI2QcMVBsGEBHKZ7wLTWmQ==
-  dependencies:
-    call-bound "^1.0.3"
-    get-proto "^1.0.0"
-    has-tostringtag "^1.0.2"
-    safe-regex-test "^1.1.0"
-
 is-glob@^4.0.0, is-glob@^4.0.1, is-glob@^4.0.3:
   version "4.0.3"
   resolved "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz"
@@ -2519,7 +2496,7 @@ is-typed-array@^1.1.10, is-typed-array@^1.1.9:
   dependencies:
     which-typed-array "^1.1.11"
 
-is-typed-array@^1.1.13, is-typed-array@^1.1.14, is-typed-array@^1.1.15, is-typed-array@^1.1.3:
+is-typed-array@^1.1.13, is-typed-array@^1.1.14, is-typed-array@^1.1.15:
   version "1.1.15"
   resolved "https://registry.yarnpkg.com/is-typed-array/-/is-typed-array-1.1.15.tgz#4bfb4a45b61cee83a5a46fba778e4e8d59c0ce0b"
   integrity sha512-p3EcsicXjit7SaskXHs1hA91QxgTw46Fv6EFKKGS5DRFLD8yKnohjF3hxoju94b/OcMZoQukzpPpBE9uLVKzgQ==
@@ -2664,21 +2641,21 @@ jsonwebtoken@^9.0.2:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
-jwa@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.npmjs.org/jwa/-/jwa-1.4.1.tgz"
-  integrity sha512-qiLX/xhEEFKUAJ6FiBMbes3w9ATzyk5W7Hvzpa/SLYdxNtng+gcurvrI7TbACjIXlsJyr05/S1oUhZrc63evQA==
+jwa@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/jwa/-/jwa-1.4.2.tgz#16011ac6db48de7b102777e57897901520eec7b9"
+  integrity sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==
   dependencies:
-    buffer-equal-constant-time "1.0.1"
+    buffer-equal-constant-time "^1.0.1"
     ecdsa-sig-formatter "1.0.11"
     safe-buffer "^5.0.1"
 
 jws@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.npmjs.org/jws/-/jws-3.2.2.tgz"
-  integrity sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/jws/-/jws-3.2.3.tgz#5ac0690b460900a27265de24520526853c0b8ca1"
+  integrity sha512-byiJ0FLRdLdSVSReO/U4E7RoEyOCKnEnEPMjq3HxWtvzLsV08/i5RQKsFVNkCldrCaPr2vDNAOMsfs8T/Hze7g==
   dependencies:
-    jwa "^1.4.1"
+    jwa "^1.4.2"
     safe-buffer "^5.0.1"
 
 jwt-decode@^3.1.2:
@@ -3782,7 +3759,7 @@ tsutils@^3.21.0:
     tslib "^1.8.1"
 
 "twilio-taskrouter@file:..":
-  version "2.0.27-dev"
+  version "2.1.2-dev"
   dependencies:
     "@babel/runtime" "7.26.10"
     axios "^1.8.2"
@@ -3793,7 +3770,6 @@ tsutils@^3.21.0:
     loglevel "^1.4.1"
     path-browserify "^1.0.1"
     typed-emitter "^2.1.0"
-    util "^0.12.4"
     ws "^8.17.1"
 
 twilio@^5.5.2:
@@ -3944,17 +3920,6 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-util@^0.12.4:
-  version "0.12.5"
-  resolved "https://registry.yarnpkg.com/util/-/util-0.12.5.tgz#5f17a6059b73db61a875668781a1c2b136bd6fbc"
-  integrity sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==
-  dependencies:
-    inherits "^2.0.3"
-    is-arguments "^1.0.4"
-    is-generator-function "^1.0.7"
-    is-typed-array "^1.1.3"
-    which-typed-array "^1.1.2"
-
 which-boxed-primitive@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/which-boxed-primitive/-/which-boxed-primitive-1.0.2.tgz"
@@ -4045,7 +4010,7 @@ which-typed-array@^1.1.10, which-typed-array@^1.1.11, which-typed-array@^1.1.9:
     gopd "^1.0.1"
     has-tostringtag "^1.0.0"
 
-which-typed-array@^1.1.16, which-typed-array@^1.1.2:
+which-typed-array@^1.1.16:
   version "1.1.18"
   resolved "https://registry.yarnpkg.com/which-typed-array/-/which-typed-array-1.1.18.tgz#df2389ebf3fbb246a71390e90730a9edb6ce17ad"
   integrity sha512-qEcY+KJYlWyLH9vNbsr6/5j59AXk5ni5aakf8ldzBvGde6Iz4sxZGkJyWSAueTG7QhOvNRYb1lDdFmL5Td0QKA==
