@@ -1,7 +1,7 @@
 {
   "name": "twilio-taskrouter",
   "title": "Twilio TaskRouter",
-  "version": "3.1.0-dev",
+  "version": "3.2.0-dev",
   "description": "Twilio TaskRouter JavaScript library",
   "homepage": "https://www.twilio.com",
   "author": "Wanjun Li <wli@twilio.com>",
@@ -87,7 +87,7 @@
     "chai-datetime": "^1.8.1",
     "cheerio": "^1.2.0",
     "copy-webpack-plugin": "^14.0.0",
-    "dotenv": "^17.3.1",
+    "dotenv": "16.0.1",
     "eslint": "^7.32.0",
     "graphql": "^16.13.1",
     "ink-docstrap": "^1.3.2",

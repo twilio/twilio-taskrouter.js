@@ -1,3 +1,20 @@
+3.1.0
+==========
+Maintenance
+----------
+- Upgraded dependencies to address vulnerabilities
+
+3.0.0
+==========
+Breaking Changes
+------------
+TR SDK now requires Node 20 or above
+
+Maintenance
+----------
+- Replaced lodash with es-toolkit
+- Replaced axios with fetch
+
 2.1.1
 ==========
 Bug fixes
