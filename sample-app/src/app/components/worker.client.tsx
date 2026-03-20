@@ -1,23 +1,32 @@
-'use client';
+"use client";
 
-import { Supervisor, WorkerInfo, Workspace } from 'twilio-taskrouter';
-import { LogContextType, useLogContext } from '@/lib/log-context';
-import React, { useEffect, useState } from 'react';
-import Logger from './logger.client';
-import Reservation from './reservation.client';
+import { Supervisor, WorkerInfo, Workspace } from "twilio-taskrouter";
+import { LogContextType, useLogContext } from "@/lib/log-context";
+import React, { useEffect, useState } from "react";
+import Logger from "./logger.client";
+import Reservation from "./reservation.client";
 
-const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; environment: string }) => {
+const WorkerWorkspace = ({
+  token,
+  environment = "stage",
+}: {
+  token: string;
+  environment: string;
+}) => {
   const { appendLogs } = useLogContext() as LogContextType;
 
   const [enableAccept, setEnableAccept] = useState<boolean>(false);
   const [enableReject, setEnableReject] = useState<boolean>(false);
-  const [enableDisconnectWorker, setEnableDisconnectWorker] = useState<boolean>(false);
+  const [enableDisconnectWorker, setEnableDisconnectWorker] =
+    useState<boolean>(false);
 
   const [workerObj, setWorkerObj] = useState<Supervisor | null>(null);
   const [workSpace, setWorkSpace] = useState<Workspace | null>(null);
   const [reservationObj, setReservationObj] = useState<any | null>(null);
 
-  const [currentReservations, setCurrentReservations] = useState<Array<any>>([]);
+  const [currentReservations, setCurrentReservations] = useState<Array<any>>(
+    [],
+  );
 
   const handleDisconnectWorker = () => {
     if (workerObj) {
@@ -32,10 +41,13 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       reservationObj
         ?.accept()
         .then((acceptedReservation: { status: any }) => {
-          appendLogs(`Accept Reservation--Reservation status is ${acceptedReservation.status}`, 'green');
+          appendLogs(
+            `Accept Reservation--Reservation status is ${acceptedReservation.status}`,
+            "green",
+          );
         })
         .catch((err: any) => {
-          appendLogs(`Accept Reservation--Error: ${err}`, 'red');
+          appendLogs(`Accept Reservation--Error: ${err}`, "red");
         });
     }
   };
@@ -47,10 +59,13 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       reservationObj
         ?.reject()
         .then((acceptedReservation: { status: any }) => {
-          appendLogs(`Reject Reservation--Reservation status is ${acceptedReservation.status}`, 'green');
+          appendLogs(
+            `Reject Reservation--Reservation status is ${acceptedReservation.status}`,
+            "green",
+          );
         })
         .catch((err: any) => {
-          appendLogs(`Reject Reservation--Error: ${err}`, 'red');
+          appendLogs(`Reject Reservation--Error: ${err}`, "red");
         });
     }
   };
@@ -60,12 +75,12 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       const fetchWorkersInfoReq = await workSpace?.fetchWorkersInfo();
       if (fetchWorkersInfoReq) {
         const workers = Array.from(fetchWorkersInfoReq.values());
-        appendLogs('======================================================');
-        appendLogs('Workers fetched');
+        appendLogs("======================================================");
+        appendLogs("Workers fetched");
         workers.forEach((worker: WorkerInfo) => {
-          appendLogs('Workers sid: ' + worker.sid);
-          appendLogs('Workers friendlyName: ' + worker.friendlyName);
-          appendLogs('Workers activity: ' + worker.activityName);
+          appendLogs("Workers sid: " + worker.sid);
+          appendLogs("Workers friendlyName: " + worker.friendlyName);
+          appendLogs("Workers activity: " + worker.activityName);
         });
       }
     } catch (error) {
@@ -78,20 +93,20 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       return;
     }
 
-    appendLogs('======================================================');
-    appendLogs('Token generated');
+    appendLogs("======================================================");
+    appendLogs("Token generated");
     appendLogs(token);
 
-    appendLogs('Initializing Worker with the new token', 'green');
+    appendLogs("Initializing Worker with the new token", "green");
 
     const worker = new Supervisor(token, {
-      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
-      logLevel: 'debug',
+      region: environment.toLowerCase() === "stage" ? "stage-us1" : "us1",
+      logLevel: "debug",
       // useGraphQL: true, // Use for local development testing
     });
     const workspace = new Workspace(token, {
-      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
-      logLevel: 'debug',
+      region: environment.toLowerCase() === "stage" ? "stage-us1" : "us1",
+      logLevel: "debug",
     });
     setWorkSpace(workspace);
 
@@ -111,30 +126,43 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       return;
     }
 
-    workerObj.on('ready', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`ready--Worker ${readyWorker.sid} : ${readyWorker.friendlyName} is now ready for work`, 'green');
+    workerObj.on("ready", (readyWorker: { sid: any; friendlyName: any }) => {
+      appendLogs(
+        `ready--Worker ${readyWorker.sid} : ${readyWorker.friendlyName} is now ready for work`,
+        "green",
+      );
 
       setEnableDisconnectWorker(true);
     });
 
-    workerObj.on('tokenExpired', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`tokenExpired--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s token expired`);
+    workerObj.on("tokenExpired", () => {
+      appendLogs(
+        `tokenExpired--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s token expired`,
+      );
     });
 
-    workerObj.on('tokenUpdated', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`tokenUpdated--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s token updated`);
+    workerObj.on("tokenUpdated", () => {
+      appendLogs(
+        `tokenUpdated--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s token updated`,
+      );
     });
 
-    workerObj.on('activityUpdated', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`activityUpdated--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s activity Updated`);
+    workerObj.on("activityUpdated", () => {
+      appendLogs(
+        `activityUpdated--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s activity Updated`,
+      );
     });
 
-    workerObj.on('attributesUpdated', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`attributesUpdated--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s attributes Updated`);
+    workerObj.on("attributesUpdated", () => {
+      appendLogs(
+        `attributesUpdated--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s attributes Updated`,
+      );
     });
 
-    workerObj.on('disconnected', (reason: any) => {
-      appendLogs(`disconnected--Worker is disconnected. reason: ${JSON.stringify(reason)}`);
+    workerObj.on("disconnected", (reason: any) => {
+      appendLogs(
+        `disconnected--Worker is disconnected. reason: ${JSON.stringify(reason)}`,
+      );
 
       setEnableDisconnectWorker(false);
       setEnableAccept(false);
@@ -142,24 +170,31 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       setCurrentReservations([]);
     });
 
-    workerObj.on('error', (error: any) => {
-      appendLogs(`error--Worker errored out. error: ${JSON.stringify(error)}`, 'red');
+    workerObj.on("error", (error: any) => {
+      appendLogs(
+        `error--Worker errored out. error: ${JSON.stringify(error)}`,
+        "red",
+      );
 
       workerObj.disconnect();
     });
 
-    workerObj.on('reservationFailed', (reservation: any) => {
-      appendLogs(`reservationFailed--Reservation ${reservation.sid} failed for ${workerObj.sid}`);
+    workerObj.on("reservationFailed", (reservation: any) => {
+      appendLogs(
+        `reservationFailed--Reservation ${reservation.sid} failed for ${workerObj.sid}`,
+      );
     });
 
-    workerObj.on('reservationCreated', (reservation: any) => {
+    workerObj.on("reservationCreated", (reservation: any) => {
       setReservationObj(reservation);
       setEnableAccept(true);
       setEnableReject(true);
 
-      appendLogs(`reservationCreated--Reservation ${reservation.sid} has been created for ${workerObj.sid}`);
+      appendLogs(
+        `reservationCreated--Reservation ${reservation.sid} has been created for ${workerObj.sid}`,
+      );
 
-      appendLogs('reservationCreated--Task attributes are: ');
+      appendLogs("reservationCreated--Task attributes are: ");
       appendLogs(JSON.stringify(reservation?.task?.attributes || {}));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,44 +205,63 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       return;
     }
 
-    reservationObj.on('accepted', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} was accepted.`, 'green');
+    reservationObj.on("accepted", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} was accepted.`,
+        "green",
+      );
 
       setEnableAccept(false);
       setEnableReject(false);
     });
 
-    reservationObj.on('pending', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} is pending.`);
+    reservationObj.on("pending", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} is pending.`,
+      );
     });
-    reservationObj.on('rejected', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} was rejected.`, 'green');
+    reservationObj.on("rejected", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} was rejected.`,
+        "green",
+      );
 
       setEnableAccept(false);
       setEnableReject(false);
     });
-    reservationObj.on('timeout', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} is timeout.`, 'red');
+    reservationObj.on("timeout", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} is timeout.`,
+        "red",
+      );
 
       setEnableAccept(false);
       setEnableReject(false);
       setEnableDisconnectWorker(false);
     });
-    reservationObj.on('canceled', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} is canceled.`);
+    reservationObj.on("canceled", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} is canceled.`,
+      );
 
       setEnableAccept(false);
       setEnableReject(false);
       setEnableDisconnectWorker(false);
     });
-    reservationObj.on('rescinded', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} is rescinded.`);
+    reservationObj.on("rescinded", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} is rescinded.`,
+      );
     });
-    reservationObj.on('wrapping', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} is wrapping.`);
+    reservationObj.on("wrapping", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} is wrapping.`,
+      );
     });
-    reservationObj.on('completed', (acceptedReservation: { sid: any }) => {
-      appendLogs(`reservationCreated--Reservation ${acceptedReservation.sid} is completed.`);
+    reservationObj.on("completed", (acceptedReservation: { sid: any }) => {
+      appendLogs(
+        `reservationCreated--Reservation ${acceptedReservation.sid} is completed.`,
+      );
 
       setEnableAccept(false);
       setEnableReject(false);
@@ -239,7 +293,9 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
 
   return (
     <div className="w-full mt-4">
-      <div className="border bg-gray-50 border-gray-300 block py-4 px-2 rounded-xs">Worker Dashboard</div>
+      <div className="border bg-gray-50 border-gray-300 block py-4 px-2 rounded-xs">
+        Worker Dashboard
+      </div>
 
       <Reservation currentReservations={currentReservations} />
 

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
 type LogType = {
   message: string;
@@ -20,13 +20,17 @@ const LogContext = createContext<LogContextType | null>(null);
 export const LogContextProvider = ({ children }: any) => {
   const [logs, setLogs] = useState<Array<LogType>>([]);
 
-  const appendLogs = (newLog: string, color: string = 'black') => {
+  const appendLogs = (newLog: string, color: string = "black") => {
     setLogs((existingLogs) => [...existingLogs, { message: newLog, color }]);
     // eslint-disable-next-line no-console
     console.log(newLog);
   };
 
-  return <LogContext.Provider value={{ logs, setLogs, appendLogs }}>{children}</LogContext.Provider>;
+  return (
+    <LogContext.Provider value={{ logs, setLogs, appendLogs }}>
+      {children}
+    </LogContext.Provider>
+  );
 };
 
 export const useLogContext = () => useContext(LogContext);

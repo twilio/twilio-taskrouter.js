@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import { useLogContext } from '@/lib/log-context';
+import React, { useEffect, useRef } from "react";
+import { useLogContext } from "@/lib/log-context";
 
 const Logger = (): React.JSX.Element => {
   // @ts-ignore
@@ -10,7 +10,7 @@ const Logger = (): React.JSX.Element => {
 
   const scrollToBottom = () => {
     // @ts-ignore
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleClearLogs = () => {
@@ -34,16 +34,21 @@ const Logger = (): React.JSX.Element => {
       </div>
 
       <div className="break-words border-2 border-t-0 border-[#e1e3ea] p-2 h-[440px] overflow-x-auto">
-        {logs.map(({ message, color }: { message: string; color: string }, index: number) => (
-          <div
-            key={`log-${index}`}
-            className={`border-b-2 border-[#e1e3ea] p-1 ${color === 'green' ? 'text-green-600' : ''} ${
-              color === 'red' ? 'text-[#d6201f]' : ''
-            }`}
-          >
-            {message}
-          </div>
-        ))}
+        {logs.map(
+          (
+            { message, color }: { message: string; color: string },
+            index: number,
+          ) => (
+            <div
+              key={`log-${index}`}
+              className={`border-b-2 border-[#e1e3ea] p-1 ${color === "green" ? "text-green-600" : ""} ${
+                color === "red" ? "text-[#d6201f]" : ""
+              }`}
+            >
+              {message}
+            </div>
+          ),
+        )}
         <div ref={bottomRef} />
       </div>
     </div>
