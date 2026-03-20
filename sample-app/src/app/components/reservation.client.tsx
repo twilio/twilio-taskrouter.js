@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
 const TableHeaderRow = () => {
   return (
@@ -20,10 +20,7 @@ const TableRow = ({ data }: any) => {
   return (
     <tbody>
       {data.map((currentReservation: any) => (
-        <tr
-          key={`${currentReservation.sid}`}
-          className="border border-gray-300"
-        >
+        <tr key={`${currentReservation.sid}`} className="border border-gray-300">
           <td>{currentReservation.status}</td>
           <td>{currentReservation.task.sid}</td>
           <td>{currentReservation.task.status}</td>
@@ -35,11 +32,7 @@ const TableRow = ({ data }: any) => {
   );
 };
 
-const Reservation = ({
-  currentReservations,
-}: {
-  currentReservations: Array<any>;
-}): React.JSX.Element => {
+const Reservation = ({ currentReservations }: { currentReservations: Array<any> }): React.JSX.Element => {
   return (
     <div>
       {currentReservations.length !== 0 && (

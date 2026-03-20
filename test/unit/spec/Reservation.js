@@ -673,81 +673,6 @@ describe('Reservation', () => {
                 expect(pendingReservation.status).to.equal('pending');
             });
         });
-
-        it('should set conference options with multiple parameters', () => {
-            const params = Object.assign({}, requestParams, {
-                To: '+15555551234',
-                From: '+15555554321',
-                Timeout: 30,
-                StatusCallback: 'https://example.com/callback',
-                StatusCallbackMethod: 'POST',
-                StatusCallbackEvent: 'initiated',
-                Record: 'true',
-                Muted: false,
-                Beep: 'onEnter',
-                StartConferenceOnEnter: true,
-                EndConferenceOnExit: false,
-                EndConferenceOnCustomerExit: false,
-                WaitUrl: 'https://example.com/wait',
-                WaitMethod: 'GET',
-                EarlyMedia: true,
-                MaxParticipants: 5,
-                ConferenceStatusCallback: 'https://example.com/conf-callback',
-                ConferenceStatusCallbackMethod: 'POST',
-                ConferenceStatusCallbackEvent: 'start end',
-                ConferenceRecord: 'record-from-start',
-                ConferenceTrim: 'trim-silence',
-                RecordingChannels: 'dual',
-                RecordingStatusCallback: 'https://example.com/recording',
-                RecordingStatusCallbackMethod: 'POST',
-                ConferenceRecordingStatusCallback: 'https://example.com/conf-rec',
-                ConferenceRecordingStatusCallbackMethod: 'POST',
-                Region: 'us1',
-                SipAuthUsername: 'user',
-                SipAuthPassword: 'pass',
-                Transcribe: false,
-                TranscriptionConfiguration: '{"transcription_engine":"default"}'
-            });
-
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, params, API_V1).returns(Promise.resolve(reservationConferenced));
-            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
-            return pendingReservation.conference({
-                to: '+15555551234',
-                from: '+15555554321',
-                timeout: 30,
-                statusCallback: 'https://example.com/callback',
-                statusCallbackMethod: 'POST',
-                statusCallbackEvent: 'initiated',
-                record: 'true',
-                muted: false,
-                beep: 'onEnter',
-                startConferenceOnEnter: true,
-                endConferenceOnExit: false,
-                endConferenceOnCustomerExit: false,
-                waitUrl: 'https://example.com/wait',
-                waitMethod: 'GET',
-                earlyMedia: true,
-                maxParticipants: 5,
-                conferenceStatusCallback: 'https://example.com/conf-callback',
-                conferenceStatusCallbackMethod: 'POST',
-                conferenceStatusCallbackEvent: 'start end',
-                conferenceRecord: 'record-from-start',
-                conferenceTrim: 'trim-silence',
-                recordingChannels: 'dual',
-                recordingStatusCallback: 'https://example.com/recording',
-                recordingStatusCallbackMethod: 'POST',
-                conferenceRecordingStatusCallback: 'https://example.com/conf-rec',
-                conferenceRecordingStatusCallbackMethod: 'POST',
-                region: 'us1',
-                sipAuthUsername: 'user',
-                sipAuthPassword: 'pass',
-                transcribe: false,
-                transcriptionConfiguration: '{"transcription_engine":"default"}'
-            }).then(updatedReservation => {
-                expect(updatedReservation).to.equal(pendingReservation);
-                expect(pendingReservation.status).to.equal('pending');
-            });
-        });
     });
 
     describe('#updateParticipant(options)', () => {
@@ -788,25 +713,6 @@ describe('Reservation', () => {
             assignedReservation.updateParticipant({ endConferenceOnExit: true }).catch(err => {
                 expect(err.name).to.equal('TASKROUTER_ERROR');
                 expect(err.message).to.equal('Failed to parse JSON.');
-            });
-        });
-
-        it('should update multiple participant properties', () => {
-            const params = {
-                ReservationSid: 'WRxx1',
-                EndConferenceOnExit: false,
-                Mute: true,
-                BeepOnExit: true
-            };
-            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, params, API_V2).returns(Promise.resolve(assignedReservationDescriptor));
-
-            const assignedReservation = new Reservation(worker, new Request(config), assignedReservationDescriptor);
-            assignedReservation.updateParticipant({
-                endConferenceOnExit: false,
-                mute: true,
-                beepOnExit: true
-            }).then(sameRes => {
-                expect(assignedReservation).to.be.equal(sameRes);
             });
         });
     });

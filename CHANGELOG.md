@@ -1,9 +1,3 @@
-3.1.0
-==========
-Maintenance
-----------
-- Upgraded dependencies to address vulnerabilities
-
 3.0.0
 ==========
 Breaking Changes

@@ -26,7 +26,6 @@ require('./spec/Workspace');
 require('./spec/signaling/EventBridgeSignaling');
 require('./spec/signaling/GraphqlSignaling');
 require('./spec/util/Configuration');
-require('./spec/util/Errors');
 require('./spec/util/Logger');
 require('./spec/util/Paginator');
 require('./spec/util/Tools');

@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function Token() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [inputFields, setInputFields] = useState({
-    accountSid: searchParams.get("accountSid") || "",
-    signingKeySid: searchParams.get("signingKeySid") || "",
-    signingKeySecret: searchParams.get("signingKeySecret") || "",
-    workspaceSid: searchParams.get("workspaceSid") || "",
-    workerSid: searchParams.get("workerSid") || "",
-    identity: searchParams.get("identity") || "",
-    environment: searchParams.get("environment") || "",
+    accountSid: searchParams.get('accountSid') || '',
+    signingKeySid: searchParams.get('signingKeySid') || '',
+    signingKeySecret: searchParams.get('signingKeySecret') || '',
+    workspaceSid: searchParams.get('workspaceSid') || '',
+    workerSid: searchParams.get('workerSid') || '',
+    identity: searchParams.get('identity') || '',
+    environment: searchParams.get('environment') || '',
   });
   const [errors, setErrors] = useState<any>({});
   const [submitting, setSubmitting] = useState(false);
@@ -23,25 +23,25 @@ export default function Token() {
   const validateValues = (inputValues: any) => {
     let errors: any = {};
     if (!inputValues.accountSid.length) {
-      errors.accountSid = "Account Sid is required";
+      errors.accountSid = 'Account Sid is required';
     }
     if (!inputValues.signingKeySid.length) {
-      errors.signingKeySid = "SigningKey Sid is required";
+      errors.signingKeySid = 'SigningKey Sid is required';
     }
     if (!inputValues.signingKeySecret.length) {
-      errors.signingKeySecret = "SigningKey Secret is required";
+      errors.signingKeySecret = 'SigningKey Secret is required';
     }
     if (!inputValues.workspaceSid.length) {
-      errors.workspaceSid = "Workspace Sid is required";
+      errors.workspaceSid = 'Workspace Sid is required';
     }
     if (!inputValues.workerSid.length) {
-      errors.workerSid = "Worker Sid is required";
+      errors.workerSid = 'Worker Sid is required';
     }
     if (!inputValues.identity.length) {
-      errors.identity = "Identity is required";
+      errors.identity = 'Identity is required';
     }
     if (!inputValues.environment.length) {
-      errors.environment = "Environment is required";
+      errors.environment = 'Environment is required';
     }
     return errors;
   };
@@ -62,17 +62,17 @@ export default function Token() {
     setInputFields({
       ...inputFields,
       ...{
-        accountSid: "",
-        signingKeySid: "",
-        signingKeySecret: "",
-        workspaceSid: "",
-        workerSid: "",
-        identity: "",
-        environment: "",
+        accountSid: '',
+        signingKeySid: '',
+        signingKeySecret: '',
+        workspaceSid: '',
+        workerSid: '',
+        identity: '',
+        environment: '',
       },
     });
 
-    router.push("/");
+    router.push('/');
   };
 
   const finishSubmit = () => {
@@ -93,10 +93,7 @@ export default function Token() {
 
   return (
     <div>
-      <form
-        onSubmit={handleSubmit}
-        className="flex h-full flex-row justify-between"
-      >
+      <form onSubmit={handleSubmit} className="flex h-full flex-row justify-between">
         <div>
           <div className="flex mb-2">
             <label className="pt-2 min-w-[150px]" htmlFor="accountSid">
@@ -111,9 +108,7 @@ export default function Token() {
                 onChange={handleChange}
                 type="text"
               />
-              {errors.accountSid ? (
-                <p className="text-[#d6201f]">{errors.accountSid}</p>
-              ) : null}
+              {errors.accountSid ? <p className="text-[#d6201f]">{errors.accountSid}</p> : null}
             </div>
           </div>
           <div className="flex mb-2">
@@ -129,9 +124,7 @@ export default function Token() {
                 value={inputFields.signingKeySid}
                 onChange={handleChange}
               />
-              {errors.signingKeySid ? (
-                <p className="text-[#d6201f]">{errors.signingKeySid}</p>
-              ) : null}
+              {errors.signingKeySid ? <p className="text-[#d6201f]">{errors.signingKeySid}</p> : null}
             </div>
           </div>
           <div className="flex mb-2">
@@ -147,9 +140,7 @@ export default function Token() {
                 value={inputFields.signingKeySecret}
                 onChange={handleChange}
               />
-              {errors.signingKeySecret ? (
-                <p className="text-[#d6201f]">{errors.signingKeySecret}</p>
-              ) : null}
+              {errors.signingKeySecret ? <p className="text-[#d6201f]">{errors.signingKeySecret}</p> : null}
             </div>
           </div>
           <div className="flex mb-2">
@@ -165,9 +156,7 @@ export default function Token() {
                 value={inputFields.workspaceSid}
                 onChange={handleChange}
               />
-              {errors.workspaceSid ? (
-                <p className="text-[#d6201f]">{errors.workspaceSid}</p>
-              ) : null}
+              {errors.workspaceSid ? <p className="text-[#d6201f]">{errors.workspaceSid}</p> : null}
             </div>
           </div>
           <div className="flex mb-2">
@@ -183,9 +172,7 @@ export default function Token() {
                 value={inputFields.workerSid}
                 onChange={handleChange}
               />
-              {errors.workerSid ? (
-                <p className="text-[#d6201f]">{errors.workerSid}</p>
-              ) : null}
+              {errors.workerSid ? <p className="text-[#d6201f]">{errors.workerSid}</p> : null}
             </div>
           </div>
           <div className="flex mb-2">
@@ -201,9 +188,7 @@ export default function Token() {
                 value={inputFields.identity}
                 onChange={handleChange}
               />
-              {errors.identity ? (
-                <p className="text-[#d6201f]">{errors.identity}</p>
-              ) : null}
+              {errors.identity ? <p className="text-[#d6201f]">{errors.identity}</p> : null}
             </div>
           </div>
           <div className="flex mb-2">
@@ -219,18 +204,13 @@ export default function Token() {
                 value={inputFields.environment}
                 onChange={handleChange}
               />
-              {errors.environment ? (
-                <p className="text-[#d6201f]">{errors.environment}</p>
-              ) : null}
+              {errors.environment ? <p className="text-[#d6201f]">{errors.environment}</p> : null}
             </div>
           </div>
         </div>
         <div className="flex flex-col items-center justify-around h-full  mr-5">
           <div>
-            <button
-              className="bg-[#0263e0] hover:bg-[#06033a] text-white py-2 px-4 rounded-sm font-medium"
-              type="submit"
-            >
+            <button className="bg-[#0263e0] hover:bg-[#06033a] text-white py-2 px-4 rounded-sm font-medium" type="submit">
               Get New Token
             </button>
             {Object.keys(errors).length === 0 && submitting ? (

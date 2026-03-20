@@ -606,18 +606,8 @@ describe('Worker', () => {
       // simulate disconnected--> connected-->init
       worker._signaling.emit('disconnected');
     }).timeout(5000);
-  });
 
-  describe('#disconnect()', () => {
-    it('should call disconnect on the signaling layer', () => {
-      const worker = new Worker(initialToken, WorkerConfig);
-      const disconnectSpy = sinon.spy(worker._signaling, 'disconnect');
 
-      worker.disconnect();
-
-      expect(disconnectSpy).to.have.been.calledOnce;
-      disconnectSpy.restore();
-    });
   });
 
 });

@@ -1,6 +1,6 @@
-import "server-only";
+import 'server-only';
 
-import Twilio from "twilio";
+import Twilio from 'twilio';
 
 const AccessToken = Twilio.jwt.AccessToken;
 const TaskRouterGrant = AccessToken.TaskRouterGrant;
@@ -16,30 +16,19 @@ export default async function createToken(
   workerSid: string,
   identity: string,
 ) {
-  if (
-    !accountSid ||
-    !signingKeySid ||
-    !signingKeySecret ||
-    !workspaceSid ||
-    !workerSid
-  ) {
-    return "";
+  if (!accountSid || !signingKeySid || !signingKeySecret || !workspaceSid || !workerSid) {
+    return '';
   }
 
   const taskRouterGrant = new TaskRouterGrant({
     workerSid: workerSid,
     workspaceSid: workspaceSid,
-    role: "worker",
+    role: 'worker',
   });
 
-  const accessToken = new AccessToken(
-    accountSid,
-    signingKeySid,
-    signingKeySecret,
-    {
-      identity: identity,
-    },
-  );
+  const accessToken = new AccessToken(accountSid, signingKeySid, signingKeySecret, {
+    identity: identity,
+  });
   accessToken.addGrant(taskRouterGrant);
   accessToken.identity = identity;
 
