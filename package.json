@@ -103,7 +103,7 @@
     "nyc": "^15.1.0",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.5.0",
-    "twilio": "^3.71.3",
+    "twilio": "^4.19.3",
     "twilio-sync": "^2.0.1",
     "typescript": "^4.5.5",
     "webpack": "^5.65.0",
