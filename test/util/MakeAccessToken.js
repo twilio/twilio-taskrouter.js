@@ -13,7 +13,7 @@ module.exports.getAccessToken = function(accountSid, workspaceSid, workerSid, ex
     role: role || 'worker'
   });
 
-  const accessToken = new AccessToken(accountSid, credentials.signingKeySid, credentials.signingKeySecret, { ttl: expirationTime });
+  const accessToken = new AccessToken(accountSid, credentials.signingKeySid, credentials.signingKeySecret, { ttl: expirationTime, region: credentials.region });
   accessToken.addGrant(taskRouterGrant);
 
   if (options.useSync) {

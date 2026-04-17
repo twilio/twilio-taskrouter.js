@@ -6,14 +6,27 @@ import createToken from '@/lib/get-token';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) {
+type Props = {
+  searchParams: {
+    accountSid?: string;
+    signingKeySid?: string;
+    signingKeySecret?: string;
+    workspaceSid?: string;
+    workerSid?: string;
+    identity?: string;
+    environment?: string;
+  };
+};
+
+export default async function Home({ searchParams }: Props) {
   const token = await createToken(
     searchParams?.accountSid || '',
     searchParams?.signingKeySid || '',
     searchParams?.signingKeySecret || '',
     searchParams?.workspaceSid || '',
     searchParams?.workerSid || '',
-    searchParams?.identity || ''
+    searchParams?.identity || '',
+    searchParams?.environment || 'stage'
   );
 
   return (

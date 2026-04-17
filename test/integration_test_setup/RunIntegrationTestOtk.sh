@@ -23,6 +23,7 @@ DD_REPORT_ENABLED=$DD_REPORT_ENABLED
 JOB_NAME=$JOB_NAME
 
 ENV=$ENV
+REGION=$REGION
 WORKSPACE_FRIENDLY_NAME=$WORKSPACE_FRIENDLY_NAME
 RUN_SIX_SIGMA_SUITE=$RUN_SIX_SIGMA_SUITE
 
@@ -35,6 +36,7 @@ EOT
 
 # Used by Datadog reporter script to determine test duration
 export JOB_START_MS=$(date +%s000)
+echo "Job start timestamp (ms): $JOB_START_MS"
 
 if ! test -f "$TEST_FILE"; then
     node test/integration_test_setup/IntegrationTestSetup.js || EXIT_CODE=$?

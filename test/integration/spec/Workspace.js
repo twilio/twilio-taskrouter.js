@@ -21,7 +21,6 @@ describe('Workspace', () => {
     let workspace;
     const options =  {
         region: buildRegionForEventBridge(credentials.region),
-        edge: credentials.edge,
         logLevel: 'error'
     };
 

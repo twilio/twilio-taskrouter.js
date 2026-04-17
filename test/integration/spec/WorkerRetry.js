@@ -47,7 +47,6 @@ describe('Worker Retry', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'info'
             });
 
@@ -92,7 +91,6 @@ describe('Worker Retry', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'info'
             });
 
@@ -106,7 +104,6 @@ describe('Worker Retry', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'info'
             });
 
@@ -148,7 +145,6 @@ describe('Worker Retry', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'info'
             });
 

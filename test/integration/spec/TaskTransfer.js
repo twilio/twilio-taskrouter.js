@@ -26,14 +26,12 @@ describe('Task Transfer', function() {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'error',
             });
             // bob stays offline
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'error',
             });
              envTwilio.createTask(
