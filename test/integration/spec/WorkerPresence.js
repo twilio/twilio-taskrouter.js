@@ -18,6 +18,7 @@ describe('Worker Presence Client', () => {
         before(() => {
             bob = new Worker(bobToken, {
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
                 logLevel: 'info',
                 connectActivitySid: credentials.multiTaskConnectActivitySid
             });

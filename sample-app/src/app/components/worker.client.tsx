@@ -5,15 +5,8 @@ import { LogContextType, useLogContext } from '@/lib/log-context';
 import React, { useEffect, useState } from 'react';
 import Logger from './logger.client';
 import Reservation from './reservation.client';
-import { resolveRegion } from '@/lib/utils';
 
-
-type WorkerWorkspaceProps = {
-  token: string;
-  environment: string;
-};
-
-const WorkerWorkspace = ({ token, environment = 'stage' }: WorkerWorkspaceProps) => {
+const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; environment: string }) => {
   const { appendLogs } = useLogContext() as LogContextType;
 
   const [enableAccept, setEnableAccept] = useState<boolean>(false);
@@ -91,15 +84,15 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: WorkerWorkspaceProps)
 
     appendLogs('Initializing Worker with the new token', 'green');
 
-    const region = resolveRegion(environment);
-    const workerOptions = {
-      region,
-      logLevel: 'debug' as const,
+    const worker = new Supervisor(token, {
+      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
+      logLevel: 'debug',
       // useGraphQL: true, // Use for local development testing
-    };
-
-    const worker = new Supervisor(token, workerOptions);
-    const workspace = new Workspace(token, workerOptions);
+    });
+    const workspace = new Workspace(token, {
+      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
+      logLevel: 'debug',
+    });
     setWorkSpace(workspace);
 
     setWorkerObj(worker);

@@ -10,9 +10,6 @@ const JWT = require('../../util/MakeAccessToken');
 import Worker from '../../../lib/Worker';
 import { buildRegionForEventBridge } from '../../integration_test_setup/IntegrationTestSetupUtils';
 
-const TEST_TIMEOUT = 15000; // milliseconds
-
-
 describe('MultiTask Worker Client', () => {
     const aliceMultiToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const envTwilio = new EnvTwilio(credentials.accountSid, credentials.authToken, credentials.region);
@@ -35,6 +32,7 @@ describe('MultiTask Worker Client', () => {
         it('@SixSigma - should populate .activities', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -47,11 +45,12 @@ describe('MultiTask Worker Client', () => {
                     envTwilio.getErrorMessage(`Task ${multiTaskAlice.sid} activities count mismatch`, credentials.accountSid, credentials.multiTaskAliceSid));
 
             });
-        }).timeout(TEST_TIMEOUT);
+        }).timeout(5000);
 
         it('@SixSigma - should populate .channels', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -74,12 +73,13 @@ describe('MultiTask Worker Client', () => {
 
                 });
             });
-        }).timeout(TEST_TIMEOUT);
+        }).timeout(5000);
 
         it('@SixSigma - should set the activity on connect if provided', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise((resolve) => {
@@ -100,12 +100,13 @@ describe('MultiTask Worker Client', () => {
                     }
                 });
             });
-        }).timeout(TEST_TIMEOUT);
+        }).timeout(5000);
 
         it('@SixSigma - should populate .reservations with 0 Reservations when none currently pending', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -115,7 +116,7 @@ describe('MultiTask Worker Client', () => {
                     envTwilio.getErrorMessage(`Task ${multiTaskAlice.sid} reservation size mismatch`, credentials.accountSid, credentials.multiTaskConnectActivitySid));
 
             });
-        }).timeout(TEST_TIMEOUT);
+        }).timeout(5000);
     });
 
     describe('Multi Task Worker with pending Reservations', () => {
@@ -144,6 +145,7 @@ describe('MultiTask Worker Client', () => {
             await new Promise(r => setTimeout(r, 2000));
             multiTaskAlice = new Worker(aliceMultiToken, {
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -160,13 +162,14 @@ describe('MultiTask Worker Client', () => {
                     }
                 });
             });
-        }).timeout(TEST_TIMEOUT);
+        }).timeout(5000);
     });
 
     describe('Multi Task Worker creates Task', () => {
         it('@SixSigma - should be able to create a Task for self', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {
@@ -178,6 +181,6 @@ describe('MultiTask Worker Client', () => {
 
                 });
             });
-        }).timeout(TEST_TIMEOUT);
+        });
     });
 });

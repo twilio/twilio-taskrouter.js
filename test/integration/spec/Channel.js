@@ -29,6 +29,7 @@ describe('Channel', () => {
         it('@SixSigma - should create specific channels in MultiTask mode', () => {
             const multiTaskAlice = new Worker(aliceMultiToken, {
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return new Promise(resolve => {

@@ -1,7 +1,6 @@
 import 'server-only';
 
 import Twilio from 'twilio';
-import { resolveRegion } from './utils';
 
 const AccessToken = Twilio.jwt.AccessToken;
 const TaskRouterGrant = AccessToken.TaskRouterGrant;
@@ -16,12 +15,10 @@ export default async function createToken(
   workspaceSid: string,
   workerSid: string,
   identity: string,
-  environment?: string
 ) {
   if (!accountSid || !signingKeySid || !signingKeySecret || !workspaceSid || !workerSid) {
     return '';
   }
-
 
   const taskRouterGrant = new TaskRouterGrant({
     workerSid: workerSid,
@@ -31,9 +28,7 @@ export default async function createToken(
 
   const accessToken = new AccessToken(accountSid, signingKeySid, signingKeySecret, {
     identity: identity,
-    region: resolveRegion(environment || 'stage'),
   });
-
   accessToken.addGrant(taskRouterGrant);
   accessToken.identity = identity;
 

@@ -34,6 +34,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             worker.on('ready', async() => {
@@ -43,6 +44,7 @@ describe('Supervisor Mode with Outbound Voice Task', () => {
             supervisor = new Supervisor(supervisorToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge
             });
 
             return Promise.all([outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(worker),

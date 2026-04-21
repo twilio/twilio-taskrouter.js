@@ -10,6 +10,7 @@ const { updateActivitiesInTaskQueue,
     buildRegionForEventBridge
 } = require('./IntegrationTestSetupUtils');
 
+
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
 const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const SIGNING_KEY_SID = process.env.SIGNING_KEY_SID;
@@ -23,7 +24,7 @@ const client = getTwilioClient();
 const fs = require('fs');
 
 async function createWorkspaces() {
-    console.log('Creating workspaces for integration tests...');
+
     // Create a multiTaskWorkspace
     const multiTaskWorkspace = await createWorkspace(WORKSPACE_FRIENDLY_NAME, "true")
 
@@ -75,7 +76,8 @@ async function createWorkspaces() {
         'customerNumber': CUSTOMER_NUMBER ?? '',
         'flexCCNumber': FLEX_CC_NUMBER ?? '',
         'workerNumber': WORKER_NUMBER ?? '',
-        'region': buildRegionForEventBridge(REGION || ENV)
+        'region': buildRegionForEventBridge(REGION || ENV),
+        'edge': process.env.EDGE
     };
 
     if (['stage', 'dev'].includes(ENV)) {

@@ -48,6 +48,7 @@ describe('ActivityRejectReservations', () => {
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
             });
 
             let connectActivity;
@@ -124,6 +125,7 @@ describe('ActivityRejectReservations', () => {
             multiTaskWorker = new Worker(multiTaskToken,  {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
+                edge: credentials.edge,
             });
 
             const createdReservations = [];
