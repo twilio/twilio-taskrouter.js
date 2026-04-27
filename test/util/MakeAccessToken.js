@@ -13,7 +13,7 @@ module.exports.getAccessToken = function(accountSid, workspaceSid, workerSid, ex
     role: role || 'worker'
   });
 
-  const accessToken = new AccessToken(accountSid, credentials.signingKeySid, credentials.signingKeySecret, { ttl: expirationTime });
+  const accessToken = new AccessToken(accountSid, credentials.signingKeySid, credentials.signingKeySecret, { ttl: expirationTime, identity: identity });
   accessToken.addGrant(taskRouterGrant);
 
   if (options.useSync) {
@@ -23,8 +23,6 @@ module.exports.getAccessToken = function(accountSid, workspaceSid, workerSid, ex
     _syncGrant.key = 'flex_insights';
     accessToken.addGrant(_syncGrant);
   }
-
-  accessToken.identity = identity;
 
   return accessToken.toJwt();
 };
