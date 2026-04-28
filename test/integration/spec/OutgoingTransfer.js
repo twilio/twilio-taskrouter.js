@@ -142,7 +142,28 @@ describe('OutgoingTransfer', () => {
 
                                         // canceling the same outgoing task again
                                         return transferredTask.transfers.outgoing.cancel().catch(err => {
-                                            assert.equal(err.message, `Request failed with status code 400. Transfer ${canceledTransfer.sid} is already canceled . Cannot cancel transfer.`, envTwilio.getErrorMessage('400 not received when canceling same task twice', credentials.accountSid, credentials.multiTaskBobSid));
+
+                                            // Accept either error message due to backend race condition:
+                                            // 1. "is already canceled" - fast path, transfer validation runs first
+                                            // 2. "has been deleted or is not in correct state" - slow path, task cleanup completes first
+                                            const errorMessage = err.message;
+
+                                            const possibleMessages = [
+                                                `Request failed with status code 400. Transfer ${canceledTransfer.sid} is already canceled . Cannot cancel transfer.`,
+                                                `Request failed with status code 400. Transfer ${canceledTransfer.sid} be cannot canceled. Task ${transferredTask.sid} has been deleted or is not in correct state.`
+                                            ];
+
+                                            const isValid = possibleMessages.some(msg => errorMessage.includes(msg));
+
+                                            assert.strictEqual(
+                                                isValid,
+                                                true,
+                                                envTwilio.getErrorMessage(
+                                                    '400 not received when canceling same task twice',
+                                                    credentials.accountSid,
+                                                    credentials.multiTaskBobSid
+                                                )
+                                            );
                                             done();
                                         });
                                     });
