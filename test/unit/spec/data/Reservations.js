@@ -176,4 +176,86 @@ describe('Reservations', () => {
             assert.equal(task2.sid, 'WTxx1');
         });
     });
+
+    describe('#_deleteByReservationSid', () => {
+        let clock;
+
+        beforeEach(() => {
+            clock = sinon.useFakeTimers();
+        });
+
+        afterEach(() => {
+            clock.restore();
+        });
+
+        it('should soft delete and then hard delete reservation after 5 seconds', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            // Insert a reservation
+            const reservation = reservationsServices.insert(mockInstance);
+            assert.equal(reservationsServices.reservations.size, 1);
+            assert.isTrue(reservationsServices.reservations.has('WRxx1'));
+
+            // Delete by sid
+            reservationsServices._deleteByReservationSid('WRxx1');
+
+            // Soft delete: reservation still exists but marked for deletion
+            assert.isTrue(reservationsServices._reservations.has('WRxx1'));
+            const softDeletedEntry = reservationsServices._reservations.get('WRxx1');
+            assert.isArray(softDeletedEntry);
+            assert.equal(softDeletedEntry[0], reservation);
+            assert.isTrue(softDeletedEntry[1]); // deletion flag
+
+            // Fast forward 5 seconds
+            clock.tick(5000);
+
+            // Hard delete: reservation should be removed
+            assert.isFalse(reservationsServices._reservations.has('WRxx1'));
+        });
+
+        it('should handle deletion of non-existent reservation', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            // Try to delete a reservation that doesn't exist
+            reservationsServices._deleteByReservationSid('WRxx-nonexistent');
+
+            // Should not throw and should handle gracefully
+            assert.equal(reservationsServices.reservations.size, 0);
+        });
+    });
+
+    describe('#_cleanUpReservationAndTask', () => {
+        let clock;
+
+        beforeEach(() => {
+            clock = sinon.useFakeTimers();
+        });
+
+        afterEach(() => {
+            clock.restore();
+        });
+
+        it('should soft delete immediately and hard delete after timeout', () => {
+            const reservationsServices = new ReservationsEntity(worker, new Request(config));
+
+            const reservation = reservationsServices.insert(mockInstance);
+
+            // Call cleanup directly
+            reservationsServices._cleanUpReservationAndTask(reservation);
+
+            // Immediately after: soft deleted
+            const entry = reservationsServices._reservations.get('WRxx1');
+            assert.isArray(entry);
+            assert.equal(entry[0], reservation);
+            assert.isTrue(entry[1]); // marked for deletion
+
+            // Before timeout: still exists
+            clock.tick(4999);
+            assert.isTrue(reservationsServices._reservations.has('WRxx1'));
+
+            // After timeout: hard deleted
+            clock.tick(1);
+            assert.isFalse(reservationsServices._reservations.has('WRxx1'));
+        });
+    });
 });

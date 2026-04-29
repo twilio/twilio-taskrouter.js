@@ -673,6 +673,96 @@ describe('Reservation', () => {
                 expect(pendingReservation.status).to.equal('pending');
             });
         });
+
+        it('should handle multiple conference options', () => {
+            const conferenceOptions = {
+                to: '+15551234567',
+                from: '+15559876543',
+                timeout: 30,
+                statusCallback: 'https://example.com/status',
+                statusCallbackMethod: 'POST',
+                statusCallbackEvent: 'initiated ringing answered completed',
+                record: 'record-from-ringing',
+                muted: false,
+                beep: true,
+                startConferenceOnEnter: true,
+                endConferenceOnExit: false,
+                endConferenceOnCustomerExit: true,
+                waitUrl: 'https://example.com/wait',
+                waitMethod: 'GET',
+                earlyMedia: true,
+                maxParticipants: 5,
+                conferenceStatusCallback: 'https://example.com/conf-status',
+                conferenceStatusCallbackMethod: 'POST',
+                conferenceStatusCallbackEvent: 'start end',
+                conferenceRecord: 'record-from-start',
+                conferenceTrim: 'trim-silence',
+                recordingChannels: 'dual',
+                recordingStatusCallback: 'https://example.com/rec-status',
+                recordingStatusCallbackMethod: 'POST',
+                conferenceRecordingStatusCallback: 'https://example.com/conf-rec-status',
+                conferenceRecordingStatusCallbackMethod: 'POST',
+                region: 'us1',
+                sipAuthUsername: 'user123',
+                sipAuthPassword: 'pass456',
+                transcribe: true,
+                transcriptionConfiguration: '{"transcribe":true}'
+            };
+
+            const expectedParams = Object.assign({ Instruction: 'conference' }, {
+                To: '+15551234567',
+                From: '+15559876543',
+                Timeout: 30,
+                StatusCallback: 'https://example.com/status',
+                StatusCallbackMethod: 'POST',
+                StatusCallbackEvent: 'initiated ringing answered completed',
+                Record: 'record-from-ringing',
+                Muted: false,
+                Beep: true,
+                StartConferenceOnEnter: true,
+                EndConferenceOnExit: false,
+                EndConferenceOnCustomerExit: true,
+                WaitUrl: 'https://example.com/wait',
+                WaitMethod: 'GET',
+                EarlyMedia: true,
+                MaxParticipants: 5,
+                ConferenceStatusCallback: 'https://example.com/conf-status',
+                ConferenceStatusCallbackMethod: 'POST',
+                ConferenceStatusCallbackEvent: 'start end',
+                ConferenceRecord: 'record-from-start',
+                ConferenceTrim: 'trim-silence',
+                RecordingChannels: 'dual',
+                RecordingStatusCallback: 'https://example.com/rec-status',
+                RecordingStatusCallbackMethod: 'POST',
+                ConferenceRecordingStatusCallback: 'https://example.com/conf-rec-status',
+                ConferenceRecordingStatusCallbackMethod: 'POST',
+                Region: 'us1',
+                SipAuthUsername: 'user123',
+                SipAuthPassword: 'pass456',
+                Transcribe: true,
+                TranscriptionConfiguration: '{"transcribe":true}'
+            });
+
+            sandbox.stub(Request.prototype, 'post').withArgs(requestURL, expectedParams, API_V1).returns(Promise.resolve(reservationConferenced));
+            const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+            return pendingReservation.conference(conferenceOptions).then(updatedReservation => {
+                expect(updatedReservation).to.equal(pendingReservation);
+            });
+        });
+
+        it('should throw an error if conference options have invalid types', () => {
+            (() => {
+                const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+                pendingReservation.conference({ maxParticipants: 'five' }); // should be integer
+            }).should.throw(/did not match the required types|does not meet the required type/);
+        });
+
+        it('should throw an error if beep option has invalid type', () => {
+            (() => {
+                const pendingReservation = new Reservation(worker, new Request(config), pendingReservationDescriptor);
+                pendingReservation.conference({ beep: 123 }); // should be boolean or string
+            }).should.throw(/did not match the required types|does not meet the required type/);
+        });
     });
 
     describe('#updateParticipant(options)', () => {

@@ -486,6 +486,57 @@ describe('Worker', () => {
     });
   });
 
+  describe('#_setWorkerConnectActivity', () => {
+    let worker;
+    let sandbox;
+    let clock;
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers();
+      worker = new Worker(initialToken, Object.assign({}, WorkerConfig, { connectActivitySid: 'WAxx2' }));
+      worker.version = 1;
+      sinon.stub(worker, 'getRoutes').returns(routes);
+
+      const activities = new Map();
+      mockList.contents.forEach((activityPayload) => {
+        const activityDescriptor = new ActivityDescriptor(activityPayload);
+        activities.set(activityPayload.sid, new Activity(worker, activityDescriptor, activityPayload.sid));
+      });
+
+      sinon.stub(worker, 'activities').get(() => activities);
+      sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+      clock.restore();
+      sandbox.restore();
+    });
+
+
+    it('should not retry on 400 error', () => {
+      const requestURL = 'Workspaces/WSxxx/Workers/WKxxx';
+      const requestParams = { ActivitySid: 'WAxx2' };
+
+      const error = Errors.TASKROUTER_ERROR.clone('Bad Request');
+      error.response = { status: 400 };
+
+      const stub = sandbox.stub(Request.prototype, 'post');
+      stub.withArgs(requestURL, requestParams, API_V1).returns(Promise.reject(error));
+
+      return worker._setWorkerConnectActivity().catch(() => {
+        // Should not retry, only initial attempt
+        assert.equal(stub.callCount, 1);
+      });
+    });
+
+    it('should throw error for connectActivitySid if not a string', () => {
+      worker._connectActivitySid = 123; // Invalid type
+      assert.throws(() => {
+        worker._setWorkerConnectActivity();
+      }, /connectActivitySid must be a string/);
+    });
+  });
+
   describe('#TaskrouterListenerSubscriptions', () => {
 
     let sandbox;

@@ -105,7 +105,7 @@
     "taffydb": "2.7.3",
     "twilio": "^5.13.0",
     "twilio-sync": "^3.4.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "webpack": "^5.105.4",
     "webpack-cli": "^7.0.2",
     "webpack-node-externals": "^3.0.0"

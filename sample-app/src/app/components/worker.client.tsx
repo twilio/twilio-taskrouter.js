@@ -117,12 +117,12 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       setEnableDisconnectWorker(true);
     });
 
-    workerObj.on('tokenExpired', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`tokenExpired--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s token expired`);
+    workerObj.on('tokenExpired', () => {
+      appendLogs(`tokenExpired--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s token expired`);
     });
 
-    workerObj.on('tokenUpdated', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`tokenUpdated--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s token updated`);
+    workerObj.on('tokenUpdated', () => {
+      appendLogs(`tokenUpdated--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s token updated`);
     });
 
     workerObj.on('activityUpdated', (readyWorker: { sid: any; friendlyName: any }) => {
