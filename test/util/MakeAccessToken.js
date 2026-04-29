@@ -24,7 +24,5 @@ module.exports.getAccessToken = function(accountSid, workspaceSid, workerSid, ex
     accessToken.addGrant(_syncGrant);
   }
 
-  accessToken.identity = identity;
-
   return accessToken.toJwt();
 };
