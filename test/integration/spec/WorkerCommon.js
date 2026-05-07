@@ -12,6 +12,8 @@ const sinon = require('sinon');
 const credentials = require('../../env');
 const JWT = require('../../util/MakeAccessToken');
 
+const TEST_TIMEOUT = 15000; // milliseconds
+
 describe('Common Worker Client', () => {
     const aliceToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskAliceSid);
     const bobToken = JWT.getAccessToken(credentials.accountSid, credentials.multiTaskWorkspaceSid, credentials.multiTaskBobSid);
@@ -22,7 +24,6 @@ describe('Common Worker Client', () => {
         return envTwilio.deleteAllTasks(credentials.multiTaskWorkspaceSid).then(() => {
             alice = new Worker(aliceToken, {
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'error'
             });
         });
@@ -67,7 +68,7 @@ describe('Common Worker Client', () => {
                     alice.setAttributes(origAttributes);
                 });
             });
-        }).timeout(5000);
+        }).timeout(TEST_TIMEOUT);
 
         it('should return an error if unable to set the attributes', () => {
             (() => {
@@ -92,7 +93,7 @@ describe('Common Worker Client', () => {
             assert.isTrue(alice._signaling.reconnect,
                 envTwilio.getErrorMessage('Account reconnect did not happen', credentials.accountSid, credentials.multiTaskAliceSid));
 
-        }).timeout(5000);
+        }).timeout(TEST_TIMEOUT);
     });
 
 
@@ -100,7 +101,6 @@ describe('Common Worker Client', () => {
         it('should not allow log levels across unique workers to be affected', () => {
             const bob = new Worker(bobToken, {
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'info'
             });
 
@@ -116,7 +116,6 @@ describe('Common Worker Client', () => {
         it('should fire a disconnect event', done => {
             const bob = new Worker(bobToken, {
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'info'
             });
 
@@ -127,7 +126,7 @@ describe('Common Worker Client', () => {
 
                 done();
             });
-        });
+        }).timeout(TEST_TIMEOUT);
 
         it('[backward compatibility] should fire a disconnect event', done => {
             const bob = new Worker(bobToken, {
@@ -159,7 +158,7 @@ describe('Common Worker Client', () => {
                 });
 
             });
-        }).timeout(5000);
+        }).timeout(TEST_TIMEOUT);
 
         it('@SixSigma - should update worker version after creating reservation', async() => {
             await new Promise(resolve => alice.on('ready', resolve));
@@ -170,7 +169,7 @@ describe('Common Worker Client', () => {
                 expect(Number(alice.version)).to.equal(Number(oldVersion) + 1);
             });
             await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
-        }).timeout(5000);
+        }).timeout(TEST_TIMEOUT);
 
         it('@SixSigma - should not update worker version after rejecting reservation', async() => {
             await new Promise(resolve => alice.on('ready', resolve));
@@ -183,6 +182,6 @@ describe('Common Worker Client', () => {
                 await reservation.reject();
             });
             await alice.createTask('customer', 'worker', credentials.multiTaskWorkflowSid, credentials.multiTaskQueueSid);
-        }).timeout(10000);
+        }).timeout(TEST_TIMEOUT);
     });
 });

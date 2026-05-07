@@ -34,7 +34,6 @@ describe('Activity', () => {
         it('@SixSigma - should set this connect activity on the Worker, and then update it', () => {
             worker = new Worker(token, {
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 connectActivitySid: credentials.multiTaskConnectActivitySid
             });
 

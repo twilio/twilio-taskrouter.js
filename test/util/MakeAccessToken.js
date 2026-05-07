@@ -13,11 +13,11 @@ module.exports.getAccessToken = function(accountSid, workspaceSid, workerSid, ex
     role: role || 'worker'
   });
 
-  const accessToken = new AccessToken(accountSid, credentials.signingKeySid, credentials.signingKeySecret, { ttl: expirationTime, identity: identity });
+  const accessToken = new AccessToken(accountSid, credentials.signingKeySid, credentials.signingKeySecret, { ttl: expirationTime, region: credentials.region, identity: identity });
   accessToken.addGrant(taskRouterGrant);
 
   if (options.useSync) {
-      const _syncGrant = new SyncGrant({
+    const _syncGrant = new SyncGrant({
       serviceSid: workspaceSid + '.insights'  // these values can change anytime without notice
     });
     _syncGrant.key = 'flex_insights';

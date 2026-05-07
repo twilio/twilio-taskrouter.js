@@ -4297,7 +4297,7 @@ tsutils@^3.21.0:
     loglevel "^1.9.2"
     path-browserify "^1.0.1"
     typed-emitter "^2.1.0"
-    ws "^8.19.0"
+    ws "^8.20.0"
 
 twilio@^5.13.0:
   version "5.13.1"
@@ -4605,7 +4605,7 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
-ws@^8.19.0:
+ws@^8.20.0:
   version "8.20.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.20.0.tgz#4cd9532358eba60bc863aad1623dfb045a4d4af8"
   integrity sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==

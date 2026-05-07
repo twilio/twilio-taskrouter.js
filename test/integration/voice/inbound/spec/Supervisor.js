@@ -48,7 +48,6 @@ describe('Supervisor with Inbound Voice Task', () => {
             // supervisor stays offline
             supervisor = new Supervisor(supervisorToken, {
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             supervisor.on('ready', async() => {
@@ -58,7 +57,6 @@ describe('Supervisor with Inbound Voice Task', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             return new Promise(async(resolve, reject) => {

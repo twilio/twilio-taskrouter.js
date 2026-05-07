@@ -21,7 +21,6 @@ describe('Reservation Canceled', () => {
             worker = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
         });
     });

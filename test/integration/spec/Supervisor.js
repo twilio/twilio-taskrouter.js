@@ -42,14 +42,12 @@ describe('Supervisor Client', function() {
       .then(() => {
         worker = new Worker(workerToken, {
           region: buildRegionForEventBridge(credentials.region),
-          edge: credentials.edge,
           logLevel: 'error',
           connectActivitySid: credentials.multiTaskConnectActivitySid,
         });
 
         supervisor = new Supervisor(superToken, {
           region: buildRegionForEventBridge(credentials.region),
-          edge: credentials.edge,
           logLevel: 'error',
         });
          return Promise.all([

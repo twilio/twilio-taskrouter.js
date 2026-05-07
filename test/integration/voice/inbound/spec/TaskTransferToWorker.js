@@ -32,7 +32,6 @@ describe('Task Transfer to Worker for Inbound Voice Task', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             alice.on('ready', async() => {
@@ -43,7 +42,6 @@ describe('Task Transfer to Worker for Inbound Voice Task', () => {
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             bob.on('ready', async() => {

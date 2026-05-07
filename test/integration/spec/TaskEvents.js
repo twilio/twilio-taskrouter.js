@@ -20,7 +20,6 @@ describe('TaskEvents', () => {
             alice = new Worker(multiTaskAliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge,
                 logLevel: 'error'
             });
             // Make sure Bob remains offline before creating a task
@@ -94,7 +93,6 @@ describe('TaskEvents', () => {
                 alice = new Worker(multiTaskAliceToken, {
                     connectActivitySid: credentials.multiTaskConnectActivitySid,
                     region: buildRegionForEventBridge(credentials.region),
-                    edge: credentials.edge
                 });
                 // Make sure Bob remains offline before creating a task
                 return envTwilio.updateWorkerActivity(
