@@ -39,7 +39,7 @@
     "build:dev": "yarn webpack development",
     "build:prod": "yarn webpack production",
     "build:types": "tsc && node ./scripts/types.js",
-    "prebuild": "yarn clean && yarn install",
+    "prebuild": "yarn clean && yarn install --frozen-lockfile",
     "build": "yarn lint && yarn build:prod",
     "postbuild": "yarn docs && yarn coverage",
     "docs": "node ./scripts/docs.js ./dist/docs",

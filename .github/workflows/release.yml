@@ -29,7 +29,7 @@ jobs:
           git config user.email flexrouting+ci@twilio.com
           yarn version --new-version "${{ github.event.inputs.releaseVersion }}" --no-git-tag-version
       - run: |
-          yarn
+          yarn install --frozen-lockfile
           yarn build
 
       - name: Push Docs to gh-pages
