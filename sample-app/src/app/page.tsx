@@ -26,14 +26,14 @@ export default async function Home({ searchParams }: Props) {
     searchParams?.workspaceSid || '',
     searchParams?.workerSid || '',
     searchParams?.identity || '',
-    searchParams?.environment || 'stage'
+    searchParams?.environment || 'us1'
   );
 
   return (
     <main className="flex justify-center p-10">
       <div className="w-[760px] flex-col justify-center flex">
         <Token />
-        <WorkerWorkspace token={token} environment={searchParams?.environment || 'stage'} />
+        <WorkerWorkspace token={token} environment={searchParams?.environment || 'us1'} />
       </div>
     </main>
   );

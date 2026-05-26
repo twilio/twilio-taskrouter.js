@@ -13,7 +13,7 @@ type WorkerWorkspaceProps = {
   environment: string;
 };
 
-const WorkerWorkspace = ({ token, environment = 'stage' }: WorkerWorkspaceProps) => {
+const WorkerWorkspace = ({ token, environment = 'us1' }: WorkerWorkspaceProps) => {
   const { appendLogs } = useLogContext() as LogContextType;
 
   const [enableAccept, setEnableAccept] = useState<boolean>(false);

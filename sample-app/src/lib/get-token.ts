@@ -31,7 +31,7 @@ export default async function createToken(
 
   const accessToken = new AccessToken(accountSid, signingKeySid, signingKeySecret, {
     identity: identity,
-    region: resolveRegion(environment || 'stage'),
+    region: resolveRegion(environment || 'us1'),
   });
 
   accessToken.addGrant(taskRouterGrant);
