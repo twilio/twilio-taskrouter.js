@@ -1,4 +1,4 @@
-FROM node:16.13.0
+FROM registry.twilio.com/library/base-node/20:20
 
 COPY . /home/tr-sdk/
 

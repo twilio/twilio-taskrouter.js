@@ -4,7 +4,8 @@ TEST_FILE="test.json"
 
 echo "Running integration tests with OTK..."
 
-yarn install
+# Dependencies are baked into the image at build time (see Dockerfile);
+# the test pod has no egress to the npm mirror, so don't run yarn install here.
 
 AUTH_TOKEN=$(echo "$AUTH_TOKEN" | jq -r '.["auth-token"]')
 SIGNING_KEY_SECRET=$(echo "$SIGNING_KEY_SECRET" | jq -r '.["signing-key-secret"]')
