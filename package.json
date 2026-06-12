@@ -66,7 +66,7 @@
     "loglevel": "^1.9.2",
     "path-browserify": "^1.0.1",
     "typed-emitter": "^2.1.0",
-    "ws": "^8.20.0"
+    "ws": "^8.20.1"
   },
   "peerDependencies": {
     "graphql": ">=0.11 <=16"
@@ -113,7 +113,8 @@
   },
   "resolutions": {
     "nyc/**/y18n": "^4.0.1",
-    "@babel/plugin-transform-modules-commonjs": "7.21.2"
+    "@babel/plugin-transform-modules-commonjs": "7.21.2",
+    "ws": "^8.20.1"
   },
   "engines": {
     "node": ">=20"
