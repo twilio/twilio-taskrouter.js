@@ -1,0 +1,78 @@
+name: Publish taskrouter-sdk to npm
+
+on:
+  pull_request:
+    types: [labeled]
+    branches:
+      - release/*
+env:
+    NODE_VERSION: 20.20
+    DIST_DIR: ./dist
+    ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+
+jobs:
+  deploy:
+    name: Publish to npm
+    runs-on: ubuntu-x64
+    if: github.event.label.name == 'trigger-release' && github.repository_owner == 'twilio'
+    environment: production # manual-approval gate + scoped to publish
+    permissions:
+      contents: read
+      id-token: write           # required for npm OIDC trusted publishing
+    steps:
+
+      - name: Extract version from package.json
+        id: extract-version
+        run: |
+          version=$(jq -r '.version' package.json)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Extracted version: $version"
+    
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+    
+      - name: Artifactory OIDC Auth
+        uses: ./.github/actions/artifactory-oidc
+
+      # Node 24+ required for npm OIDC trusted publisher support (npm >= 11.5.1)
+      - name: Setup Node 20.20
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Upgrade npm for trusted publishing (OIDC)
+        run: npm install -g npm@11.18    # needs >= 11.5.1 for OIDC publish
+
+      - name: Install and Build taskrouter-sdk
+        run: yarn install && yarn run build
+
+      - name: Validate tag matches package.json version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "::error::Release tag must be v1.2.3 (got '$TAG')"; exit 1
+          fi
+          [ "${TAG#v}" = "$(node -p "require('./package.json').version")" ] \
+            || { echo "::error::tag $TAG != package.json version"; exit 1; }
+      - name: Publish
+        env:
+          RELEASE_VERSION: ${{ steps.extract-version.outputs.version }}
+        run: |
+          cd ${{ env.DIST_DIR }}/
+          if [[ "$RELEASE_VERSION" == *-rc* ]]; then
+            npm publish --ignore-scripts --tag=rc --provenance
+          else
+            npm publish --ignore-scripts --provenance
+          fi
+      - name: Tag version
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          RELEASE_VERSION: ${{ steps.extract-version.outputs.version }}
+        with:
+          script: |
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/v${process.env.RELEASE_VERSION}`,
+              sha: context.payload.pull_request.head.sha
+            });

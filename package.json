@@ -104,6 +104,7 @@
     "sinon": "^7.5.0",
     "sinon-chai": "^3.7.0",
     "taffydb": "2.7.3",
+    "terser-webpack-plugin": "^5.6.1",
     "twilio": "^5.13.0",
     "twilio-sync": "^3.4.0",
     "typescript": "^6.0.3",
