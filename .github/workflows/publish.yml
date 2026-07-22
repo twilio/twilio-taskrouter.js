@@ -41,7 +41,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Upgrade npm for trusted publishing (OIDC)
-        run: npm install -g npm@11.18    # needs >= 11.5.1 for OIDC publish
+        run: npm install --ignore-engines -g npm@11.18 # needs >= 11.5.1 for OIDC publish
 
       - name: Install and Build taskrouter-sdk
         run: yarn install && yarn run build
