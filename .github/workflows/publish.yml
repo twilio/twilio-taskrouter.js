@@ -6,7 +6,7 @@ on:
     branches:
       - release/*
 env:
-    NODE_VERSION: 20.20
+    NODE_VERSION: "20.20"
     DIST_DIR: ./dist
     ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
 
