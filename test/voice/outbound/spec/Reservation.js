@@ -25,7 +25,6 @@ describe('Reservation with Outbound Voice Task', () => {
             worker = new Worker(workerToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(worker);

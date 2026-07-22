@@ -36,7 +36,6 @@ describe.skip('External Transfer for Outbound Voice Task', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             alice.on('ready', async() => {
@@ -47,7 +46,6 @@ describe.skip('External Transfer for Outbound Voice Task', () => {
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);

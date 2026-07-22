@@ -4,7 +4,8 @@ TEST_FILE="test.json"
 
 echo "Running integration tests with OTK..."
 
-yarn install
+# Dependencies are baked into the image at build time (see Dockerfile);
+# the test pod has no egress to the npm mirror, so don't run yarn install here.
 
 AUTH_TOKEN=$(echo "$AUTH_TOKEN" | jq -r '.["auth-token"]')
 SIGNING_KEY_SECRET=$(echo "$SIGNING_KEY_SECRET" | jq -r '.["signing-key-secret"]')
@@ -23,6 +24,7 @@ DD_REPORT_ENABLED=$DD_REPORT_ENABLED
 JOB_NAME=$JOB_NAME
 
 ENV=$ENV
+REGION=$REGION
 WORKSPACE_FRIENDLY_NAME=$WORKSPACE_FRIENDLY_NAME
 RUN_SIX_SIGMA_SUITE=$RUN_SIX_SIGMA_SUITE
 
@@ -35,6 +37,7 @@ EOT
 
 # Used by Datadog reporter script to determine test duration
 export JOB_START_MS=$(date +%s000)
+echo "Job start timestamp (ms): $JOB_START_MS"
 
 if ! test -f "$TEST_FILE"; then
     node test/integration_test_setup/IntegrationTestSetup.js || EXIT_CODE=$?

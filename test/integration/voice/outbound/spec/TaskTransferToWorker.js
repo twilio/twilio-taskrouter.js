@@ -35,7 +35,6 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             alice = new Worker(aliceToken, {
                 connectActivitySid: credentials.multiTaskConnectActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
 
             alice.on('ready', async() => {
@@ -46,7 +45,6 @@ describe('Task Transfer to Worker for Outbound Voice Task', () => {
             bob = new Worker(bobToken, {
                 connectActivitySid: credentials.multiTaskUpdateActivitySid,
                 region: buildRegionForEventBridge(credentials.region),
-                edge: credentials.edge
             });
             aliceSyncClient = new SyncClientInstance(aliceToken);
             return outboundCommonHelpers.listenToWorkerReadyOrErrorEvent(alice);

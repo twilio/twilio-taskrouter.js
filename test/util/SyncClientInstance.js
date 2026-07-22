@@ -1,5 +1,5 @@
 /* eslint camelcase: 0 */
-const SyncClient = require('twilio-sync');
+const { SyncClient } = require('twilio-sync');
 const credentials = require('../env');
 import { Async } from 'async-test-tools';
 import { expect } from 'chai';

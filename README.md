@@ -140,4 +140,4 @@ make lint
 ## Contributing
 
 Bug fixes welcome! If you're not familiar with the GitHub pull
-request/contribution process, [this is a nice tutorial](https://gun.io/blog/how-to-github-fork-branch-and-pull-request/).
+request/contribution process, [this is a nice tutorial](https://gun.io/blog/how-to-github-fork-branch-and-pull-request/)

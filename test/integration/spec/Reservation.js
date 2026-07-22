@@ -19,7 +19,6 @@ describe('Reservation', () => {
       worker = new Worker(multiTaskAliceToken, {
         connectActivitySid: credentials.multiTaskConnectActivitySid,
         region: buildRegionForEventBridge(credentials.region),
-        edge: credentials.edge
       });
 
       return envTwilio.updateWorkerActivity(

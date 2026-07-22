@@ -5,8 +5,15 @@ import { LogContextType, useLogContext } from '@/lib/log-context';
 import React, { useEffect, useState } from 'react';
 import Logger from './logger.client';
 import Reservation from './reservation.client';
+import { resolveRegion } from '@/lib/utils';
 
-const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; environment: string }) => {
+
+type WorkerWorkspaceProps = {
+  token: string;
+  environment: string;
+};
+
+const WorkerWorkspace = ({ token, environment = 'us1' }: WorkerWorkspaceProps) => {
   const { appendLogs } = useLogContext() as LogContextType;
 
   const [enableAccept, setEnableAccept] = useState<boolean>(false);
@@ -84,15 +91,15 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
 
     appendLogs('Initializing Worker with the new token', 'green');
 
-    const worker = new Supervisor(token, {
-      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
-      logLevel: 'debug',
+    const region = resolveRegion(environment);
+    const workerOptions = {
+      region,
+      logLevel: 'debug' as const,
       // useGraphQL: true, // Use for local development testing
-    });
-    const workspace = new Workspace(token, {
-      region: environment.toLowerCase() === 'stage' ? 'stage-us1' : 'us1',
-      logLevel: 'debug',
-    });
+    };
+
+    const worker = new Supervisor(token, workerOptions);
+    const workspace = new Workspace(token, workerOptions);
     setWorkSpace(workspace);
 
     setWorkerObj(worker);
@@ -117,12 +124,12 @@ const WorkerWorkspace = ({ token, environment = 'stage' }: { token: string; envi
       setEnableDisconnectWorker(true);
     });
 
-    workerObj.on('tokenExpired', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`tokenExpired--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s token expired`);
+    workerObj.on('tokenExpired', () => {
+      appendLogs(`tokenExpired--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s token expired`);
     });
 
-    workerObj.on('tokenUpdated', (readyWorker: { sid: any; friendlyName: any }) => {
-      appendLogs(`tokenUpdated--Worker ${readyWorker.sid} : ${readyWorker.friendlyName}'s token updated`);
+    workerObj.on('tokenUpdated', () => {
+      appendLogs(`tokenUpdated--Worker ${workerObj.sid} : ${workerObj.friendlyName}'s token updated`);
     });
 
     workerObj.on('activityUpdated', (readyWorker: { sid: any; friendlyName: any }) => {

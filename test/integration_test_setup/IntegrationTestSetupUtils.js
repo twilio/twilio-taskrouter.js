@@ -6,9 +6,15 @@ const REGION = process.env.REGION || process.env.ENV;
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
 const AUTH_TOKEN = process.env.AUTH_TOKEN;
 
+function normalizeRegion(region, defaultRegion = '') {
+    return (region || defaultRegion).trim().toLowerCase();
+}
+
 const getTwilioClient = () => {
-    if(ACCOUNT_SID && AUTH_TOKEN){
-        return new Twilio(ACCOUNT_SID, AUTH_TOKEN, {region: buildRegionForTwilioSdk(REGION)});
+    if (ACCOUNT_SID && AUTH_TOKEN) {
+        return new Twilio(ACCOUNT_SID, AUTH_TOKEN, {
+            region: buildRegionForTwilioSdk(REGION),
+        });
     }
 };
 
@@ -16,19 +22,16 @@ const client = getTwilioClient();
 
 function getEventBridgeUrl() {
     // For backward compatibility it's ENV. Valid values are: prod|stage|dev
-    switch (REGION) {
-        case 'stage':
-            return `event-bridge.stage-us1.twilio.com`;
-        case 'dev':
-            return `event-bridge.dev-us1.twilio.com`;
-        case 'prod':
-        case 'us1' :
-            return'event-bridge.twilio.com';
-        default:
-            return `event-bridge.${REGION}.twilio.com`;
-    }
-}
+    const mappedRegion = buildRegionForEventBridge(
+        normalizeRegion(REGION, 'prod')
+    );
 
+    if (!mappedRegion) {
+        return 'event-bridge.twilio.com';
+    }
+
+    return `event-bridge.${mappedRegion}.twilio.com`;
+}
 
 async function createWorkspace(workspaceName, multiTaskEnabled) {
     const workspaces = await client.taskrouter.workspaces.list();
@@ -43,31 +46,43 @@ async function createWorkspace(workspaceName, multiTaskEnabled) {
     workspace = await client.taskrouter.workspaces.create({
         template: 'FIFO',
         friendlyName: workspaceName,
-        multiTaskEnabled
+        multiTaskEnabled,
     });
     console.log(`Created workspace ${workspaceName}`);
     return workspace;
 }
 
 async function createWorker(multiTaskWorkspace, friendlyName, attributes) {
-    const workersBeforeCreation = await client.taskrouter.workspaces(multiTaskWorkspace.sid).workers.list();
-    const worker = workersBeforeCreation.find((w) => w.friendlyName === friendlyName);
+    const workersBeforeCreation = await client.taskrouter
+        .workspaces(multiTaskWorkspace.sid)
+        .workers.list();
+    const worker = workersBeforeCreation.find(
+        (w) => w.friendlyName === friendlyName
+    );
 
     if (worker) {
         console.log(`Worker ${friendlyName} already exists`);
         return worker;
     }
 
-    const multiTaskAlice = await client.taskrouter.workspaces(multiTaskWorkspace.sid).workers.create({
-        attributes: JSON.stringify(attributes),
-        friendlyName
-    });
+    const multiTaskAlice = await client.taskrouter
+        .workspaces(multiTaskWorkspace.sid)
+        .workers.create({
+            attributes: JSON.stringify(attributes),
+            friendlyName,
+        });
     console.log(`Created worker ${friendlyName}`);
     return multiTaskAlice;
 }
 
-async function renameExistingActivity(workspaceSid, currentFriendlyName, newFriendlyName) {
-    const activities = await client.taskrouter.workspaces(workspaceSid).activities.list();
+async function renameExistingActivity(
+    workspaceSid,
+    currentFriendlyName,
+    newFriendlyName
+) {
+    const activities = await client.taskrouter
+        .workspaces(workspaceSid)
+        .activities.list();
 
     let activity = activities.find((a) => a.friendlyName === newFriendlyName);
 
@@ -79,13 +94,17 @@ async function renameExistingActivity(workspaceSid, currentFriendlyName, newFrie
     activity = activities.find((a) => a.friendlyName === currentFriendlyName);
     if (activity) {
         await activity.update({ friendlyName: newFriendlyName });
-        console.log(`Renamed activity from ${currentFriendlyName} to ${newFriendlyName}`);
+        console.log(
+            `Renamed activity from ${currentFriendlyName} to ${newFriendlyName}`
+        );
     }
     return activity;
 }
 
 async function createReservedTask(workspaceSid) {
-    const activities = await client.taskrouter.workspaces(workspaceSid).activities.list();
+    const activities = await client.taskrouter
+        .workspaces(workspaceSid)
+        .activities.list();
 
     let activity = activities.find((a) => a.friendlyName === 'Reserved');
 
@@ -94,91 +113,144 @@ async function createReservedTask(workspaceSid) {
         return activity;
     }
 
-    activity = await client.taskrouter.workspaces(workspaceSid).activities.create({
-        available: false,
-        friendlyName: 'Reserved'
-    });
+    activity = await client.taskrouter
+        .workspaces(workspaceSid)
+        .activities.create({
+            available: false,
+            friendlyName: 'Reserved',
+        });
     console.log('Created Task Reserved');
     return activity;
 }
 
 async function createActivities(workspaceSid) {
-    const multiTaskActivities = await client.taskrouter.workspaces(workspaceSid).activities.list();
+    const multiTaskActivities = await client.taskrouter
+        .workspaces(workspaceSid)
+        .activities.list();
 
-    const multiTaskOffline = multiTaskActivities.find((activity) => activity.friendlyName === 'Offline');
-    const multiTaskAvailable = await renameExistingActivity(workspaceSid, 'Available', 'Idle');
-    const multiTaskBusy = await renameExistingActivity(workspaceSid, 'Unavailable', 'Busy');
+    const multiTaskOffline = multiTaskActivities.find(
+        (activity) => activity.friendlyName === 'Offline'
+    );
+    const multiTaskAvailable = await renameExistingActivity(
+        workspaceSid,
+        'Available',
+        'Idle'
+    );
+    const multiTaskBusy = await renameExistingActivity(
+        workspaceSid,
+        'Unavailable',
+        'Busy'
+    );
 
     const multiTaskReserved = await createReservedTask(workspaceSid);
 
-    return { multiTaskOffline, multiTaskAvailable, multiTaskBusy, multiTaskReserved };
+    return {
+        multiTaskOffline,
+        multiTaskAvailable,
+        multiTaskBusy,
+        multiTaskReserved,
+    };
 }
-
 
 async function updateActivitiesInTaskQueue(
     multiTaskWorkspace,
     multiTaskBusy,
     multiTaskReserved
 ) {
-    const multiTaskqueues = await client.taskrouter.workspaces(multiTaskWorkspace.sid).taskQueues.list();
-    const multiTaskqueue = await multiTaskqueues[0];
+    const multiTaskqueues = await client.taskrouter
+        .workspaces(multiTaskWorkspace.sid)
+        .taskQueues.list();
+    const multiTaskqueue = multiTaskqueues[0];
 
-    await client.taskrouter.workspaces(multiTaskWorkspace.sid).taskQueues(multiTaskqueue.sid).update({
-        assignmentActivitySid: multiTaskBusy.sid,
-        reservationActivitySid: multiTaskReserved.sid
-    });
+    if (!multiTaskqueue) {
+        throw new Error(
+            `No task queues found in workspace ${multiTaskWorkspace.sid}`
+        );
+    }
+
+    await client.taskrouter
+        .workspaces(multiTaskWorkspace.sid)
+        .taskQueues(multiTaskqueue.sid)
+        .update({
+            assignmentActivitySid: multiTaskBusy.sid,
+            reservationActivitySid: multiTaskReserved.sid,
+        });
 
     return multiTaskqueue;
 }
 
-
 async function createWorkers(multiTaskWorkspace) {
     const multiTaskAlice = await createWorker(multiTaskWorkspace, 'Alice', {
-        'contact_uri': 'client:alice'
+        contact_uri: 'client:alice',
     });
 
     const multiTaskBob = await createWorker(multiTaskWorkspace, 'Bob', {
-        'contact_uri': 'client:bob'
+        contact_uri: 'client:bob',
     });
 
     return { multiTaskAlice, multiTaskBob };
 }
 
 function buildRegionForTwilioSdk(region) {
-    switch (region) {
+    const normalizedRegion = normalizeRegion(region);
+
+    switch (normalizedRegion) {
         case 'prod':
+        case 'prod-us1':
         case 'us1':
             return '';
+        case 'dublin-ie1':
+        case 'dublin.ie1':
+            return 'dublin.ie1';
+        case 'prod-au1':
+        case 'au1':
+            return 'au1';
         case 'stage-us1':
+        case 'stage-ie1':
             return 'stage';
+        case 'stage-au1':
+            return 'stage-au1';
         case 'dev-us1':
             return 'dev';
         default:
-            return region;
+            return normalizedRegion;
     }
 }
 
 function buildRegionForEventBridge(region) {
-    switch (region) {
+    const normalizedRegion = normalizeRegion(region);
+
+    switch (normalizedRegion) {
         case 'prod':
+        case 'prod-us1':
         case 'us1':
             return '';
+        case 'dublin-ie1':
+        case 'dublin.ie1':
+            return 'dublin.ie1';
+        case 'prod-au1':
+        case 'au1':
+            return 'au1';
         case 'stage':
             return 'stage-us1';
+        case 'stage-ie1':
+            return 'stage-ie1';
+        case 'stage-au1':
+            return 'stage-au1';
         case 'dev':
             return 'dev-us1';
         default:
-            return region;
+            return normalizedRegion;
     }
 }
 
 module.exports = {
-    createWorkspace,
-    updateActivitiesInTaskQueue,
-    createActivities,
-    getEventBridgeUrl,
-    createWorkers,
-    getTwilioClient,
-    buildRegionForTwilioSdk,
-    buildRegionForEventBridge
+  	createWorkspace,
+  	updateActivitiesInTaskQueue,
+  	createActivities,
+  	getEventBridgeUrl,
+  	createWorkers,
+  	getTwilioClient,
+  	buildRegionForTwilioSdk,
+  	buildRegionForEventBridge,
 };
