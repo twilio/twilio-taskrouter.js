@@ -39,6 +39,7 @@ jobs:
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
 
       - name: Upgrade npm for trusted publishing (OIDC)
         run: npm install --ignore-engines -g npm@11.18 # needs >= 11.5.1 for OIDC publish
