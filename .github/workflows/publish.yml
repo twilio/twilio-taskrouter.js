@@ -50,7 +50,6 @@ jobs:
         env:
           RELEASE_VERSION: ${{ steps.extract-version.outputs.version }}
         run: |
-          cd ${{ env.DIST_DIR }}/
           if [[ "$RELEASE_VERSION" == *-rc* ]]; then
             npm publish --ignore-scripts --tag=rc --provenance
           else
