@@ -21,16 +21,16 @@ jobs:
       id-token: write           # required for npm OIDC trusted publishing
     steps:
 
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+    
       - name: Extract version from package.json
         id: extract-version
         run: |
           version=$(jq -r '.version' package.json)
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Extracted version: $version"
-    
-      - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-    
+
       - name: Artifactory OIDC Auth
         uses: ./.github/actions/artifactory-oidc
 
