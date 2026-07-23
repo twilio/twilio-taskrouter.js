@@ -1,4 +1,4 @@
-name: Publish taskrouter-sdk to npm
+name: Publish twilio-taskrouter to npm
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 env:
     NODE_VERSION: "20.20"
     ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
-    ARTIFACT_NAME: taskrouter-sdk-dist
+    ARTIFACT_NAME: twilio-taskrouter-dist
     DIST_DIR: ./dist
 
 jobs:
@@ -59,8 +59,8 @@ jobs:
           VERSION=${{ steps.extract-version.outputs.version }}
           echo "Releasing version: $VERSION"
           # Fail if version already exists in npm registry
-          npm view taskrouter-sdk@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
-      - name: Install and Build taskrouter-sdk
+          npm view twilio-taskrouter@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
+      - name: Install and Build twilio-taskrouter
         run: yarn install && yarn run build
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -72,7 +72,7 @@ jobs:
   deploy:
     needs: ci
     runs-on: ubuntu-x64
-    environment: production
+    # environment: production
     permissions:
       contents: write
       id-token: write
