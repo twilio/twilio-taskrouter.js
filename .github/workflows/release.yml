@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-x64
     permissions:
       contents: read
-      id-token: write 
+      id-token: write
+      pull-requests: write 
       
     outputs:
       version: ${{ steps.extract-version.outputs.version }}
@@ -77,7 +78,8 @@ jobs:
     runs-on: ubuntu-x64
     permissions:
       contents: read
-      id-token: write 
+      id-token: write
+      pull-requests: write 
       
     steps:
       - name: Checkout code
