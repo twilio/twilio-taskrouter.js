@@ -8,21 +8,43 @@ on:
 env:
     NODE_VERSION: "20.20"
     ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_URL }}
+    ARTIFACT_NAME: taskrouter-sdk-dist
+    DIST_DIR: ./dist
 
 jobs:
-  deploy:
-    name: Publish to npm
-    runs-on: ubuntu-x64
+  ci:
     if: github.event.label.name == 'trigger-release' && github.repository_owner == 'twilio'
-    environment: production # manual-approval gate + scoped to publish
+    runs-on: ubuntu-x64
     permissions:
       contents: read
-      id-token: write           # required for npm OIDC trusted publishing
+      id-token: write 
+      
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
+
     steps:
+      - name: Remove trigger-release label
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        with:
+          script: |
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              name: 'trigger-release'
+            })
 
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-    
+
+      - name: Upgrade npm for trusted publishing (OIDC)
+        run: npm install --ignore-engines -g npm@11.18
+      - name: Setup Node 20.20
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+
       - name: Extract version from package.json
         id: extract-version
         run: |
@@ -30,10 +52,44 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Extracted version: $version"
 
+      - name: Validate version
+        run: |
+          VERSION=${{ steps.extract-version.outputs.version }}
+          echo "Releasing version: $VERSION"
+          # Fail if version already exists in npm registry
+          npm view taskrouter-sdk@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
+
       - name: Artifactory OIDC Auth
         uses: ./.github/actions/artifactory-oidc
 
-      # Node 24+ required for npm OIDC trusted publisher support (npm >= 11.5.1)
+      - name: Install and Build taskrouter-sdk
+        run: yarn install && yarn run build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.DIST_DIR }}
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-x64
+    permissions:
+      contents: read
+      id-token: write 
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.DIST_DIR }}
+
       - name: Setup Node 20.20
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
@@ -41,24 +97,22 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Upgrade npm for trusted publishing (OIDC)
-        run: npm install --ignore-engines -g npm@11.18 # needs >= 11.5.1 for OIDC publish
-
-      - name: Install and Build taskrouter-sdk
-        run: yarn install && yarn run build
-
+        run: npm install --ignore-engines -g npm@11.18
+  
       - name: Publish
         env:
-          RELEASE_VERSION: ${{ steps.extract-version.outputs.version }}
+          RELEASE_VERSION: ${{ needs.ci.outputs.version }}
         run: |
           if [[ "$RELEASE_VERSION" == *-rc* ]]; then
-            npm publish --ignore-scripts --tag=rc --provenance
+            npm publish --ignore-scripts --tag=rc --provenance --dry-run
           else
-            npm publish --ignore-scripts --provenance
+            npm publish --ignore-scripts --provenance --dry-run
           fi
+        
       - name: Tag version
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         env:
-          RELEASE_VERSION: ${{ steps.extract-version.outputs.version }}
+          RELEASE_VERSION: ${{ needs.ci.outputs.version }}
         with:
           script: |
             await github.rest.git.createRef({
@@ -66,4 +120,15 @@ jobs:
               repo: context.repo.repo,
               ref: `refs/tags/v${process.env.RELEASE_VERSION}`,
               sha: context.payload.pull_request.head.sha
+            });
+
+      - name: Add RELEASED label
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['RELEASED']
             });
