@@ -76,7 +76,8 @@ jobs:
     permissions:
       contents: write
       id-token: write
-      pull-requests: write 
+      pull-requests: write
+      pages: write 
       
     steps:
       - name: Checkout code
@@ -108,19 +109,14 @@ jobs:
             npm publish --ignore-scripts --provenance --dry-run
           fi
 
-      - name: Push Docs to gh-pages
-        env:
-          RELEASE_VERSION: ${{ needs.ci.outputs.version }}
-        run: |
-          git fetch origin gh-pages || git checkout --orphan gh-pages
-          git checkout -B gh-pages
-          find . -mindepth 1 -maxdepth 1 \( -name .gitignore -o -name node_modules -o -name dist -o -name .git \) -prune -o -exec rm -rf {} +
-          mv dist/docs/* .
-          rm -rf dist
-          git add .
-          git commit -am "Deploy docs for v${RELEASE_VERSION}" || echo "No changes to commit"
-          git push origin gh-pages --force
-          git checkout -
+      - name: Upload docs to GitHub Pages
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
+        with:
+          path: dist/docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
         
       - name: Tag version
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
