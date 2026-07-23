@@ -37,15 +37,16 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Artifactory OIDC Auth
+        uses: ./.github/actions/artifactory-oidc
 
-      - name: Upgrade npm for trusted publishing (OIDC)
-        run: npm install --ignore-engines -g npm@11.18
       - name: Setup Node 20.20
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: https://registry.npmjs.org
-
+      - name: Upgrade npm for trusted publishing (OIDC)
+        run: npm install --ignore-engines -g npm@11.18
       - name: Extract version from package.json
         id: extract-version
         run: |
@@ -59,13 +60,8 @@ jobs:
           echo "Releasing version: $VERSION"
           # Fail if version already exists in npm registry
           npm view taskrouter-sdk@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
-
-      - name: Artifactory OIDC Auth
-        uses: ./.github/actions/artifactory-oidc
-
       - name: Install and Build taskrouter-sdk
         run: yarn install && yarn run build
-
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
 
