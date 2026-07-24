@@ -104,9 +104,9 @@ jobs:
           RELEASE_VERSION: ${{ needs.ci.outputs.version }}
         run: |
           if [[ "$RELEASE_VERSION" == *-rc* ]]; then
-            npm publish --ignore-scripts --tag=rc --provenance --dry-run
+            npm publish --ignore-scripts --tag=rc --provenance
           else
-            npm publish --ignore-scripts --provenance --dry-run
+            npm publish --ignore-scripts --provenance
           fi
 
       - name: Upload docs to GitHub Pages
