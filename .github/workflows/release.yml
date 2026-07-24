@@ -54,12 +54,12 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Extracted version: $version"
 
-      # - name: Validate version
-      #   run: |
-      #     VERSION=${{ steps.extract-version.outputs.version }}
-      #     echo "Releasing version: $VERSION"
-      #     # Fail if version already exists in npm registry
-      #     npm view twilio-taskrouter@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
+      - name: Validate version
+        run: |
+          VERSION=${{ steps.extract-version.outputs.version }}
+          echo "Releasing version: $VERSION"
+          # Fail if version already exists in npm registry
+          npm view twilio-taskrouter@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
       - name: Install and Build twilio-taskrouter
         run: yarn install && yarn run build
       - name: Upload Build Artifacts
@@ -72,7 +72,7 @@ jobs:
   deploy:
     needs: ci
     runs-on: ubuntu-x64
-    # environment: production
+    environment: production
     permissions:
       contents: write
       id-token: write
