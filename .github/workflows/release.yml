@@ -61,7 +61,7 @@ jobs:
           # Fail if version already exists in npm registry
           npm view twilio-taskrouter@$VERSION version --registry https://registry.npmjs.org && exit 1 || true
       - name: Install and Build twilio-taskrouter
-        run: yarn install && yarn run build
+        run: yarn install --frozen-lockfile --ignore-scripts && yarn run build
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
 
