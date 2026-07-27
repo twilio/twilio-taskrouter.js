@@ -1,3 +1,11 @@
+3.1.0-rc.1
+==========
+Maintenance
+----------
+- Enabled regional support
+- Bumped `ws` to `^8.20.1`
+- Updated dependencies to address reported vulnerabilities.
+
 3.0.0
 ==========
 Breaking Changes
